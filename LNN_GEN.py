@@ -11,6 +11,7 @@ import numpy as np
 ################################ PARAMETER
 I,O = 5,5
 D = 5; R = np.random.randint(D)
+batch_size = 10
 
 ################################ First GEN
 # First Net : 'Index','NbNeuron','NbConnect','x','y','listInput'
@@ -52,3 +53,33 @@ class Network(nn.Module):
                 x = self.Layers[idx](tensor_in)
             self.trace[idx] = x
         return x
+
+##### XOR Fit Part
+X = np.mgrid[0:batch_size,0:I][1]
+y = 1*np.logical_xor(X < 3, X > 5)
+
+# Convert to tensor
+X, y = torch.tensor(X, dtype=torch.float), torch.tensor(y, dtype=torch.float)
+
+# Model init
+model = Network(Net)
+criterion = torch.nn.MSELoss(reduction='sum')
+optimizer = torch.optim.SGD(model.parameters(), lr=1e-6)
+# Training Loop
+for t in range(1000):
+    # Forward pass: Compute predicted y by passing x to the model
+    y_pred = model(X)
+
+    # Compute and print loss
+    loss = criterion(y_pred, y)
+    if t % 100 == 99:
+        print(t, loss.item())
+
+    # Zero gradients, perform a backward pass, and update the weights.
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+##### XOR Predict Part
+y_pred = model(X)
+print(y,y_pred)
