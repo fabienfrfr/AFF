@@ -35,7 +35,7 @@ else :
 NB_CONNEC_TOT = np.random.randint(C_MIN,C_MAX)
 print(NB_CONNEC_TOT, NB_PERCEPTRON_HIDDEN, NB_LAYERS)
 
-# nb neuron by hidden layer (à faire)
+# nb neuron by hidden layer
 NEURON_LIST = [[-1, O]]
 SUM_N, REMAIN_L = 0, NB_LAYERS-1
 if NB_LAYERS > 0 :
@@ -51,6 +51,24 @@ if NB_LAYERS > 0 :
         SUM_N += n
         REMAIN_L -= 1
 
+NEURON_LIST = np.array(NEURON_LIST)
 print(NEURON_LIST)
 
-# define x position of neuron (y it's for visualisation)
+# define x position of neuron (Y : it's for visualisation)
+MAX_HIDDEN_LVL = 32
+X_POS = np.zeros(NB_LAYERS+1, dtype=int)
+X_POS[0]  = MAX_HIDDEN_LVL
+X_POS[1:] = np.random.randint(1, MAX_HIDDEN_LVL, NB_LAYERS)
+
+NEURON_LIST = np.concatenate((NEURON_LIST,X_POS[None].T), axis=1)
+print(NEURON_LIST)
+
+# redistribution of nb connection per layer (find recursive low)
+
+
+
+
+
+
+
+
