@@ -10,7 +10,7 @@ import numpy as np
 NB_P_GEN = 16
 
 # nombre de perceptron dans les couches "hidden"
-P_MAX = np.rint(np.sqrt(NB_P_GEN)).astype(int) # empiric
+P_MAX = np.rint(np.sqrt(NB_P_GEN)+2).astype(int) # empiric
 NB_PERCEPTRON_HIDDEN = np.random.randint(0,P_MAX+1)
 
 # I/O
@@ -35,20 +35,26 @@ else :
 NB_CONNEC_TOT = np.random.randint(C_MIN,C_MAX)
 print(NB_CONNEC_TOT, NB_PERCEPTRON_HIDDEN, NB_LAYERS)
 
-# nb neuron by hidden layer
-NEURON_LIST = [[-1, O]]
-SUM_N, REMAIN_L = 0, NB_LAYERS-1
+## nb neuron and connection by hidden layer
+c = np.random.randint(1,NB_CONNEC_TOT-NB_LAYERS+1)
+NEURON_LIST = [[-1, O, c]] # out layers
+SUM_N, SUM_C, REMAIN_L = 0, c, NB_LAYERS-1
 if NB_LAYERS > 0 :
-    for i in range(NB_LAYERS):
+    for i in range(1,NB_LAYERS+1):
         # recurrent law
         NMAX = NB_PERCEPTRON_HIDDEN - SUM_N - REMAIN_L
+        CMAX = NB_CONNEC_TOT - SUM_C - REMAIN_L
         # define number of perceptron per layers 
-        if NMAX == 1 : n = 1
-        elif i == NB_LAYERS - 1 : n = NMAX
-        else : n = np.random.randint(1, NMAX)
-        NEURON_LIST += [[i, n]]
+        if i == NB_LAYERS : 
+            n = NMAX
+            c = CMAX
+        else : 
+            n = np.random.randint(1, NMAX+1)
+            c = np.random.randint(1, CMAX+1)
+        NEURON_LIST += [[i, n, c]]
         # update weight
         SUM_N += n
+        SUM_C += c
         REMAIN_L -= 1
 
 NEURON_LIST = np.array(NEURON_LIST)
@@ -63,12 +69,33 @@ X_POS[1:] = np.random.randint(1, MAX_HIDDEN_LVL, NB_LAYERS)
 NEURON_LIST = np.concatenate((NEURON_LIST,X_POS[None].T), axis=1)
 print(NEURON_LIST)
 
-# redistribution of nb connection per layer (find recursive low)
+# listing of possible connection (<= NB_CONNEC_TOT)
+LIST_C = [[0,0,i] for i in range(I)] # X, IDX, NEURON
+if NB_LAYERS > 0 :
+    for l in NEURON_LIST[1:]:
+        LIST_C += [[l[-1],l[0], i] for i in range(l[1])]
+LIST_C = np.array(LIST_C)
+print(LIST_C)
 
-
-
-
-
-
-
-
+# redistribution of connection per layer (neirest and normal random (x))
+C_PER_LAYERS = []
+LIST_C_REMAIN = LIST_C.copy()
+for n in NEURON_LIST :
+    C_LAYER = []
+    pos = n[-1]
+    d = pos - LIST_C_REMAIN[:,0] # pos - x
+    # calculate first probability
+    p = np.zeros(d.shape) #init
+    p[d == d[d>0].min()] += 1.
+    p = p/np.sum(p)
+    for c in range(n[2]):
+        idx = np.random.choice(d.shape[0], 1, p=p)
+        C_LAYER += [LIST_C_REMAIN[1,1:].tolist()]
+        # recalculate probability (exp form)
+        p = np.ones(d.shape) #init
+        p[d > 0] += 2.
+        p[d == d[d>0].min()] += 4.
+        p = p/np.sum(p)
+    C_PER_LAYERS += [C_LAYER]
+C_PER_LAYERS = np.array(C_PER_LAYERS)
+print(C_PER_LAYERS)
