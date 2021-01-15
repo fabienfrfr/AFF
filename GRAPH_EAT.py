@@ -27,7 +27,7 @@ class GRAPH_EAT(GRAPH):
         # copy of module (heritage)
         IO, NEURON_LIST, LIST_C = self.IO, self.NEURON_LIST, self.LIST_C
         # adding mutation (variation)
-        MUT = 3 # np.random.randint(2) # 0 : add neuron, 1 : add connect
+        MUT = 4 # np.random.randint(2) # 0 : add neuron, 1 : add connect
         if MUT == 0 :
             # add connection (0.8 proba)
             NEURON_LIST = self.ADD_CONNECTION(NEURON_LIST, LIST_C)
@@ -39,14 +39,15 @@ class GRAPH_EAT(GRAPH):
             NEURON_LIST, LIST_C = self.ADD_LAYERS(NEURON_LIST, LIST_C)
         elif MUT == 3 :
             # cut doublon connect neuron (0.1 proba)
-            self.CUT_CONNECTION(NEURON_LIST)
-        else :
-            # cut Nb connect
-            NEURON_LIST = NEURON_LIST
+            NEURON_LIST = self.CUT_CONNECTION(NEURON_LIST)
+        elif MUT == 4 :
+            # cut neuron
+            NEURON_LIST, LIST_C = self.CUT_NEURON(NEURON_LIST)
+        # return neuronList with mutation or not
         return GRAPH_EAT(None,[IO, NEURON_LIST, LIST_C])
     
     """
-    Verifier pour chaque fonction si ca correspond bien avec ce qu'y est attendu pour la generation suivante
+    NEED TO VERIFY
     """
     def ADD_CONNECTION(self, NEURON_LIST, LIST_C) :
         # add Nb connect
@@ -117,7 +118,29 @@ class GRAPH_EAT(GRAPH):
         NEURON_LIST[IDX,2] -= 1
         del(NEURON_LIST[IDX,-1][0][int(idx_)])
         return NEURON_LIST
-
+    
+    def CUT_NEURON(self, NEURON_LIST):
+        # choose neuron (add to verify connection and minimal neuron)
+        IDX = np.random.randint(1,NEURON_LIST.shape[0])
+        idx, idx_ = NEURON_LIST[IDX,0], np.random.randint(1,NEURON_LIST[IDX,1])
+        # remove one neuron number
+        NEURON_LIST[IDX, 1] -= 1
+        # update list of neuron
+        for n in NEURON_LIST :
+            list_c = np.array(n[-1])
+            # boolean element
+            egal = (list_c == [idx, idx_]).all(axis=1)
+            sup_ = (list_c[:,0] == idx) * (list_c[:,1] > idx_)
+            # change connection (permutation)
+            if egal.any() :
+                list_c[sup_,1] -= 1
+                list_c = list_c[np.invert(egal)]
+            # update neuronlist
+            n[-1] = list_c.tolist()
+            n[2] = len(n[-1])
+        # update connection list
+        LIST_C = self.LISTING_CONNECTION(NEURON_LIST.shape[0]-1, NEURON_LIST[:,:-1])
+        return NEURON_LIST, LIST_C
 
 ################################ GRAPH TESTER
 if TEST_CLASS :
