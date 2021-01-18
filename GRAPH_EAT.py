@@ -94,13 +94,7 @@ class GRAPH_EAT(GRAPH):
     
     def CUT_CONNECTION(self, NEURON_LIST):
         # listing of connection
-        CONNECT_DATA = []
-        for n in NEURON_LIST :
-            idx = n[0]*np.ones((n[2],1))
-            idx_ = np.arange(n[2])[:,None]
-            c = np.array(n[-1])
-            CONNECT_DATA += [np.concatenate((idx,idx_,c),axis=1)]
-        CONNECT_DATA = np.concatenate(CONNECT_DATA)
+        CONNECT_DATA = self.CONNECTED_DATA(NEURON_LIST)
         # choose connect duplicate (doublon : ! min connect, otherwise : return)
         c_u, ret = np.unique(CONNECT_DATA[:,2:], axis=0, return_counts=True)
         idx_doublon = np.where(ret > 1)[0]
@@ -120,9 +114,24 @@ class GRAPH_EAT(GRAPH):
         return NEURON_LIST
     
     def CUT_NEURON(self, NEURON_LIST):
-        # choose neuron (add to verify connection and minimal neuron)
-        IDX = np.random.randint(1,NEURON_LIST.shape[0])
-        idx, idx_ = NEURON_LIST[IDX,0], np.random.randint(1,NEURON_LIST[IDX,1])
+        # listing of connection
+        CONNECT_DATA = self.CONNECTED_DATA(NEURON_LIST)
+        ## find possible neuron (no ones connection)
+        c_n, ret = np.unique(CONNECT_DATA[:,0], return_counts=True)
+        idx_ones = c_n[np.where(ret == 1)[0]]
+        # ones verif
+        if idx_ones.shape != (0,) :
+            bool_o  = np.any([CONNECT_DATA[:,0] == i for i in idx_ones], axis = 0)
+            C = CONNECT_DATA[bool_o,2:]
+            bool_o_ = np.any([(CONNECT_DATA[:,2:] == d).all(axis=1) for d in C], axis=0)
+            # choose neuron
+            C_ = CONNECT_DATA[np.invert(bool_o_), 2:]
+        else :
+            # choose neuron
+            C_ = CONNECT_DATA[:, 2:]
+        C_ = C_[C_[:,0] != 0] # del input
+        idx, idx_ = C_[np.random.randint(C_.shape[0])]
+        IDX = np.where(NEURON_LIST[:,0] == idx)[0]
         # remove one neuron number
         NEURON_LIST[IDX, 1] -= 1
         # update list of neuron
@@ -141,6 +150,16 @@ class GRAPH_EAT(GRAPH):
         # update connection list
         LIST_C = self.LISTING_CONNECTION(NEURON_LIST.shape[0]-1, NEURON_LIST[:,:-1])
         return NEURON_LIST, LIST_C
+    
+    def CONNECTED_DATA(self, NEURON_LIST):
+        CONNECT_DATA = []
+        for n in NEURON_LIST :
+            idx = n[0]*np.ones((n[2],1))
+            idx_ = np.arange(n[2])[:,None]
+            c = np.array(n[-1])
+            CONNECT_DATA += [np.concatenate((idx,idx_,c),axis=1)]
+        CONNECT_DATA = np.concatenate(CONNECT_DATA)
+        return CONNECT_DATA
 
 ################################ GRAPH TESTER
 if TEST_CLASS :
