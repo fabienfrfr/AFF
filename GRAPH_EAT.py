@@ -27,18 +27,19 @@ class GRAPH_EAT(GRAPH):
         # copy of module (heritage)
         IO, NEURON_LIST, LIST_C = self.IO, self.NEURON_LIST, self.LIST_C
         # adding mutation (variation)
-        MUT = 2 # np.random.randint(2) # 0 : add neuron, 1 : add connect
+        MUT = np.random.randint(5)
+        print('Mutation type : ' + str(MUT))
         if MUT == 0 :
-            # add connection (0.8 proba)
+            # add connection
             NEURON_LIST = self.ADD_CONNECTION(NEURON_LIST, LIST_C)
         elif MUT == 1 :
-            # add neuron (0.1 proba)
+            # add neuron
             NEURON_LIST, LIST_C = self.ADD_NEURON(NEURON_LIST)
         elif MUT == 2 :
-            # add layers (0.1 proba)
+            # add layers
             NEURON_LIST, LIST_C = self.ADD_LAYERS(NEURON_LIST, LIST_C)
         elif MUT == 3 :
-            # cut doublon connect neuron (0.1 proba)
+            # cut doublon connect neuron
             NEURON_LIST = self.CUT_CONNECTION(NEURON_LIST)
         elif MUT == 4 :
             # cut neuron
@@ -117,20 +118,31 @@ class GRAPH_EAT(GRAPH):
         c_n, ret = np.unique(CONNECT_DATA[:,0], return_counts=True)
         idx_ones = c_n[np.where(ret == 1)[0]]
         # ones verif
-        if idx_ones.shape != (0,) :
+        if idx_ones.shape[0] != 0 :
+            # select index
             bool_o  = np.any([CONNECT_DATA[:,0] == i for i in idx_ones], axis = 0)
             C = CONNECT_DATA[bool_o,2:]
+            # select doublon
             bool_o_ = np.any([(CONNECT_DATA[:,2:] == d).all(axis=1) for d in C], axis=0)
             # choose neuron
             C_ = CONNECT_DATA[np.invert(bool_o_), 2:]
         else :
             # choose neuron
             C_ = CONNECT_DATA[:, 2:]
-        C_ = C_[C_[:,0] != 0] # del input
+        # delete input
+        C_ = C_[C_[:,0] != 0]
+        # return if no connection
+        if C_.shape[0] == 0 :
+            return NEURON_LIST, self.LIST_C
+        # choise index
         idx, idx_ = C_[np.random.randint(C_.shape[0])]
         IDX = np.where(NEURON_LIST[:,0] == idx)[0]
+        # return if no neuron
+        NEW_NB_NEURON = NEURON_LIST[IDX, 1] - 1
+        if NEW_NB_NEURON == 0 :
+            return NEURON_LIST, self.LIST_C
         # remove one neuron number
-        NEURON_LIST[IDX, 1] -= 1
+        NEURON_LIST[IDX, 1] = NEW_NB_NEURON
         # update list of neuron
         for n in NEURON_LIST :
             list_c = np.array(n[-1])
