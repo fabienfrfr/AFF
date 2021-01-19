@@ -27,7 +27,7 @@ class GRAPH_EAT(GRAPH):
         # copy of module (heritage)
         IO, NEURON_LIST, LIST_C = self.IO, self.NEURON_LIST, self.LIST_C
         # adding mutation (variation)
-        MUT = 4 # np.random.randint(2) # 0 : add neuron, 1 : add connect
+        MUT = 1 # np.random.randint(2) # 0 : add neuron, 1 : add connect
         if MUT == 0 :
             # add connection (0.8 proba)
             NEURON_LIST = self.ADD_CONNECTION(NEURON_LIST, LIST_C)
@@ -46,9 +46,6 @@ class GRAPH_EAT(GRAPH):
         # return neuronList with mutation or not
         return GRAPH_EAT(None,[IO, NEURON_LIST, LIST_C])
     
-    """
-    NEED TO VERIFY
-    """
     def ADD_CONNECTION(self, NEURON_LIST, LIST_C) :
         # add Nb connect
         idx = np.random.randint(NEURON_LIST.shape[0])
@@ -64,11 +61,11 @@ class GRAPH_EAT(GRAPH):
         if NB_LAYER == 1 : IDX_N = 1
         else : IDX_N = np.random.randint(1,NB_LAYER)
         NEURON_LIST[IDX_N,1] += 1
-        idx_c_new, idx_c_new = NEURON_LIST[IDX_N,0], NEURON_LIST[IDX_N,1]+1
+        idx_new, idx_c_new = NEURON_LIST[IDX_N,0], NEURON_LIST[IDX_N,1]-1
         # add connection
         IDX_C = np.random.randint(NB_LAYER)
         NEURON_LIST[IDX_C, 2] += 1
-        NEURON_LIST[IDX_C,-1] += [[idx_c_new, idx_c_new]]
+        NEURON_LIST[IDX_C,-1] += [[idx_new, idx_c_new]]
         # update list_connection
         LIST_C = self.LISTING_CONNECTION(NEURON_LIST.shape[0]-1, NEURON_LIST[:,:-1])
         return NEURON_LIST, LIST_C
