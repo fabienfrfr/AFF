@@ -27,7 +27,7 @@ class GRAPH_EAT(GRAPH):
         # copy of module (heritage)
         IO, NEURON_LIST, LIST_C = self.IO, self.NEURON_LIST, self.LIST_C
         # adding mutation (variation)
-        MUT = 1 # np.random.randint(2) # 0 : add neuron, 1 : add connect
+        MUT = 2 # np.random.randint(2) # 0 : add neuron, 1 : add connect
         if MUT == 0 :
             # add connection (0.8 proba)
             NEURON_LIST = self.ADD_CONNECTION(NEURON_LIST, LIST_C)
@@ -83,7 +83,7 @@ class GRAPH_EAT(GRAPH):
         IDX_N = np.where(NEURON_LIST[:,3] > POS_X_new)[0]
         idx_n = IDX_N[np.random.randint(IDX_N.shape[0])]
         NEURON_LIST[idx_n, 2] += 1
-        NEURON_LIST[idx_n, -1] += [idx_new, 0]
+        NEURON_LIST[idx_n, -1] += [[idx_new, 0]]
         # add layers and update list
         NEURON_LIST = np.concatenate((NEURON_LIST,NEW_NEURON[None]), axis=0)
         LIST_C = self.LISTING_CONNECTION(NEURON_LIST.shape[0]-1, NEURON_LIST[:,:-1])
