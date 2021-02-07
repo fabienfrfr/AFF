@@ -39,10 +39,6 @@ class Q_AGENT_GEN():
         y = np.random.choice(range(len(Y)), self.IO[1], replace=False)
         # note for output min : cyclic 3,4 if 3 mvt, 2 if 4 mvt
         return X[x], Y[y]
-        
-    def IN_COOR_GEN(self) :
-        # random 9 cell in 5*5 
-        return np.mgrid[-1:2,-1:2]
     
     ## Training Q-Table
     def OPTIM_MODEL(self) :
