@@ -4,7 +4,8 @@
 Created on Tue Jan 26 11:38:14 2021
 @author: fabien
 """
-import torch
+import torch, torch.nn as nn
+import torch.optim as optim
 import numpy as np
 
 from GRAPH_EAT import GRAPH_EAT
@@ -13,9 +14,10 @@ from pRNN_GEN import pRNN
 TEST_CLASS = True
 
 ################################ GRAPH of Network
-class Q_AGENT_GEN():
+class Q_AGENT():
     def __init__(self, NB_P_GEN, IO, BS):
         self.P_MIN = 1
+        self.P_DILEMNA = 0.4*np.random.random() + 0.1
         # I/O
         self.IO = IO # image cells, action
         self.batch_size = BS
@@ -23,8 +25,13 @@ class Q_AGENT_GEN():
         self.NET = GRAPH_EAT([NB_P_GEN, self.IO[0], self.IO[1], self.P_MIN], None)
         self.NEURON_LIST = self.NET.NEURON_LIST
         self.MODEL = pRNN(self.NEURON_LIST, self.batch_size)
+        # nn optimiser
+        self.optimizer = optim.Adam(self.MODEL.parameters())
+        self.criterion = nn.MSELoss()
         ## IO Coordinate
         self.X,self.Y = self.FIRST_IO_COOR_GEN()
+        ## Data sample (memory : 'old_state', 'action', 'new_state', 'reward', 'terminal')
+        self.MEMORY = [[],[],[],[],[]]
     
     ## Define coordinate of IN/OUT
     def FIRST_IO_COOR_GEN(self) :
@@ -40,9 +47,31 @@ class Q_AGENT_GEN():
         # note for output min : cyclic 3,4 if 3 mvt, 2 if 4 mvt
         return X[x], Y[y]
     
+    ## Action Exploration/Exploitation Dilemna
+    def ACTION(self, position) :
+        return None
+    
     ## Training Q-Table
     def OPTIM_MODEL(self) :
-        return None
+        gamma = 0.1 #(?)
+        # extract info
+        old_state, action, new_state, reward, DONE = self.MEMORY
+        # Compute predicted Q-values for each action
+        pred_q_values_batch = torch.sum(self.MODEL(old_state).gather(1, action),dim=1)
+        pred_q_values_next = self.MODEL(new_state)
+    
+        # Compute targeted Q-value for action performed
+        target_q_values_batch = torch.cat(tuple(reward[i] if DONE[i]
+                    else reward[i] + gamma * torch.max(pred_q_values_next[i])
+                    for i in range(len(reward))))
+        # zero the parameter gradients
+        self.MODEL.zero_grad()
+        # Compute the loss
+        target_q_values_batch = target_q_values_batch.detach()
+        loss = self.criterion(pred_q_values_batch,target_q_values_batch)
+        # Do backward pass
+        loss.backward()
+        self.optimizer.step()
     
 ################################ GRAPH TESTER
 if TEST_CLASS :
@@ -50,13 +79,13 @@ if TEST_CLASS :
     # Parameter
     IO = (9,3)
     NB_P_GEN = 16
-    batch_size = 5
+    batch_size = 32
     MAP_SIZE = 16
     # Basic Env Gen
     IMG = np.random.random((batch_size,MAP_SIZE,MAP_SIZE))
     POS = np.random.randint(0,MAP_SIZE,2)
     # Init
-    AGENT = Q_AGENT_GEN(NB_P_GEN, IO, batch_size)
+    AGENT = Q_AGENT(NB_P_GEN, IO, batch_size)
     # Input test
     In_COOR = np.mod(POS + AGENT.X, MAP_SIZE)
     
