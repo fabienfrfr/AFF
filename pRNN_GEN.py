@@ -8,7 +8,7 @@ Created on Sun Dec  6 14:01:21 2020
 import torch, torch.nn as nn
 import numpy as np
 
-TEST_CLASS = True
+TEST_CLASS = False
 
 ################################ Custom neural network
 class pRNN(nn.Module):
@@ -25,6 +25,8 @@ class pRNN(nn.Module):
 
     def forward(self,x):
         self.input = x
+        # Generalization of Exploitation or Training batch
+        BATCH_ = np.arange(len(x)) # min = 1, max = batch_size 
         # virtualization (t-1)
         self.h = [t.detach() for t in self.trace]
         # BP follow XY position
@@ -39,12 +41,12 @@ class pRNN(nn.Module):
                 else :
                     idx_ = np.where(self.Net[:,0] == j)[0][0]
                     # pseudo-RNN
-                    if (self.Net[idx_, 3] >= self.Net[idx, 3]) : tensor += [self.h[idx_][:,None,k]]
+                    if (self.Net[idx_, 3] >= self.Net[idx, 3]) : tensor += [self.h[idx_][BATCH_,None,k]]
                     # Non Linear input
-                    else : tensor += [self.trace[idx_][:,None,k]]
+                    else : tensor += [self.trace[idx_][BATCH_,None,k]]
             tensor_in = torch.cat(tensor, dim=1)
             x = self.Layers[idx](tensor_in)
-            self.trace[idx] = x
+            self.trace[idx][BATCH_] = x
         return x
 
 ################################ GRAPH TESTER
