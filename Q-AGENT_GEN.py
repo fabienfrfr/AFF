@@ -48,11 +48,36 @@ class Q_AGENT():
         return X[x], Y[y]
     
     ## Action Exploration/Exploitation Dilemna
-    def ACTION(self, position) :
-        return None
+    def ACTION(self, Input) :
+        img_in = torch.tensor(Input, dtype=torch.float)
+        DEAL = True #np.random.choice([True,False], 1, p=[self.P_DILEMNA, 1 - self.P_DILEMNA])[0]
+        if DEAL :
+            # prnn buffer
+            output = self.MODEL(img_in)
+            # exploration
+            next_action = np.random.randint(self.IO[1])
+        else :
+            # exploitation
+            output = self.MODEL(torch.from_numpy(img_in).float())
+            # Max values classification
+            _, predicted = torch.max(output.data, 1)
+            predicted = predicted.numpy()
+            next_action = predicted[0]
+        return next_action
+    
+    ## Memory sequencing
+    def SEQUENCING(self, prev_state,action,new_state,reward,DONE):
+        self.MEMORY[0] += [prev_state]
+        self.MEMORY[1] += [action]
+        self.MEMORY[2] += [new_state]
+        self.MEMORY[3] += [reward]
+        self.MEMORY[4] += [DONE]
+        if DONE :
+            self.MEMORY[0] = np.concatenate(self.MEMORY[0])
+            self.MEMORY[2] = np.concatenate(self.MEMORY[2])
     
     ## Training Q-Table
-    def OPTIM_MODEL(self) :
+    def OPTIM(self) :
         gamma = 0.1 #(?)
         # extract info
         old_state, action, new_state, reward, DONE = self.MEMORY
@@ -86,13 +111,35 @@ if TEST_CLASS :
     POS = np.random.randint(0,MAP_SIZE,2)
     # Init
     AGENT = Q_AGENT(NB_P_GEN, IO, batch_size)
-    # Input test
+    # first step
     In_COOR = np.mod(POS + AGENT.X, MAP_SIZE)
+    new_state = IMG[0][In_COOR[:,0],In_COOR[:,1]][None]
+    # Loop
+    i, DONE = 1, False
+    for img in IMG[1:] :
+        # new input
+        prev_state = new_state.copy()
+        # Action
+        action = AGENT.ACTION(prev_state)
+        action_coor = AGENT.Y[action]
+        # position update
+        POS = np.mod(POS + action_coor, MAP_SIZE)
+        # step reward
+        reward = np.random.randint(-1,2)
+        # Input update
+        In_COOR = np.mod(POS + AGENT.X, MAP_SIZE)
+        new_state = img[In_COOR[:,0],In_COOR[:,1]][None]
+        # DONE
+        i += 1
+        if i == batch_size : DONE = True
+        # Memory update
+        AGENT.SEQUENCING(prev_state,action,new_state,reward,DONE)
+        print(POS,action)
+    a = AGENT.MEMORY
     
-    Input = IMG[:,In_COOR[:,0],In_COOR[:,1]]
-    IN_ = torch.tensor(Input, dtype=torch.float)
-    # Test model
-    OUT_ = AGENT.MODEL(IN_)
+    """
+    # Test complet model
+    OUT_ = AGENT.MODEL()
     MVT = int(torch.argmax(OUT_[0]))
     Out_COOR = np.mod(POS + AGENT.Y[2], MAP_SIZE)
     # Plot
@@ -101,3 +148,9 @@ if TEST_CLASS :
     plt.scatter(POS[0],POS[1], c='k', s=80)
     plt.scatter(In_COOR[:,0],In_COOR[:,1], c='b',s=40)
     print(OUT_)
+    # Exploitation task
+    OUT_ = AGENT.MODEL(IN_[:5])
+    print(OUT_)
+    #print('input : ', AGENT.MODEL.input)
+    #print('h : ', AGENT.MODEL.h)
+    """
