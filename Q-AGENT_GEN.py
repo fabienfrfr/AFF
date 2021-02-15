@@ -26,6 +26,7 @@ class Q_AGENT():
         self.NEURON_LIST = self.NET.NEURON_LIST
         self.MODEL = pRNN(self.NEURON_LIST, self.batch_size)
         # nn optimiser
+        self.GAMMA = 0.9
         self.optimizer = optim.Adam(self.MODEL.parameters())
         self.criterion = nn.MSELoss()
         ## IO Coordinate
@@ -73,31 +74,30 @@ class Q_AGENT():
         self.MEMORY[3] += [reward]
         self.MEMORY[4] += [DONE]
         if DONE :
-            self.MEMORY[0] = np.concatenate(self.MEMORY[0])
-            self.MEMORY[2] = np.concatenate(self.MEMORY[2])
+            self.MEMORY[0] = torch.tensor(np.concatenate(self.MEMORY[0]), dtype=torch.float)
+            self.MEMORY[1] = torch.tensor(np.array(self.MEMORY[1]),  dtype=torch.long).unsqueeze(1)
+            self.MEMORY[2] = torch.tensor(np.concatenate(self.MEMORY[2]), dtype=torch.float)
+            self.MEMORY[3] = torch.tensor(np.array(self.MEMORY[3]))
+            self.MEMORY[4] = torch.tensor(np.array(self.MEMORY[4]), dtype=torch.int)
     
     ## Training Q-Table
     def OPTIM(self) :
-        gamma = 0.1 #(?)
         # extract info
         old_state, action, new_state, reward, DONE = self.MEMORY
         # Compute predicted Q-values for each action
-        pred_q_values_batch = torch.sum(self.MODEL(old_state).gather(1, action),dim=1)
+        pred_q_values_batch = torch.sum(self.MODEL(old_state).gather(1, action),dim=1).detach()
         pred_q_values_next = self.MODEL(new_state)
-    
         # Compute targeted Q-value for action performed
-        target_q_values_batch = torch.cat(tuple(reward[i] if DONE[i]
-                    else reward[i] + gamma * torch.max(pred_q_values_next[i])
-                    for i in range(len(reward))))
+        target_q_values_batch = reward+(1-DONE)*self.GAMMA*torch.max(pred_q_values_next, 1)[0]
         # zero the parameter gradients
         self.MODEL.zero_grad()
         # Compute the loss
-        target_q_values_batch = target_q_values_batch.detach()
         loss = self.criterion(pred_q_values_batch,target_q_values_batch)
         # Do backward pass
         loss.backward()
         self.optimizer.step()
-    
+
+
 ################################ GRAPH TESTER
 if TEST_CLASS :
     import pylab as plt
@@ -134,8 +134,8 @@ if TEST_CLASS :
         if i == batch_size : DONE = True
         # Memory update
         AGENT.SEQUENCING(prev_state,action,new_state,reward,DONE)
-        print(POS,action)
-    a = AGENT.MEMORY
+    # Reinforcement learning
+    AGENT.OPTIM()
     
     """
     # Test complet model
