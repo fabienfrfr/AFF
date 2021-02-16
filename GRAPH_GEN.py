@@ -139,17 +139,4 @@ class GRAPH():
             NEW_NEURON_LIST[i,-1] = C_LAYER
             i += 1
         return np.array(NEW_NEURON_LIST)
-
-
-################################ GRAPH TESTER
-if TEST_CLASS :
-    # Generator
-    NB_P_GEN = 16
-    P_MIN = 1
     
-    # I/O
-    I = 3 # image cells
-    O = 3 # action
-    
-    NET = GRAPH(NB_P_GEN, I, O, P_MIN)
-    print("Liste des neurons : \n", NET.NEURON_LIST)
