@@ -8,8 +8,6 @@ Created on Tue Jan  5 09:50:26 2021
 
 import numpy as np
 
-TEST_CLASS = True
-
 ################################ GRAPH of Network
 class GRAPH():
     def __init__(self, NB_P_GEN, I, O, P_MIN, MAX_HIDDEN_LVL = 32):
