@@ -8,8 +8,6 @@ Created on Sun Dec  6 14:01:21 2020
 import torch, torch.nn as nn
 import numpy as np
 
-TEST_CLASS = False
-
 ################################ Custom neural network
 class pRNN(nn.Module):
     def __init__(self, Net, batch_size):
@@ -48,36 +46,3 @@ class pRNN(nn.Module):
             x = self.Layers[idx](tensor_in)
             self.trace[idx][BATCH_] = x
         return x
-
-################################ GRAPH TESTER
-if TEST_CLASS :
-    from GRAPH_GEN import GRAPH
-    # Generator
-    NB_P_GEN = 16
-    P_MIN = 1
-    
-    # I/O
-    I = 16 # image cells
-    O = 16 # action
-    
-    NET = GRAPH(NB_P_GEN, I, O, P_MIN)
-    Net = NET.NEURON_LIST
-    print("Liste des neurons : \n", Net)
-    
-    batch_size = 5
-    # IO values
-    X = np.mgrid[0:batch_size,0:I][1]
-    y = 1*np.logical_xor(X < 3, X > 7)
-    X, y = torch.tensor(X, dtype=torch.float), torch.tensor(y, dtype=torch.float)
-    print("XOR output (not shuffleled..) : \n", y)
-    
-    # init RNN
-    h0 = torch.zeros(batch_size,1).requires_grad_()
-
-    # Model init
-    model = pRNN(Net, batch_size)
-    print("Model : \n", model)
-    
-    # test prediction
-    y_pred = model(X)
-    print("first output predicted : \n", y_pred)
