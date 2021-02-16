@@ -169,23 +169,3 @@ class GRAPH_EAT(GRAPH):
             CONNECT_DATA += [np.concatenate((idx,idx_,c),axis=1)]
         CONNECT_DATA = np.concatenate(CONNECT_DATA)
         return CONNECT_DATA
-
-################################ GRAPH TESTER
-if TEST_CLASS :
-    # Generator
-    NB_P_GEN = 16
-    P_MIN = 1
-    
-    # I/O
-    I = 3 # image cells
-    O = 3 # action
-    
-    # Init
-    NET = GRAPH_EAT([NB_P_GEN, I, O, P_MIN], None)
-    print("Liste des neurons : \n", NET.NEURON_LIST)
-    
-    NEURON_LIST = NET.NEURON_LIST
-    
-    NET_ = NET.NEXT_GEN()
-    print("Liste des neurons : \n", NET_.NEURON_LIST)
-        
