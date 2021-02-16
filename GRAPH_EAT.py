@@ -10,8 +10,6 @@ import numpy as np
 
 from GRAPH_GEN import GRAPH
 
-TEST_CLASS = True
-
 ################################ GRAPH Evolution Augmenting Topology
 class GRAPH_EAT(GRAPH):
     def __init__(self, GEN_PARAM, NET):
