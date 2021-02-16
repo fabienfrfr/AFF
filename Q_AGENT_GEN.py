@@ -11,8 +11,6 @@ import numpy as np
 from GRAPH_EAT import GRAPH_EAT
 from pRNN_GEN import pRNN
 
-TEST_CLASS = True
-
 ################################ GRAPH of Network
 class Q_AGENT():
     def __init__(self, NB_P_GEN, IO, BS):
