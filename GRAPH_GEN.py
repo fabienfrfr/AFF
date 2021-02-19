@@ -8,10 +8,14 @@ Created on Tue Jan  5 09:50:26 2021
 
 import numpy as np
 
+TEST_CLASS = False
+
 ################################ GRAPH of Network
 class GRAPH():
     def __init__(self, NB_P_GEN, I, O, P_MIN, MAX_HIDDEN_LVL = 32):
         
+        # assign parameter
+        self.IO = I, O
         # nombre de perceptron dans les couches "hidden"
         P_MAX = np.rint(np.sqrt(NB_P_GEN)+2).astype(int) # empiric
         NB_PERCEPTRON_HIDDEN = np.random.randint(P_MIN,P_MAX+1)
@@ -40,7 +44,7 @@ class GRAPH():
         self.ADDING_POS_X(NB_LAYERS, MAX_HIDDEN_LVL)
         
         # listing of possible connection (<= NB_CONNEC_TOT)
-        self.LIST_C = self.LISTING_CONNECTION(NB_LAYERS)
+        self.LIST_C = self.LISTING_CONNECTION(NB_LAYERS, self.NEURON_LIST)
         
         # expand NEURON_LIST of is own connection
         self.NEURON_LIST = self.CONNECTION_GEN(MAX_HIDDEN_LVL)
@@ -49,7 +53,7 @@ class GRAPH():
     def LISTING_NEURON(self, NB_CONNEC_TOT, NB_LAYERS, NB_PERCEPTRON_HIDDEN) :
         ## nb neuron and connection by hidden layer
         c = np.random.randint(1,NB_CONNEC_TOT-NB_LAYERS+1)
-        NEURON_LIST = [[-1, O, c]] # out layers
+        NEURON_LIST = [[-1, self.IO[1], c]] #out
         SUM_N, SUM_C, REMAIN_L = 0, c, NB_LAYERS-1
         if NB_LAYERS > 0 :
             for i in range(1,NB_LAYERS+1):
@@ -77,15 +81,16 @@ class GRAPH():
         #define x position of neuron (Y : it's for visualisation)
         X_POS = np.zeros(NB_LAYERS+1, dtype=int)
         X_POS[0]  = MAX_HIDDEN_LVL
-        X_POS[1:] = np.random.randint(1, MAX_HIDDEN_LVL, NB_LAYERS)
+        X_POS[1:] = np.random.choice(np.arange(1,MAX_HIDDEN_LVL), NB_LAYERS, replace=False)
         
         self.NEURON_LIST = np.concatenate((self.NEURON_LIST,X_POS[None].T), axis=1)
         #print("Liste des neuron + position : \n", self.NEURON_LIST)
 
-    def LISTING_CONNECTION(self, NB_LAYERS):
-        LIST_C = [[0,0,i] for i in range(I)] # X, IDX, NEURON
+    def LISTING_CONNECTION(self, NB_LAYERS, NEURON_INFO):
+        # ! NEURON_INFO != NEURON_LIST (without connection list)
+        LIST_C = [[0,0,i] for i in range(self.IO[0])] # X, IDX, NEURON
         if NB_LAYERS > 0 :
-            for l in self.NEURON_LIST[1:]:
+            for l in NEURON_INFO[1:]:
                 LIST_C += [[l[-1],l[0], i] for i in range(l[1])]
         LIST_C = np.array(LIST_C)
         #print("Liste des connections : \n", LIST_C)
@@ -137,4 +142,3 @@ class GRAPH():
             NEW_NEURON_LIST[i,-1] = C_LAYER
             i += 1
         return np.array(NEW_NEURON_LIST)
-    
