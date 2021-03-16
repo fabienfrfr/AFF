@@ -123,6 +123,7 @@ class GRAPH():
                 # discrete probability low gen
                 if c == 0 :
                     p[p_behind] = 1.
+                    p[np.invert(p_behind)] = 0.
                 else :
                     # 1/3 + 2/3
                     p[p_front] = 1.
