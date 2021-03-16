@@ -130,7 +130,9 @@ class GRAPH():
                     p[p_upstream] = 2.*((p_front.sum()+1)/(p_upstream.sum()+1))
                     p[p_behind] = 2*p[p_behind]
                 # normalisation
-                p = p/np.sum(p)
+                norm = np.sum(p)
+                if norm != 0: p = p/norm
+                else : p = np.ones(d.shape)/(d.shape[0])
                 # random connection
                 idx = np.random.choice(d.shape[0], 1, p=p)
                 if LIST_C_REMAIN.shape[0] != 0 :
