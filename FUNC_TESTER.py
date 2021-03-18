@@ -61,7 +61,7 @@ def DRAW_NETWORK(net_graph,in_):
         plt.fill_between([x-0.5,x+0.5], [y+0.5,y+0.5], -0.5, alpha=0.5)
     ## Plot the graph-network
     plt.scatter(neuron_in[:,1], neuron_in[:,2], s=10); plt.scatter(neuron_out[:,1], neuron_out[:,2], s=30)
-    plt.savefig('NETWORK.svg')
+    plt.savefig('NETWORK.svg'); plt.show(); plt.close()
 
 def MODEL_BASIC(net_rnn, io):
     # regression type (MSE)
@@ -70,24 +70,63 @@ def MODEL_BASIC(net_rnn, io):
     # Training Loop
     for t in range(5):
         # randomised IO
-        X = torch.tensor(np.random.random((batch_size,io[0])), dtype=torch.float)
-        y = torch.tensor(np.random.random((batch_size,io[1])), dtype=torch.float)
+        X = torch.randn(batch_size,io[0])
+        y = torch.randn(batch_size,io[1])
         # Forward pass: Compute predicted y by passing x to the model
         y_pred = net_rnn(X)
-        print(y_pred)
+        ############print(y_pred)
         # Compute and print loss
         loss = criterion(y_pred, y)
-        print(t, loss.item())
+        ############print(t, loss.item())
         # Zero gradients, perform a backward pass, and update the weights.
         optimizer.zero_grad()
         loss.backward()#retain_graph=True)
         optimizer.step()
     return None
+
+def MODEL_ENV(AGENT, train_size):
+    for n in range(train_size) :
+        # Basic Env Gen
+        IMG = np.random.random((batch_size,MAP_SIZE,MAP_SIZE))
+        POS = np.random.randint(0,MAP_SIZE,2)
+        # Memory
+        x = POS[None].copy()
+        # first step
+        In_COOR = np.mod(POS + AGENT.X, MAP_SIZE)
+        new_state = IMG[0][In_COOR[:,0],In_COOR[:,1]][None]
+        # Loop
+        i, DONE = 1, False
+        for img in IMG[1:] :
+            # new input
+            prev_state = new_state.copy()
+            # Action
+            action = AGENT.ACTION(prev_state)
+            action_coor = AGENT.Y[action]
+            # position update
+            POS = np.mod(POS + action_coor, MAP_SIZE)
+            # memory
+            x = np.concatenate((x,POS[None].copy()), axis=0)
+            # step reward
+            reward = np.random.randint(-1,2)
+            # Input update
+            In_COOR = np.mod(POS + AGENT.X, MAP_SIZE)
+            new_state = img[In_COOR[:,0],In_COOR[:,1]][None]
+            # DONE
+            i += 1
+            if i == batch_size : DONE = True
+            # Memory update
+            AGENT.SEQUENCING(prev_state,action,new_state,reward,DONE)
+        # Reinforcement learning
+        AGENT.OPTIM()
+    # last move
+    plt.scatter(x[[0,-1],0],x[[0,-1],1], c="k")
+    plt.plot(x[:,0],x[:,1], c="k")
+    plt.imshow(IMG[0])
     
 ### TESTING PART
 if TEST :
     # Parameter
-    IO = (3,3)
+    IO = (5,3)
     NB_P_GEN = 8
     batch_size = 32
     MAP_SIZE = 16
@@ -101,11 +140,9 @@ if TEST :
     ############### training test
     NET_RNN = AGENT.MODEL
     
-    # RANDOM ENV GEN
-    IMG = np.random.random((batch_size,MAP_SIZE,MAP_SIZE))
-    POS = np.random.randint(0,MAP_SIZE,2)
-    
     ### basic-training
     MODEL_BASIC(NET_RNN, IO)
 
     ### q-training
+    MODEL_ENV(AGENT, 10)
+    
