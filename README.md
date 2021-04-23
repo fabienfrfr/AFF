@@ -4,6 +4,8 @@
 
 Tree structure :
 
+---
+
 * LYFE_MAIN.py
 * * ANIM_LYFE.py
 * * PLAY_IA.py
