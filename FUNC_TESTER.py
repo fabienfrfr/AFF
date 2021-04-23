@@ -17,6 +17,7 @@ TEST = True
 
 ### FUNCTION PART
 def DRAW_NETWORK(net_graph,in_):
+    global neuron_in, neuron_out
     ## Generate layer node
     # TRIPLET : (IDX, X, INDEX_ = Y)
     neuron_in, neuron_out = [], []
@@ -141,8 +142,34 @@ if TEST :
     NET_RNN = AGENT.MODEL
     
     ### basic-training
-    MODEL_BASIC(NET_RNN, IO)
+    #MODEL_BASIC(NET_RNN, IO)
 
     ### q-training
-    MODEL_ENV(AGENT, 10)
+    #MODEL_ENV(AGENT, 10)
     
+    ### Mutation
+    NEW_AGENT = AGENT.LAUNCH_MUTATION(4)
+    """
+    COP_GRAPH = GRAPH_EAT(None,[IO, NET_GRAPH.copy(), AGENT.NET.LIST_C.copy()])
+    NEW_GRAPH = NEW_GRAPH.NEXT_GEN(4)
+    print(COP_GRAPH.NEURON_LIST)
+    print(NEW_GRAPH.NEURON_LIST)
+
+    """
+    ############### plot neuron list
+    NEW_NET_GRAPH = NEW_AGENT.NEURON_LIST
+    DRAW_NETWORK(NEW_NET_GRAPH,IO[0])
+
+    print(NET_GRAPH)
+    print(NEW_NET_GRAPH)
+
+
+"""
+################################ XOR FIT
+X = np.mgrid[0:batch_size,0:I][1]
+y = 1*np.logical_xor(X < 3, X > 5)
+
+# Convert to tensor
+X, y = torch.tensor(X, dtype=torch.float), torch.tensor(y, dtype=torch.float)
+
+"""
