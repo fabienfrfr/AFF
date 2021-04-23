@@ -2,9 +2,9 @@
 
 ###### Attribution required : Fabien Furfaro (CC 4.0 BY NC ND SA)
 
-Tree structure :
-
 ---
+
+Tree structure :
 
 * LYFE_MAIN.py
 * * ANIM_LYFE.py
