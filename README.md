@@ -6,6 +6,7 @@
 
 Tree structure :
 
+* FUNC_TESTER.py (debugging)
 * LYFE_MAIN.py
 * * ANIM_LYFE.py
 * * PLAY_IA.py
@@ -14,7 +15,3 @@ Tree structure :
 * * * * GRAPH_EAT.py
 * * * * * GRAPH_GEN.py
 * * * * pRNN_GEN.py
-
-Only debugging :
-
-* FUNC_TESTER.py
