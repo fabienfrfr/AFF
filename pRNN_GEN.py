@@ -9,7 +9,6 @@ import torch, torch.nn as nn
 import numpy as np
 
 ################################ Custom neural network
-
 class pRNN(nn.Module):
     def __init__(self, NET,B,I):
         super().__init__()
@@ -17,11 +16,12 @@ class pRNN(nn.Module):
         self.BS = B
         # list of layers
         self.Layers = nn.ModuleList( [nn.Sequential(nn.Linear(n[2], n[1]), nn.ReLU()) for n in self.NET] +
+                                     [nn.Sequential(nn.Linear(self.NET[0][2], 1), nn.ReLU())] +
                                      [nn.Sequential(nn.Conv1d(I, I, 1, groups=I, bias=True), nn.ReLU())])
         # trace data
-        self.trace = (NET.shape[0]+1)*[None]
+        self.trace = (NET.shape[0]+2)*[None]
         # pseudo RNN (virtual input)
-        self.h = [torch.zeros(B,n[1]) for n in self.NET] + [torch.zeros(B,I)]
+        self.h = [torch.zeros(B,n[1]) for n in self.NET] + [torch.zeros(B,1)] + [torch.zeros(B,I)]
         
     def forward(self,x):
         s = x.shape
@@ -45,8 +45,10 @@ class pRNN(nn.Module):
                     else : tensor += [self.trace[j][BATCH_,None,k]]
             tensor_in = torch.cat(tensor, dim=1)
             self.trace[i] = self.Layers[i](tensor_in)
+        # critic part
+        self.trace[-2] = self.Layers[-2](tensor_in)
         # save for t+1
         for t in range(len(self.trace)):
             self.h[t][BATCH_] = self.trace[t][BATCH_].detach()
-        # output
-        return self.trace[i]
+        # output Actor, Critic
+        return self.trace[i], self.trace[-2]
