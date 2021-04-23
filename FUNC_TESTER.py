@@ -62,7 +62,7 @@ def DRAW_NETWORK(net_graph,in_):
         plt.fill_between([x-0.5,x+0.5], [y+0.5,y+0.5], -0.5, alpha=0.5)
     ## Plot the graph-network
     plt.scatter(neuron_in[:,1], neuron_in[:,2], s=10); plt.scatter(neuron_out[:,1], neuron_out[:,2], s=30)
-    plt.savefig('NETWORK.svg'); plt.show(); plt.close()
+    #plt.savefig('NETWORK.svg'); plt.show(); plt.close()
 
 def MODEL_BASIC(net_rnn, io):
     # regression type (MSE)
