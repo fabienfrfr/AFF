@@ -10,6 +10,8 @@ import numpy as np
 
 from GRAPH_GEN import GRAPH
 
+import copy
+
 ################################ GRAPH Evolution Augmenting Topology
 class GRAPH_EAT(GRAPH):
     def __init__(self, GEN_PARAM, NET):
@@ -21,12 +23,13 @@ class GRAPH_EAT(GRAPH):
         else : 
             self.IO, self.NEURON_LIST, self.LIST_C = NET
         
-    def NEXT_GEN(self):
+    def NEXT_GEN(self, MUT = None):
         # copy of module (heritage)
-        IO, NEURON_LIST, LIST_C = self.IO, self.NEURON_LIST, self.LIST_C
+        IO, NEURON_LIST, LIST_C = self.IO, copy.deepcopy(self.NEURON_LIST), copy.deepcopy(self.LIST_C)
         # adding mutation (variation)
-        MUT = np.random.randint(5)
-        print('Mutation type : ' + str(MUT))
+        if MUT == None :
+            MUT = np.random.randint(5)     
+        print('Mutation type : '+str(MUT))
         if MUT == 0 :
             # add connection
             NEURON_LIST = self.ADD_CONNECTION(NEURON_LIST, LIST_C)
@@ -43,8 +46,9 @@ class GRAPH_EAT(GRAPH):
             # cut neuron
             NEURON_LIST, LIST_C = self.CUT_NEURON(NEURON_LIST)
         # return neuronList with mutation or not
-        return GRAPH_EAT(None,[IO, NEURON_LIST, LIST_C])
+        return GRAPH_EAT(None,[IO, NEURON_LIST.copy(), LIST_C.copy()])
     
+    ### MUTATION PART
     def ADD_CONNECTION(self, NEURON_LIST, LIST_C) :
         # add Nb connect
         idx = np.random.randint(NEURON_LIST.shape[0])
@@ -77,7 +81,8 @@ class GRAPH_EAT(GRAPH):
         # connection of new neuron input
         IDX_C = np.where(LIST_C[:,0] < POS_X_new)[0]
         idx_c = IDX_C[np.random.randint(IDX_C.shape[0])]
-        NEW_NEURON[-1] = LIST_C[idx_c, 1:]
+        list_c = LIST_C[idx_c, 1:] ; print(list_c)
+        NEW_NEURON[-1] = [list(list_c)]
         # adding connection of downstream neuron
         IDX_N = np.where(NEURON_LIST[:,3] > POS_X_new)[0]
         idx_n = IDX_N[np.random.randint(IDX_N.shape[0])]
