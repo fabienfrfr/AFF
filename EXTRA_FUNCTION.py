@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Mon Apr 19 18:07:48 2021
+Created on Wed May 12 10:28:43 2021
 @author: fabien
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
+import numpy as np, pylab as plt
 import matplotlib.animation as animation
 
-import os 
-
-FOLDER = 'OUT'
-if(not os.path.isdir(FOLDER)): os.makedirs(FOLDER)
+import os
+import networkx as nx
 
 ################################ EXTRA FUNCTION 
 def PrimeFactors(n):
@@ -49,31 +46,36 @@ def GRID_GEN(NB_GEN) :
     RESH = tuple(RESH)
     return (GRID,RESH)
 
-################################ ANIMATE  
-class ANIM():
-    def __init__(self, NB_GEN, MAP_SIZE):
+class MAP_ANIM():
+    def __init__(self, NB_P_GEN, MAP_SIZE, STEP_LINE = 3):
         # init figure
-        self.fig = plt.figure(figsize=(5,5), dpi=120) 
+        self.fig = plt.figure(figsize=(5,5), dpi=240) 
         self.ax = self.fig.add_subplot(111)
 
         self.fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
         plt.xticks([]), plt.yticks([])
-
         # Grid generator
-        self.GRID, self.RESH = GRID_GEN(NB_GEN)
-
+        self.GRID, self.RESH = GRID_GEN(NB_P_GEN)
         # Image init
-        self.MS, MAX_VAL = MAP_SIZE, 20
-        self.X, self.Y = MAP_SIZE*np.array(self.GRID.shape)
-        self.im = plt.imshow(MAX_VAL*np.random.random((self.X,self.Y)))
+        self.MAP_SIZE = MAP_SIZE
+        self.X, self.Y = MAP_SIZE*np.array(self.RESH)
+        self.BIG_MAP = np.zeros((self.X, self.Y))
+        self.im = plt.imshow(self.BIG_MAP, cmap='Greys', vmax = np.pi)
+        # agent & pnj position
+        A,B = MAP_SIZE*np.mgrid[:self.RESH[0], :self.RESH[1]].reshape(2,-1)
+        self.point_pnj = plt.scatter(A,B, c='C0')
+        self.point_agt = plt.scatter(A,B, c='C1')
+        # agent & pnj line
+        self.STEP = STEP_LINE
+        self.lines_pnj = self.line_gen(NB_P_GEN, 'C0')
+        self.lines_agt = self.line_gen(NB_P_GEN, 'C1')        
         # Data
         self.DATA = None
-        self.LIST_DATA = []
-        
+        self.TIME_DURATION = None
+        self.ORIGIN = None
         # Major ticks
         self.ax.set_xticks(np.arange(0., self.X, MAP_SIZE))
         self.ax.set_yticks(np.arange(0., self.Y, MAP_SIZE))
-        
         # parametrisation plot
         plt.xlim(0.5,self.X-0.5); plt.ylim(-0.5,self.Y-0.5)
         # Delete border
@@ -81,105 +83,111 @@ class ANIM():
         self.ax.spines['right'].set_color('None'); self.ax.spines['left'].set_color('None')
         # show grid
         self.ax.grid(True)
-
-    def gen_data(self,LENGHT, PLAYERS):
-        self.DATA = np.zeros((LENGHT,self.X, self.Y), dtype=int)
-        i = 0
-        for p in PLAYERS:
-            IMG_SEQ = p.MAP_LIST
-            # find idx
-            X,Y = np.where(self.GRID == i); X,Y = int(X), int(Y)
-            self.DATA[:, X*self.MS:(X+1)*self.MS, Y*self.MS:(Y+1)*self.MS] = np.array(IMG_SEQ)
-            i += 1
     
-    def list_data(self):
-        self.LIST_DATA += [self.DATA.copy()]
+    def line_gen(self,NB_P_GEN, COLOR):
+        lines = []
+        for index in range(NB_P_GEN):
+            ax_ = self.ax.plot([],[],lw=2,color=COLOR)[0]
+            lines.append(ax_)
+        return lines
+
+    def add_data(self,DATA_LIST):
+        self.DATA = DATA_LIST
+        self.TIME_DURATION = len(DATA_LIST[0])
+        # real position in map
+        self.ORIGIN = self.MAP_SIZE*np.mgrid[:self.RESH[0], :self.RESH[1]].reshape(2,-1).T
+        self.DATA[0] += self.ORIGIN[None,:,:]
+        self.DATA[1] += self.ORIGIN[None,:,:]
+        self.DATA[2] += self.ORIGIN[None,:,:,None]
     
     def anim_update(self, i):
-        self.im.set_array(self.DATA[i])
-        return self.im
+        # extract data
+        A, P, I = self.DATA
+        # update img
+        self.BIG_MAP = np.zeros((self.X, self.Y))
+        VIEW_IDX = np.moveaxis(I[i], 0,1).reshape(2,-1)
+        self.BIG_MAP[tuple(map(tuple,VIEW_IDX))] = 1
+        self.im.set_array(self.BIG_MAP.T)
+        # update line
+        if i < self.STEP : i_ = 0
+        else : i_ = i - self.STEP
+        for lnum,line_p in enumerate(self.lines_pnj):
+            line_p.set_data(P[i_:i,lnum,0], P[i_:i,lnum,1])
+        for lnum,line_a in enumerate(self.lines_agt):
+            line_a.set_data(A[i_:i,lnum,0], A[i_:i,lnum,1])
+        # update point
+        self.point_pnj.set_offsets(P[i])
+        self.point_agt.set_offsets(A[i])
+        if i%10 == 0 :
+            print(str(i)+'/'+str(self.TIME_DURATION))
+        return self.im, self.point_pnj, self.point_agt, self.lines_pnj, self.lines_agt
 
-    def animate(self):
-        self.DATA = np.concatenate(self.LIST_DATA, axis=0)
-        self.anim = animation.FuncAnimation(self.fig, self.anim_update, frames=len(self.DATA), interval=1, blit=False)
-        self.anim.save(filename=FOLDER + os.path.sep + 'OUTPUT_LYFE.mp4', writer='ffmpeg', fps=25) # png for alpha
+    def animate(self, FRAME = True):
+        if (FRAME == True) or (FRAME > self.TIME_DURATION) :
+            FRAME = self.TIME_DURATION
+        self.anim = animation.FuncAnimation(self.fig, self.anim_update, frames=FRAME, interval=1, blit=False)
+        self.anim.save(filename= os.getcwd() + os.path.sep + 'OUT' + os.path.sep + 'MAP_LYFE.mp4', writer='ffmpeg', fps=25) # png for alpha
+        plt.savefig(os.getcwd() + os.path.sep + 'OUT' + os.path.sep + 'MAP_LYFE.png', dpi = 360)
         plt.show()
-            
-class PLOT_NET():
-    def __init__(self, NB_GEN, IN):
-        # Grid generator
-        self.GRID, self.RESH = GRID_GEN(NB_GEN)
-        # init figures (matplotlib.gridspec : if need flexible)
-        self.fig, self.axes = plt.subplots(nrows=self.RESH[0], ncols=self.RESH[1])
-        self.AX = None
-        # neuron list
-        self.GRAPH_LIST = []
-        self.in_ = IN
-        
-    def gen_data(self, PLAYERS):
-        self.GRAPH_LIST = []
-        for p in PLAYERS :
-            self.GRAPH_LIST += [p.AGENT.NEURON_LIST]
-            
-    def DRAW_NETWORK(self, NAME):
-        ITER = 0
-        for net_graph in self.GRAPH_LIST :
-            # find idx :
-            AX = np.where(self.GRID == ITER)
-            self.AX = (AX[0][0], AX[1][0])
-            ## Generate layer node
-            # TRIPLET : (IDX, X, INDEX_ = Y)
-            neuron_in, neuron_out = [], []
-            # Input part :
-            for n in range(self.in_):
-                neuron_out += [[0,0,n]]
-            # Layering
-            for n in net_graph :
-                # input part
-                for n_ in range(n[2]) :
-                    neuron_in  += [[n[0],n[3]-0.25,n_]]
-                # output part
-                for n_ in range(n[1]) :
-                    neuron_out  += [[n[0],n[3]+0.25,n_]]
-            neuron_in, neuron_out = np.array(neuron_in), np.array(neuron_out)
-            ## Connect each Node
-            for n in net_graph :
-                i = 0
-                for n_ in n[-1] :
-                    connect_a = [n[3]-0.25, i]
-                    idx = np.where((n_ == neuron_out[:, 0::2]).all(axis=1))[0]
-                    connect_b = neuron_out[idx][:,1:]
-                    X = np.concatenate((np.array([connect_a]), connect_b))
-                    if X[0,0] > X[1,0] :
-                        self.axes[self.AX].plot(X[:,0], X[:,1], 'k', lw=1, alpha=0.9)
-                    else :
-                        self.axes[self.AX].plot(X[:,0], X[:,1], 'r', lw=2, alpha=0.7)
-                    # increment
-                    i+=1
-            ## Polygon neuron draw
-            idx = np.unique(neuron_out[:,0])
-            for i in idx :
-                in_idx = np.where(i == neuron_in[:,0])[0]
-                out_idx = np.where(i == neuron_out[:,0])[0]
-                if in_idx.shape == (0,) :
-                    x, y = np.max(neuron_out[out_idx,1:], axis=0)
-                else :
-                    x_i, y_i = np.max(neuron_in[in_idx,1:], axis=0)
-                    x_o, y_o = np.max(neuron_out[out_idx,1:], axis=0)
-                    x, y = np.mean((x_i, x_o)), np.max((y_i, y_o))
-                # fill between polygon
-                self.axes[self.AX].fill_between([x-0.5,x+0.5], [y+0.5,y+0.5], -0.5, alpha=0.5)
-            ## Plot the graph-network
-            self.axes[self.AX].scatter(neuron_in[:,1], neuron_in[:,2], s=10)
-            self.axes[self.AX].scatter(neuron_out[:,1], neuron_out[:,2], s=30)
-            ## Iteration
-            ITER += 1
-        self.fig.savefig(FOLDER + os.path.sep + 'NETWORK_'+str(NAME)+'.svg')
 
-""""
-plnet = PLOT_NET(9,9)
-plnet.gen_data(EXP.PLAYERS)
-plnet.DRAW_NETWORK()
+def NEURON_2_GRAPH(NEURON_INFO, LINK_LAYERS = True):
+    # Create new graph
+    G = nx.DiGraph()
+    # 4-PLET : (IDX, INDEX_LAYERS, INDEX_NODE = Y, X)
+    NEURON_IN, NEURON_OUT = [], []
+    # Input part :
+    for n in range(9):
+        NEURON_OUT += [[0,n,0]]
+    # Layering
+    for n in NEURON_INFO :
+        # input part
+        for n_ in range(n[2]) :
+            NEURON_IN  += [[n[0],n_,n[3]-0.25]]
+        # output part
+        for n_ in range(n[1]) :
+            NEURON_OUT  += [[n[0],n_,n[3]+0.25]]
+    NEURON_IN, NEURON_OUT = np.array(NEURON_IN), np.array(NEURON_OUT)
+    # Node construction
+    NEURON_IO = np.concatenate((NEURON_IN, NEURON_OUT))
+    for i in range(len(NEURON_IO)) :
+        y,x = NEURON_IO[i][1:]
+        G.add_node(i, pos=(x,y))
+    ## Connect each Node
+    for n in NEURON_INFO :
+        for i in range(n[2]) :
+            # Input
+            n_i = [n[0],i]
+            idx_i = np.where((n_i == NEURON_IN[:, :-1]).all(axis=1))[0]
+            # Output
+            n_o = n[-1][i]
+            idx_o = np.where((n_o == NEURON_OUT[:, :-1]).all(axis=1))[0]
+            ## Edge
+            G.add_edge(int(idx_o)+len(NEURON_IN),int(idx_i))
+            # Link Layers
+            if LINK_LAYERS :
+                for j in np.where(NEURON_OUT[:,0] == n[0])[0]:
+                    G.add_edge(int(idx_i),int(j)+len(NEURON_IN))        
+    # Extract pos dict
+    pos = nx.get_node_attributes(G,'pos')
+    return pos, G
 
-
-"""
+def LINEAGE_2_GRAPH(NB_GEN,NB_P_GEN,TREE_LIST):
+    # Create new graph
+    G = nx.DiGraph()
+    # Positionnal
+    Y, X = np.mgrid[0:NB_GEN, 0:NB_P_GEN]
+    Y, X = Y.reshape(-1), X.reshape(-1)
+    # generate Node
+    for i in range(len(X)) :
+        G.add_node(i,pos=(X[i],-Y[i]))
+    # genrate Edge
+    for i in range(len(X)) :
+        GEN = abs(Y[i])
+        if GEN > 0 :
+            y_loc = (Y == Y[i]-1)
+            x_loc = (X == TREE_LIST[i][0])
+            ID = np.where(y_loc*x_loc)[0]
+            if len(ID) == 1 : G.add_edge(int(ID),i, weight = 0)
+    # Extract pos dict
+    pos = nx.get_node_attributes(G,'pos')
+    return pos, G

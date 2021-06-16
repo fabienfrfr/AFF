@@ -14,10 +14,13 @@ class TAG_ENV():
         self.MAP_SIZE = MAP_SIZE
         ## PNJ and AGENT PLAYER POSITION
         self.PNJ_POS, self.AG_POS = self.POS_PLAYERS_FIRST()
+        self.PNJ_LIST, self.AG_LIST = [list(self.PNJ_POS)], [list(self.AG_POS)]
         ## IT OR OT (for PNJ)
         self.IT = True
+        self.IT_LIST = [self.IT]
         ## MAP UPDATE
         self.MAP = None
+        self.MAP_LIST = []
         self.UPDATE_MAP()
         ## AGENT INFO
         self.AGENT_VIEW, self.AGENT_MOVE = AGENT_PROP
@@ -34,6 +37,7 @@ class TAG_ENV():
         else : A,B = 20., 10.
         self.MAP[tuple(self.AG_POS)] = A
         self.MAP[tuple(self.PNJ_POS)] = B
+        self.MAP_LIST += [self.MAP.copy()]
     
     def RESET(self) :
         ## Box observation
@@ -57,9 +61,11 @@ class TAG_ENV():
                 COOR = np.random.randint(2)
                 SIGN = np.random.randint(-1,2)
             self.PNJ_POS[COOR] = np.mod(self.PNJ_POS[COOR] - SIGN, self.MAP_SIZE)
+        self.PNJ_LIST += [list(self.PNJ_POS)]
         # FOR "AGENT" :
         MVT = self.AGENT_MOVE[action]
         self.AG_POS = np.mod(self.AG_POS + MVT, self.MAP_SIZE)
+        self.AG_LIST += [list(self.AG_POS)]
         ## Update map
         self.UPDATE_MAP()
         ## Box observation
@@ -86,6 +92,7 @@ class TAG_ENV():
                 reward = +1
             elif GAP > 10 :
                 reward = -1
+        self.IT_LIST += [self.IT]
         ## ending condition
         self.SCORE += reward
         if abs(self.SCORE) > self.END :

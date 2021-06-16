@@ -8,7 +8,7 @@ Created on Tue Feb 16 13:42:20 2021
 import torch, torch.nn as nn
 import numpy as np
 
-from Q_AGENT_GEN import Q_AGENT
+from Q_AGENT import Q_AGENT
 
 import pylab as plt
 
@@ -122,17 +122,33 @@ def MODEL_ENV(AGENT, train_size):
     # last move
     plt.scatter(x[[0,-1],0],x[[0,-1],1], c="k")
     plt.plot(x[:,0],x[:,1], c="k")
-    plt.imshow(IMG[0])
+    plt.imshow(IMG[0]); plt.show()
+
+def ROTATION_3(X_CENTER, NEW_CENTER) :
+    THETA = np.linspace(np.pi/2, (3./2)*np.pi, 3)
+    X_ROTATED = []
+    for t in THETA :
+        # rotation matrix
+        r = np.array(( (np.cos(t), -np.sin(t)),(np.sin(t),  np.cos(t)) ))
+        # rotation
+        X_ROT = r.dot(X_CENTER.T)
+        # increment
+        X_ROTATED += [np.rint(X_ROT.T).astype(int) + NEW_CENTER]
+    return X_ROTATED
     
 ### TESTING PART
 if TEST :
     # Parameter
-    IO = (5,3)
-    NB_P_GEN = 8
-    batch_size = 32
-    MAP_SIZE = 16
+    IO = (9,3)
+    NB_P_GEN = 2
+    batch_size = 16
+    MAP_SIZE = 12
+    N_TIME = 12
+    NB_GEN = 9
+    
+    ARG_TUPLE = (IO,NB_P_GEN, batch_size, MAP_SIZE, N_TIME, NB_GEN)
     ## Init
-    AGENT = Q_AGENT(NB_P_GEN, IO, batch_size)
+    AGENT = Q_AGENT(*ARG_TUPLE[:-1])
     
     ############### plot neuron list
     NET_GRAPH = AGENT.NEURON_LIST
@@ -148,7 +164,7 @@ if TEST :
     #MODEL_ENV(AGENT, 10)
     
     ### Mutation
-    NEW_AGENT = AGENT.LAUNCH_MUTATION(4)
+    NEW_AGENT = AGENT.LAUNCH_MUTATION()
     """
     COP_GRAPH = GRAPH_EAT(None,[IO, NET_GRAPH.copy(), AGENT.NET.LIST_C.copy()])
     NEW_GRAPH = NEW_GRAPH.NEXT_GEN(4)
@@ -156,13 +172,40 @@ if TEST :
     print(NEW_GRAPH.NEURON_LIST)
 
     """
-    ############### plot neuron list
+    ############### plot new neuron list
     NEW_NET_GRAPH = NEW_AGENT.NEURON_LIST
-    DRAW_NETWORK(NEW_NET_GRAPH,IO[0])
-
+    
     print(NET_GRAPH)
     print(NEW_NET_GRAPH)
-
+    
+    DRAW_NETWORK(NEW_NET_GRAPH,IO[0])
+    
+    ############### density IO
+    INPUT_D = np.zeros((5,5))
+    OUTPUT_D = np.zeros((3,3))
+    
+    X_ = NEW_AGENT.X
+    Y_ = NEW_AGENT.Y
+    
+    X = X_ + [2,2]
+    Y = Y_ + [1,1]
+    
+    INPUT_D[tuple(map(tuple, X.T))] += 1
+    OUTPUT_D[tuple(map(tuple, Y.T))] += 1
+    
+    plt.close(); plt.imshow(INPUT_D); plt.show()
+    
+    # rotation
+    X_ROT = ROTATION_3(X_, [2,2])
+    
+    for x in X_ROT :
+        INPUT_D[tuple(map(tuple, x.T))] += 1
+    
+    # normalisation
+    INPUT_D = INPUT_D/INPUT_D.sum()
+    OUTPUT_D = OUTPUT_D/OUTPUT_D.sum()
+    
+    plt.close(); plt.imshow(INPUT_D); plt.show()
 
 """
 ################################ XOR FIT

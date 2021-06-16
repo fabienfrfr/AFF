@@ -26,9 +26,7 @@ class pRNN(nn.Module):
     def forward(self,x):
         s = x.shape
         # Generalization of Exploitation or Training batch
-        if s == self.BS : BATCH_ = slice(None)
-        elif s == 1 : BATCH_ = 0
-        else : BATCH_ = np.arange(len(x))
+        BATCH_ = np.arange(len(x))
         # input functionalization (with spread sparsing)
         self.trace[-1] = self.Layers[-1](x.view(s[0],s[1],1)).view(s)
         # hidden to output (X ordered)
