@@ -1,0 +1,4708 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2cm
+\topmargin 2cm
+\rightmargin 2cm
+\bottommargin 3cm
+\headheight 2cm
+\headsep 2cm
+\footskip 2cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Evolutionnary Neural Network Tools for Life Emergence and More
+\end_layout
+
+\begin_layout Author
+F.
+ Furfaro
+\end_layout
+
+\begin_layout Date
+2021
+\end_layout
+
+\begin_layout Abstract
+L'idée de vie artificielle remonte au année 1940 par principe d'autoréplication,
+ meme époque ou les concepts sur l'intelligence artificielle sont crées.
+ Nous proposons un modele à définition incomplete, mais suffisante pour
+ etudier la fonctionnalisation des structure cerebrale lors de l'evolution.
+ On combine l'apprentissage par renforcement et la modification aléatoire
+ des connections intercouche.
+ Pour tester notre modele, le jeu du chat et la souris est un exemple de
+ choix pour etudier l'evolution des comportement basique de proie/predateurs,
+ tout en etant assez complet pour une approche évolutive.
+ Ces outils n'ont pas la prétentions de reproduire la vie sur ordinateurs,
+ mais peuvent donner des idée, minime soit elle, pour l'optimisation des
+ structure de reseau de neurones et d'avancer vers la creation de vie articiel.
+ En effet, lors du processus d'apprentissage (evolution + descente de gradient),
+ on on observe par l'apparition de structure et stratégie convergente.
+ Ces structures sont conservé pendant un grand nombre de cycle alors meme
+ que des reseau 
+\begin_inset Quotes eld
+\end_inset
+
+challenger
+\begin_inset Quotes erd
+\end_inset
+
+ sont toujours ajouter à chaque cycle de reproduction.
+ En dehors, on observe que ce type d'algorithme peut s'averer efficasse
+ avec moins de neurone pour la classification MNIST.
+\end_layout
+
+\begin_layout Part*
+Introduction
+\end_layout
+
+\begin_layout Standard
+La vie est apparu il y a 3,8 milliards d'année et n'a pas cessé d'évoluer
+ et de coloniser l'environnement 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "huxley_evolution_1942"
+literal "false"
+
+\end_inset
+
+.
+ Elle a commencer de maniere unicellulaire sans noyau 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "buick_when_2008,mojzsis_evidence_1996"
+literal "false"
+
+\end_inset
+
+, à un large panel de forme avec l'appartition du noyau 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "hedges_molecular_2004,knoll_ediacaran_2006"
+literal "false"
+
+\end_inset
+
+ et de la multicellularité 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bonner_origins_1998"
+literal "false"
+
+\end_inset
+
+, et en parallele, l'apparition du potentiel d'action [ref] suivi d'une
+ explosion de des variétés des systeme nerveux [ref], avec plus recement
+ les systeme centraux [ref].
+ Pour autant, il est assez difficiele de definir ce qui est vraiment vivant
+ et cette question est toujours débatu.
+ L'une des definition les plus simple est celle donnée par la NASA lors
+ des programme de recherche de vie extra-terrestre : Un systeme chimique
+ auto-entretenu capable d'évolution darwinienne.
+ L'evolution darwinienne est un principe fondamentale dans l'etude des systeme
+ complexe disposant d'heredité, de variation et de selection.
+ On ne le retrouve pas seulement en biologie, mais on peut l'obervers dans
+ l'evolution des courants musicaux, artistique, philosophique, technologique,
+ societal et culturel [ref].
+ Une autres définition de la Vie existe, et elle est plus lié à l'une des
+ transformation thermodynamique fondamentale : L'entropie.
+ La vie serait : Une structure dissipative capable d'auto-catalyse, d'homéostati
+e et d'apprentissage 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "bartlett_defining_2020"
+literal "false"
+
+\end_inset
+
+.
+ Ce qui diminu localement l'entropie en favorisant l'auto-organisation.
+ Mais ces deux definitions se restreigne à un systeme 
+\begin_inset Quotes eld
+\end_inset
+
+chimique
+\begin_inset Quotes erd
+\end_inset
+
+, est ce qu'un robot dotée d'une intelligence, voirent d'emotion humaine
+ serait vivant dans cette définition ? (tout probleme n'est pas définissable).
+ Aujourd'hui, il existe un grand nombre de simulation de vie sur ordinateurs
+ (liste de 2-3) et certaine sont encore en cours d'execution depuis 1990.
+ Et sont d'une grande importance pour comprendre l'emergence de la vie (avec
+ les experiences de cellules minimaliste)
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+AUTOMATE :
+\series default
+\emph default
+ Dans notre cas, nous allons essayer de reproduire un systeme vivant à l'interse
+ction de ses deux definitions.
+ Un systeme auto-entretenu capable d'apprentissage evolutif.
+ Qu'on restreindra dans un premiers lieux à 
+\begin_inset Quotes eld
+\end_inset
+
+un systeme capable d'apprentissage évolutif
+\begin_inset Quotes erd
+\end_inset
+
+ pour en developper les outils futurs.
+ Pour cela on a creer un enviromment de jeu simple : le jeu du chat et la
+ souris, alternant ainsi deux comportements : proie/prédateur.
+ On se base sur deux outils : les automates cellulaires et les reseaux de
+ neurones évolutifs.
+ Les automates sont a l'origine des objets mathématique permettant de resoudre
+ des probleme de decidabilité mathématique [Von Newman].
+ On en retrouva ensuite des utilisation experiementale comme le plus connu
+ 
+\begin_inset Quotes eld
+\end_inset
+
+jeu de la vie
+\begin_inset Quotes erd
+\end_inset
+
+ [Conway], qui à partir de 2 regles simple, faire emerger une forte complexité,
+ voir meme reproduire une machine de Turing [ref à revoir].
+ L'état d'une cellule au temps t+1 est fonction de l'état au temps t d'un
+ nombre fini de cellules appelé son « voisinage ».
+ Le probleme est donc une grille ou l'on a des case 
+\begin_inset Quotes eld
+\end_inset
+
+automates
+\begin_inset Quotes erd
+\end_inset
+
+ qui se deplace dans la grille, elle a un adversaire qui va chercher soit
+ à 
+\begin_inset Quotes eld
+\end_inset
+
+attraper
+\begin_inset Quotes erd
+\end_inset
+
+ l'automate, soit la 
+\begin_inset Quotes eld
+\end_inset
+
+fuir
+\begin_inset Quotes erd
+\end_inset
+
+.
+ La decision de deplacement de l'automate est controler/réguler par un reseau
+ de neurone evolutif par principe d'apprentissage par renfocement.
+ Les propriété de l'automate changeront ainsi à chaque génération, aussi
+ bien parametre de 
+\begin_inset Quotes eld
+\end_inset
+
+vue
+\begin_inset Quotes erd
+\end_inset
+
+ de l'automate que les actions ou la structure du réseau.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+STATISTIQUE :
+\series default
+\emph default
+ Les reseaux neuronaux ont ete construit à partir du modele de neurone biologiqu
+e, le neurone formel [McCulloch & Pitts], ou l'on constate qu'une neurone
+ est une fonction 
+\begin_inset Quotes eld
+\end_inset
+
+affine
+\begin_inset Quotes erd
+\end_inset
+
+ avec une fonction d'activation.
+ Aujourd'hui il s'est rapproché des methodes statistique non inductive (descript
+ive : on ne sait pas la loi de probabilité) pour resoudre des probleme de
+ régression, classification et partitionnement.
+ Les principaux outils d'analyse de grosse donnée en statistiques sont,
+ pour ne citer que les plus connu : La PCA, analyse de composante principale,
+ qui permet de projeter l'ensemble des points sur les regression multilinéaire
+ des variable corrélé entre elle, ce qui reduit la dimension [Karl Pearson],
+ Les SVM, séparateurs à vaste marge, generalisant les classificateur linéaire
+ par des vecteurs supports (théorie de la « régularisation statistique »
+ + surapprentissage) [Vapnik] et enfin Le K-mean qui divise un ensemble
+ de points par minimisation d'un certain nombre de graine barycentrique
+ [Steinhauss, Llyod].
+ Tout ces outils encore utilisé aujourd'hui, sont peu à peu remplacé par
+ des reseau de neurone vers 2000s apres le succes de l'apprentissage profond
+ en compétition.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+APPRENTISAGE :
+\series default
+\emph default
+ Le question de l'apprentissage a été étudié au cours des année 1950, ou
+ il a pu emerger la regles de Hebbs [Hebbs 1949] qui modifier simplemnt
+ la valeurs des coefficient synaptique d'un reseau simple couche, il eue
+ un declin en fin 1970 par l'impossibilité de reseont probleme non linéaire
+ XOR ou connexité [Minsky 1969].
+ Mais ce probleme fut resolu par les perceptron multicouche, mais cette
+ fois la modification des poids était plus compliqué.
+ C'est le systeme de retropropagtion du gradient [1984] qu'on retrouve aussi
+ dans le cerveau [Stuart 1997] et l'algorithme du gradient, par minimisation
+ itérative de l'erreurs, qui permit de resoudre ce probleme.
+ En parallele, inspirer par les neurone moteurs de la vue, on devellopa
+ les reseau de neurone convolutif qui reduit fortement le calcul des poids
+ en entrée du reseau, car n'est pas entiereement connecté [Lecun, mais pas
+ que].
+ Le souci de ce genre de reseau est qu'il faut un grand nombre de donnée
+ pour adapté les poids, pour reseoudre un probleme de decision markovien,
+ il y eu l'apparition du Q-learning convergent par l'apprentissage des récompens
+e [Watkins 1989 Dayan 1992] qui ont encore était amélioré par des reseau
+ adversariaux 
+\begin_inset Quotes eld
+\end_inset
+
+actor-critic
+\begin_inset Quotes erd
+\end_inset
+
+ à l'image des reseau génératif, il permette d'accelerer la convergence
+ des poids [Konda 2003].
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+FONCTIONALISATION :
+\series default
+\emph default
+ Néamoins, ces reseaux optimise l'apprentissage du reseau mais ne cherche
+ pas à maximiser la structure des couches du reseau.
+ Seule les reseau de neurone recurant ont été le plus traité car il y avait
+ des probleme de 
+\begin_inset Quotes eld
+\end_inset
+
+vanishing gradient
+\begin_inset Quotes erd
+\end_inset
+
+, surtout pour le traitement du texte.
+ Une autre catégorie de reseau est apparu dans la fin des années 1990, les
+ reseau NEAT, ou les poids et les connexion sont 
+\begin_inset Quotes eld
+\end_inset
+
+appris
+\begin_inset Quotes erd
+\end_inset
+
+ par un processus de selection.
+ Hors le cerveau n'a pas des poids qui ont été selectionné par l'evolution,
+ mais ce qui est le cas la structure [Ref] dans la limite de la plasticité
+ cerebrale des neurones à piques [WOLFGANG MAASS 1996].
+ L'idée est donc de s'impirer des donnée en neuroscience recente, ou il
+ est montré le principe de fonctionnalisation cerebrale que le cerveau est
+ pré-cablé pour voir certain danger ou encore marcher à la naissance [araignées
+ Rakison, D.
+ H.
+ & Derringer, J 2008 et sommeil] et il n'y a pas eu besoin d'avoir un temps
+ d'apprentissage long.
+ A cette image, on a donc develloper un algorithme ou les couches interconnecté
+ de maniere aléatoire de façon à fonctionnaliser le probleme 
+\begin_inset Quotes eld
+\end_inset
+
+chat-souris
+\begin_inset Quotes erd
+\end_inset
+
+ aussi bien dans la structure que dans l'apprentissage par renforcement.
+\end_layout
+
+\begin_layout Part*
+Méthodes
+\end_layout
+
+\begin_layout Standard
+L'ensemble du projet est disponible sur le lien 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+github.com/fabienfrfr
+\end_layout
+
+\end_inset
+
+.
+ Le projet a été codé intégralement en Python de facon à utiliser efficacement
+ les bibliothèques logiciel : PyTorch pour les reseaux de neurone, Keras-Tensorf
+low pour la base de donnée MNIST, Numpy et Scipy pour les calculs scientifique,
+ Pandas pour l'analyse et le stockage des données, Networkx pour la representati
+on et l'analyse des Graphes et enfin Matplotlib pour la visualisation et
+ l'animation des données.
+ On distingue 6 fichiers d'experience, 2 fichiers d'analyse de donnée (DATA_ANAL
+YSIS et EXTRA_FUNCTION) et un fichiers de debuggage modulaire.
+ Dans les fichiers 
+\begin_inset Quotes eld
+\end_inset
+
+experience
+\begin_inset Quotes erd
+\end_inset
+
+ on retrouve au plus bas niveau GRAPH_EAT encapsulant GRAPH_GEN, generant
+ la liste des connections pour chaque couche de neurone, ainsi que pRNN,
+ générant la structure du reseau en fonction de la liste d'adjacence.
+ À plus haut niveau, on retrouve AGENT qui contient les propriété d'entrée/sorti
+e de l'agent et son algorithme d'apprentissage et de mémorisation, ainsi
+ que TAG-ENV contenant cette fois les regles du jeu 
+\begin_inset Quotes eld
+\end_inset
+
+chat-souris
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Enfin on a le MAIN qui va lister l'ensemble des agents et environnement
+ associé pour lancer les experiences d'evolution.
+ On retrouve aussi un fichier LOG qui permet de stocker au format 
+\emph on
+csv
+\emph default
+ les experience.
+\end_layout
+
+\begin_layout Section
+Reseau de neurone évolutif
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Reseau-de-neurone"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Le perceptron est un algorithme d'apprentissage fonctionnant comme une fonction
+ de seuillage et decrivant le neurone formel.
+ Une fonction de seuil est un classifieurs linéaire qui a pour entrée un
+ vecteurs à valeurs réelle (virgule flottante) et une valeurs f(z) en sortie,
+ qui peut etre suivant la fonction d'activation : binaire (Heaviside), reel
+ (Sigmoid) ou entre les deux (ReLu).
+ Le perceptrons se represente par le produit scalaire entre le vecteurs
+ d'entrée et le vecteurs poids des neurones, soit l'application multilinéaire
+ suivante :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $o=f(z)=\left\{ \begin{array}{ccc}
+1 & si & \sum_{i=1}^{n}w_{i}x_{i}>\theta\\
+0 & sinon
+\end{array}\right.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ce qui s'ecrit dans la plupart des bibliothèques logiciels comme la sequence
+ d'un neurone à 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+n
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ entrée, suivie d'une fonction d'activation.
+\end_layout
+
+\begin_layout Standard
+Code PyTorch :
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Layers = nn.Sequential(nn.Linear(N, 1), nn.ReLU())
+\end_layout
+
+\begin_layout Plain Layout
+
+x = Layers(x)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Le perceptrons est un classifieurs linéaire, il converge uniquement si l'ensembl
+e des donnée d'entrée sont linéairement séparable (droite).
+ Mettre à jours les poids 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+w
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ correspond à l'apprentissage du perceptrons, la 
+\emph on
+regles delta
+\emph default
+ [Russell Ingrid 2002] est la plus simple et consiste à comparer linéairement
+ la valeurs obtenu par la sortie du reseau 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+z
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ et la valeurs attendu par le reseau de neurones 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+d
+\series default
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Il existe d'autre methodes plus sophistiqué ou limitant les probleme d'annulati
+on tout aussi simple (Least Mean Square), mais ici présenté, la regle delta
+ se presente sous la forme :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $w_{i}(t+1)=w_{i}(t)+(d-z)x_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dans la plupart des bibliothèques logiciels, on precise le type de calcul
+ de perte (loss ou criterion) avant la boucle d'apprentissage, ainsi que
+ l'algorithme de calcul de la descente de gradiant (optimizer).
+ Les algorithme les plus utilisé sont SGD 
+\begin_inset Quotes eld
+\end_inset
+
+Stochastic Gradiant Descent
+\begin_inset Quotes erd
+\end_inset
+
+ plutot adapté à classification et 
+\begin_inset Quotes eld
+\end_inset
+
+Adam
+\begin_inset Quotes erd
+\end_inset
+
+ plutot adapté au problème de regression [ref car pas sûr].
+\end_layout
+
+\begin_layout Standard
+Code PyTorch :
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+LOSS = torch.nn.MSELoss(reduction='sum')
+\end_layout
+
+\begin_layout Plain Layout
+
+optimizer = optim.SGD(Layers.parameters())
+\end_layout
+
+\begin_layout Plain Layout
+
+### Loop
+\end_layout
+
+\begin_layout Plain Layout
+
+LOSS = LOSS(x_pred, x)
+\end_layout
+
+\begin_layout Plain Layout
+
+optimizer.zero_grad()
+\end_layout
+
+\begin_layout Plain Layout
+
+LOSS.backward()
+\end_layout
+
+\begin_layout Plain Layout
+
+optimizer.step()
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Un reseau de neurone correspond à une interconnexion entre couche de neurone
+ contenant 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+n
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ perceptrons.
+ Une unique couche de 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+n
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ perceptron corresponds au reseau le plus simple et permet de resoudre des
+ probleme linéairement séparable de type hyperplan.
+ Comme toute les entrée 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+x
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ sont interconnecté au 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+n
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ neurone, les vecteurs poids 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+w
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ forme une matrice 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+m*n
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ avec 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+m
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ le nombre d'entrée au réseau.
+ La sortie s'exprime dans ce cas : 
+\end_layout
+
+\begin_layout Standard
+\noindent
+\align center
+\begin_inset Formula $\begin{array}{c}
+\overrightarrow{y}=\left[\begin{array}{ccc}
+w_{0,0}\\
+\\
+ &  & w_{m,n}
+\end{array}\right].\left[\begin{array}{ccc}
+x_{0} & \ldots & x_{m}\end{array}\right]+\left[\begin{array}{c}
+b_{0}\\
+\\
+b_{n}
+\end{array}\right]\\
+\overrightarrow{s}=f(\vec{y})
+\end{array}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pour que l'algorithme mette à jours efficassement les poids du réseau, on
+ utilise un certain lot de donnée d'apprentissage, qu'on appele 
+\begin_inset Quotes eld
+\end_inset
+
+batch
+\begin_inset Quotes erd
+\end_inset
+
+, soit il contient l'ensemble des données de l'experience, soit il est réparti
+ en 
+\begin_inset Quotes eld
+\end_inset
+
+mini-batch
+\begin_inset Quotes erd
+\end_inset
+
+ pour eviter la sur-utilisation de la mémoire et augmente la vitesse de
+ convergence de la vallé de stabilité, le taille du lot ne doit pas etre
+ trop petit non plus car augmente le bruit [ref mini-batch].
+ Dans ce cas, le vecteurs d'entrée devient une matrice 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+m*b
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+, et la matrice des poids devient un tenseurs d'ordre 3 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+n*m*b
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+.
+ La plupart des bibliothèques logiciels s'adapte automatiquement à la taille
+ du batch, et n'a pas besoin d'etre spécifié.
+\end_layout
+
+\begin_layout Standard
+Code PyTorch :
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Layers = nn.Sequential(nn.Linear(N, M), nn.ReLU())
+\end_layout
+
+\begin_layout Plain Layout
+
+x = Layers(x)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pour autant, les reseaux linéaire ne sont pas les seules à etres employé
+ et ne sont pas forcement les plus adapté pour les problemes d'images [ref].
+ En effet, une image est une donnée 2D dont les données spatiale sont localement
+ lié, mais les informations ne sont pas interconnecté, c'est pour cela qu'il
+ existe les reseaux de convolution.
+ Ces reseau ont l'avantage d'etre interconnecté mais par fenetre 
+\begin_inset Quotes eld
+\end_inset
+
+spatiale
+\begin_inset Quotes erd
+\end_inset
+
+ ce qui reduit fortement le nombre de calculs pour l'actualisation des poids.
+ Elle est composé de 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+N
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ perceptron, mais ne represente plus comme un produit tensoriel, mais comme
+ un produit de convolution où les entrée sont moyenné pondérément par le
+ glissement 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+C
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ d'une fenetre de taille 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+k
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ sur les poids 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+w
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+.
+ La sortie s'exprime de la sorte : 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $out(N_{i},C_{out_{j}})=bias(C_{out_{j}})+\sum_{k=0}^{C_{in}-1}weight(C_{out_{j}},k)\star input(N_{i},k)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dans le cas le plus simple, on peut considerer qu'il y a qu'une seule entrée
+ par neurone, pour cela, le nombre d'entrée est egal au nombre de sortie
+ du canal de la couche.
+ Ensuite, la taille de la fenetre est de 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+1
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ et le groupement de connexion doit etre egal au nombre de neurones, qui
+ est un nombre divisible de l'entrée et de la sortie par lui meme.
+ Ce type parametrage est equivalent à 
+\series bold
+N
+\series default
+ neurones indépendants à 1 seules connexion chacune.
+ Contrairement au réseau linéaire, la taille du batch doit etre specifié
+ lorsqu'on donne les données d'entrée à la couche de convolution.
+\end_layout
+
+\begin_layout Standard
+Code PyTorch :
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Layers = nn.Sequential(nn.Conv1d(I, I, 1, groups=I), nn.ReLU())
+\end_layout
+
+\begin_layout Plain Layout
+
+x = Layers(x.view(BATCH_SIZE,I,1)).view((BATCH_SIZE,I))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Fonctionnalisation 
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Fonctionnalisation"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+S'inspirer du cerveaux 
+\begin_inset Quotes eld
+\end_inset
+
+modèle
+\begin_inset Quotes erd
+\end_inset
+
+ pour construire des algorithmes neuronaux à toujours été present dans le
+ developpement de nouvelles methodes en 
+\emph on
+Intelligence Artificielle
+\emph default
+.
+ Dans ce projet, nous nous sommes inpiré de la specialisation fonctionnele
+ du cerveau.
+ En effet, le moyen le plus efficace de réaliser des fonctions différentes
+ c’est de confier la réalisation de chaque fonction à un outil particulier
+ et spécialisé [Tooby, J.
+ & Cosmides, 1992 ; Tooby, J.
+ & Cosmides, 2015].
+ C’est pour cette raison que la sélection naturelle (survie, reproduction)
+ a organisé notre corps en différents organes qui sont chacun spécialisés,
+ mais aussi dans le domaine de la cognition [Confer, J.
+ C.
+ et al.
+ 2010].
+ La specialisation fonctionnele du cerveau est observé empiriquement par
+ plusieurs troubles neuropsychologique, comme par exemple avec le syndrome
+ de Capgras, ou une defaillance d'une region entraine la perte de reconnaissance
+ des visage [Thomas Antérion, 2008].
+ 
+\end_layout
+
+\begin_layout Standard
+Dans notre cas, nous avons simplifié le plus possible un cerveau, où l'on
+ a en entrée des neurones de 
+\begin_inset Quotes eld
+\end_inset
+
+vision
+\begin_inset Quotes erd
+\end_inset
+
+, suivi de couches sequentielle 
+\begin_inset Quotes eld
+\end_inset
+
+fonctionnelle
+\begin_inset Quotes erd
+\end_inset
+
+ et en sortie, des neurones 
+\begin_inset Quotes eld
+\end_inset
+
+moteurs
+\begin_inset Quotes erd
+\end_inset
+
+.
+ On distingues des neurones stables, les neurones d'entrée et de sortie
+ qui ne changeront pas pendant le processus évolutifs.
+ Les neurones de 
+\begin_inset Quotes eld
+\end_inset
+
+visions
+\begin_inset Quotes erd
+\end_inset
+
+ sont à l'image des cones de la rétines càd des neurones connecté à des
+ batonnée de vue unique [Dale Purves, G-J Augustine, 2005] qu'on represente
+ dans notre cas comme une couches de convolution 
+\begin_inset Quotes eld
+\end_inset
+
+simple sparse
+\begin_inset Quotes erd
+\end_inset
+
+ : une seule entrée par neurones.
+ Les neurones 
+\begin_inset Quotes eld
+\end_inset
+
+moteurs
+\begin_inset Quotes erd
+\end_inset
+
+ quand à eux sont analogue au motoneurones qui active la contraction musculaire
+ et donc le mouvement des organismes [Fitzpatrick, D.
+ (2001) The Primary Motor Cortex], on les represente dans notre cas comme
+ une couche linéaire de neurones où les sortie seront lié au action du reseau
+ de neurone complet.
+\end_layout
+
+\begin_layout Standard
+La vrai particularité du projet est que les couches intermediaire 
+\begin_inset Quotes eld
+\end_inset
+
+fonctionnalisé
+\begin_inset Quotes erd
+\end_inset
+
+ ne sont pas contruite manuellement, mais adapté par un processus evolutif
+ de selection.
+ Ainsi, l'objectif est de faire emerger un structure intermediaire fonctionnalis
+é à notre probleme, ici le 
+\begin_inset Quotes eld
+\end_inset
+
+jeu du chat et la souris
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Les connections intermediaires sont initialement aléatoire avec au minimum
+ une connection entre la couche 
+\begin_inset Quotes eld
+\end_inset
+
+n+1
+\begin_inset Quotes erd
+\end_inset
+
+ et 
+\begin_inset Quotes eld
+\end_inset
+
+n
+\begin_inset Quotes erd
+\end_inset
+
+, pour avoir toujours un lien entre l'entrée et la sortie et ne pas avoir
+ de probleme lors du calculs de poids des neurones.
+ Au cours de l'apprentissage, on s'attend à ce que le reseau soit de plus
+ en plus structuré.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/M_1_1.png
+	lyxscale 50
+	scale 200
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Reseau monocouche à connection aléatoire; Le meme reseau est representé
+ 2 fois à deux intervalle de temps à la suite, les nombres entrée/sorties
+ sont pour l'exemple.
+ De bas en haut : La commucation entre deux temps.
+ De gauche à droite : L'entrée vers la sortie.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Comme les connections entre l'entrée d'une couche 
+\begin_inset Formula $X_{n}$
+\end_inset
+
+ et la sortie d'une couche en 
+\begin_inset Formula $X_{n+m}$
+\end_inset
+
+, avec 
+\begin_inset Formula $m\geqslant0$
+\end_inset
+
+, n'est pas possible pour le calcul de la retropropagation à un temps donnée,
+ on se trouve avec la connection 
+\begin_inset Formula $X_{n+m,t-1}\rightarrow X_{n,t}$
+\end_inset
+
+.
+ Ce type de connection laisse apparaitre une forme de reseau recurrent pour
+ le calcul du gradient, mais comme nous voulons eviter les structure artificiell
+e comme LSTM qui empeche le 
+\emph on
+vanishing gradient
+\emph default
+ des reseau recurrent [Ref LSTM], nous avons consideré cette entrée à 
+\begin_inset Quotes eld
+\end_inset
+
+t-1
+\begin_inset Quotes erd
+\end_inset
+
+ comme une 
+\series bold
+\emph on
+entrée virtuelle
+\series default
+\emph default
+.
+ Cette entrée virtuelle, n'est pas la solution la plus elegante, mais est
+ la plus flexible dans le cas ou les connections sont completement desordonné
+ et reduit le temps de calculs car taille de l'entrainement est linéaire.
+ Une couche connecté à une entrée virtuelle d'une couche elle meme connecté
+ à une entrée virtuelle, permet de stocker une information à 
+\begin_inset Quotes eld
+\end_inset
+
+t-2
+\begin_inset Quotes erd
+\end_inset
+
+, la taille du stockage possible est proportionnel à la taille du reseau.
+ L'entrée virtuelle consiste au détachement de la sortie du graphes computationn
+elle à l'algorithme du gradient.
+ On obtient un réseau de 
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph on
+neurones à propagation avant
+\emph default
+
+\begin_inset Quotes eld
+\end_inset
+
+ que l'on qualifiera dans le programme de 
+\series bold
+\emph on
+pseudo-récurrents
+\series default
+\emph default
+ à cause des entrée virtuelle.
+ 
+\end_layout
+
+\begin_layout Subsection
+Construction du graphe
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Construction-du-graphe"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La topologie du reseau presenté precedement peut etre vu comme un graphe
+ orienté acyclique, en effet, les connection entre l'entrée 
+\begin_inset Formula $X_{n}$
+\end_inset
+
+ et la sortie 
+\begin_inset Formula $X_{n+m}$
+\end_inset
+
+ sont vue comme des entrée virtuelle indépendante de la rétropropagation.
+ Les connection intercouche peuvent etre négligé pour la construction initiale
+ du graphe, car elles sont completement connecté (voir code PyTorch 
+\emph on
+nn.linear
+\emph default
+) .
+ Pour les connections entre les couches, on se retrouve face à plusieurs
+ contraintes :
+\end_layout
+
+\begin_layout Itemize
+Quel est le nombre minimale de connection pour que le reseau soit complement
+ connecté ?
+\end_layout
+
+\begin_layout Itemize
+Combien de connection sont attribué par couche ?
+\end_layout
+
+\begin_layout Itemize
+Comment attribuer les connection par couche de neurone ?
+\end_layout
+
+\begin_layout Itemize
+Comment stocker ces informations pour reconstruire le graphe ?
+\end_layout
+
+\begin_layout Standard
+Empiriquement, le nombre total de perceptron dans la couche intermédiaire
+ 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $N_{h}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ est initialement défini comme la racine entiere du nombre d'agent par génératio
+n d'entrainement et ne peut dépasser 32.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\bar under
+Propriétés 
+\begin_inset Quotes eld
+\end_inset
+
+Unicité des entrée
+\begin_inset Quotes erd
+\end_inset
+
+:
+\series default
+\bar default
+ Les liens/connections entre les différentes couches de neurones depend
+ des entrée de celle ci.
+ On peut se connecter plusieurs fois à une sortie, mais 
+\begin_inset Quotes eld
+\end_inset
+
+une
+\begin_inset Quotes erd
+\end_inset
+
+ entrée n'a qu'une 
+\begin_inset Quotes eld
+\end_inset
+
+seule et unique
+\begin_inset Quotes erd
+\end_inset
+
+ entrée.
+\end_layout
+
+\begin_layout Standard
+À partir de cette propriétés, si on veut que toute les entrée soit non vide,
+ on peut definir le nombre minimal de connection pour notre reseau comme
+ la somme du nombre de perceptron de la couche intermédiaire 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $N_{h}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ et du nombre de perceptron en entrée 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $N_{i}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Ainsi, pour que le graphe soit complet, la relations du nombre minimal
+ de connection 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $C_{min}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ est :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $C_{min}=N_{h}+N_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Le nombre de connection total 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $C_{tot}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ est ensuite attribué aléatoirement dans l'interval 
+\begin_inset Formula $\left[C_{min},2C_{min}\right]$
+\end_inset
+
+.
+ Puis le nombre de couche intermediaire du reseau 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $N_{L}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ est attribué aléatoirement dans l'interval 
+\begin_inset Formula $\left[1,C_{tot}\right]$
+\end_inset
+
+.
+ Lorsque que 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $C_{tot}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ et 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $N_{L}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ sont défini, il reste à définir le nombre de connection et de perceptron
+ que va avoir chaque couche de neurone.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\bar under
+Propriétés 
+\begin_inset Quotes eld
+\end_inset
+
+Connection limité
+\begin_inset Quotes erd
+\end_inset
+
+ :
+\series default
+\bar default
+ Il ne peut y avoir moins de 
+\begin_inset Quotes eld
+\end_inset
+
+une et unique
+\begin_inset Quotes erd
+\end_inset
+
+ connection par couche, mais elle ne peut dépasser l'ecart entre 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $C_{tot}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ et 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $N_{L}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\bar under
+Propriétés 
+\begin_inset Quotes eld
+\end_inset
+
+Perceptron limité
+\begin_inset Quotes erd
+\end_inset
+
+ :
+\series default
+\bar default
+ Il ne peut y avoir moins d'
+\begin_inset Quotes eld
+\end_inset
+
+un seule et unique
+\begin_inset Quotes erd
+\end_inset
+
+ perceptron par couche, mais elle ne peut dépasser l'ecart entre 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $N_{h}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ et 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $N_{L}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+À partir de ces deux propriétés, on peut definir par récurrance l'attribution
+ aléatoire du nombre de connection et perceptron par couche intermediaire
+ de neurone.
+ Le schéma de l'evolution de la densité de probabilité uniforme à discrétiser
+ est le suivant :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $\begin{array}{c}
+f_{C_{n}}(x)=\left\{ \begin{array}{cc}
+\frac{1}{(C_{tot}-C_{n-1}-N_{L}-n)-1} & pour\,1\leq x\leq(C_{tot}-C_{n-1}-N_{L}-n)\\
+0 & sinon
+\end{array}\right.\\
+f_{N_{n}}(x)=\left\{ \begin{array}{cc}
+\frac{1}{(N_{h}-N_{n-1}-N_{L}-n)-1} & pour\,1\leq x\leq(N_{h}-N_{n-1}-N_{L}-n)\\
+0 & sinon
+\end{array}\right.
+\end{array}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Une fois l'attribution du nombre de connection réalisé par couche, il est
+ necessaire de positionner ces couches spatialement pour le calcul de la
+ rétropropagation.
+ Dans notre cas, nous avons limité le nombre de couche à 32, avec une seule
+ et unique couche possible par position spatiale discrete.
+ Ainsi la position des couches intermediaire est atribué aléatoirement et
+ sans remplacement dans l'interval 
+\begin_inset Formula $\left[1;31\right]$
+\end_inset
+
+, où la position 
+\series bold
+\emph on
+zero
+\series default
+\emph default
+ est reservé à l'entrée et 
+\series bold
+\emph on
+32
+\series default
+\emph default
+ à la sortie.
+ Les positions spatiales des couches de neurone n'influence pas le calcul
+ de la rétropropagation, ainsi, les connection entre couche sont relative
+ à l'ordre positionnel.
+ On stocke ensuite l'ensemble des connection possible dans une liste.
+ Mais une fois le positionnement des couches réalisé, comment connecter
+ les noeud de facon à ce qu'il y ait un lien entre l'entrée et la sortie
+ et qu'il n'y ait pas que des entrée virtuelle ?
+\end_layout
+
+\begin_layout Standard
+Pour cette question, nous avons considéré 3 cas où l'attribution des connections
+ suit des loi uniforme discrétisé avec des densité de probabilité différente.
+ On distingue les 3 cas suivants :
+\end_layout
+
+\begin_layout Enumerate
+La premiere connection : on se connecte à l'une des sortie de la couche
+ la plus proche derriere, si c'est la premiere, on se connecte à l'une des
+ sortie des neurones d'entree.
+ En effet, il est necessaire qu'il y est au moins un chemin qui mene d'entrée
+ vers la sortie pour la retropropagation, ce cas garantis cette condition.
+ La probabilité est directement défini par 
+\begin_inset Formula $P(X_{k})=\begin{cases}
+1 & X_{k}=X_{k+1}-1\\
+0 & sinon
+\end{cases}$
+\end_inset
+
+ pour ce cas.
+\end_layout
+
+\begin_layout Enumerate
+Tant que toute les connections n'ont pas été attribué : On privilégie les
+ connections vers l'arriere à 2/3 des probabilité.
+ De cette facon, on limite l'excess d'entrée virtuelle sans que cela ne
+ soit impossible.
+ Cette regle à été défini empiriquement et ne semble pas avoir d'effet sur
+ le processus de selection sur le long termes (non calculé).
+ La probabilité est calculé à partir de la discretisation de la densité
+ de probabilité discrétisé 
+\begin_inset Formula $f_{X}=\begin{cases}
+\frac{2}{3} & pour\,a\leq x\leq b\\
+\frac{1}{3} & pour\,b\leq x\leq c\\
+0 & sinon
+\end{cases}$
+\end_inset
+
+ dans ce cas.
+\end_layout
+
+\begin_layout Enumerate
+Lorsque toute les connection avec les neurones de sortie ont été au moins
+ attribué une fois, alors il n'y a plus de contrainte spatiale au choix
+ des neurones de sortie : La probabilité suit une loi uniforme sur l'ensemble
+ de l'intervalle de definition spatiale.
+\end_layout
+
+\begin_layout Standard
+Au cours de ce processus, les connections des couches au sortie sont listées
+ dans l'ordre d'attribution par couche, ce qui nous donne une liste d'adjacence
+ par couche.
+ Chacune des listes ont par définition la taille du nombre de connection
+ par couche.
+ En representant l'ensemble des listes dans une matrice d'adjacence, on
+ remarque que la diagonale sépare les connections en amonts des connection
+ en aval.
+ La matrice à par définition la structure d'un graph orienté.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/M_1_2.png
+	lyxscale 50
+	scale 200
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Matrice adjacente des liens du reseau de neurone précedent.
+ En rouge, les noeud de connection (entrée d'une couche) et en bleu, les
+ noeuds de perceptron (sortie de couche).
+ Les case grisé correspondent à une connection de poids constants (1 par
+ défauts).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cette matrice, n'est pas utiliser dans le processus de restructuration du
+ reseau.
+ La matrice etant creuse, on peut se limiter à un ensemble de liste adjacente
+ par couche de neurone.
+ La representation en liste simplifie la restructuration du reseau et optimise
+ la taille d'utilisation de la mémoire.
+ Cette matrice sera toutefois necessaire pour l'analyse des donnée de graphe,
+ on la reconstruiera à posteriori.
+ Les connection intercouches representé en gris clair sur la [Fig 2.] ne
+ sont pas stocké en mémoire car ils sont définit par des opérations tensoriel
+ déjà implémenté.
+\end_layout
+
+\begin_layout Section
+Methodes d'apprentissage
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Methodes-d'apprentissage"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Les methodes d'apprentissages standards ont besoin d'un grand nombre de
+ donnée pour que l'ajustement des poids permettent à un modele d'etre prédictif
+ [ref].
+ Avec l'ere du Big Data, cette approche fut concluante, meme si elle risque
+ de favoriser le surapprentissage d'un reseau en classifiant trop avec les
+ données d'entrainement [ref].
+ Pour autant, dans le vivant, il n'y a pas besoin d'un tres grand nombre
+ d'experience pour qu'un cerveau apprenne efficassement un probleme [ref].
+ Dans certain cas, le cerveau est meme pré-cablé chez certaine espece pour
+ repondre à certaine fonction, on peut citer comme exemple la marche des
+ enfants à la naissance [ref] ou des mammifere juvénile proie [ref].
+ C'est le principe de fonctionnalisation cérébrale qu'on essaye ici de reconstit
+uer en selectionnant des reseau 
+\begin_inset Quotes eld
+\end_inset
+
+optimum
+\begin_inset Quotes erd
+\end_inset
+
+ à la descente de gradient d'un probleme de decision.
+ A partir du graphe vu precedemant, on peut reconstruire les connections
+ entre les différentes couches du 
+\emph on
+réseau de neurones à propagation avant
+\emph default
+.
+ L'algorithme 
+\begin_inset Quotes eld
+\end_inset
+
+forward
+\begin_inset Quotes erd
+\end_inset
+
+ de la plupart des bibliothèques logiciel se retrouve restructuré, mais
+ est compatible avec la structure des graphes computationnels classiques.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Forward construction by Adjency List; 
+\series bold
+X
+\series default
+ correspond au Tenseur d'entrée de taille I*Batch.
+ 
+\series bold
+NET
+\series default
+ correspond au information des neurones (index, position, liste adjacente).
+ 
+\series bold
+Trace
+\series default
+ correspond à la mise en mémoire des sorties des couches modulés des liste
+ de neurones 
+\series bold
+Layers
+\series default
+ (PyTorch : 
+\emph on
+nn.ModuleList
+\emph default
+).
+ 
+\series bold
+h
+\series default
+ correspond à la copie détaché de la liste des Tenseurs Trace à t-1.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout LyX-Code
+Batch size, Input size 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ dim(X)
+\end_layout
+
+\begin_layout LyX-Code
+BATCH_ 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ np.arange(len(x)) 
+\end_layout
+
+\begin_layout LyX-Code
+Trace[-1] 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ Layers[-1](X.view(Batch size, Input size,1)).view(Batch size, Input size)
+ 
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+for
+\series default
+ i, network index ordered by position 
+\series bold
+do
+\series default
+ :
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+tensor 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ [] 
+\end_layout
+
+\begin_layout LyX-Code
+
+\series bold
+for
+\series default
+ j,k 
+\series bold
+in
+\series default
+ NET[i, -1] : 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+
+\series bold
+if
+\series default
+ j == 0 : 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+tensor += [Trace[-1][BATCH_,None,k]] 
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\series bold
+else
+\series default
+ : 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+
+\series bold
+if
+\series default
+ (NET[i, 3] >= NET[i, 3]) : 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+tensor += [h[j][BATCH_,None,k]]
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\series bold
+else
+\series default
+ : 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+tensor += [Trace[j][BATCH_,None,k]] 
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_deeper
+\begin_layout LyX-Code
+tensor_in 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ torch.cat(tensor, dim=1) 
+\end_layout
+
+\begin_layout LyX-Code
+Trace[i] 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ Layers[i](tensor_in) 
+\end_layout
+
+\begin_layout LyX-Code
+Trace[-2] 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ Layers[-2](tensor_in) 
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\series bold
+for
+\series default
+ t 
+\series bold
+in
+\series default
+ range(len(Trace)): 
+\end_layout
+
+\begin_deeper
+\begin_layout LyX-Code
+h[t][BATCH_] 
+\begin_inset Formula $\leftarrow$
+\end_inset
+
+ Trace[t][BATCH_].detach() 
+\end_layout
+
+\end_deeper
+\begin_layout LyX-Code
+
+\series bold
+return
+\series default
+ Trace[i], Trace[-2]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Une fois le reseau completement cablé, celui ci est equivalent à un 
+\emph on
+réseau à propagation avant
+\emph default
+ avec plusieurs entrée intermédiaire.
+ Ces entrée intermédiaire corresponde comme on l'a vu dans la partie precedante
+ au 
+\emph on
+entrée virtuelle
+\emph default
+.
+ L'objectif qui suit est d'optimiser le calcul de la fonction de cout 
+\begin_inset Formula $J(a,b)$
+\end_inset
+
+ avec 
+\begin_inset Formula $J(a,b)=\frac{1}{2m}\sum_{i=1}^{m}(f-y)$
+\end_inset
+
+.
+ Dans notre cas, on distingue deux etapes dans l'optimisation du calcul
+ la fonction de perte, d'abords à 
+\begin_inset Quotes eld
+\end_inset
+
+
+\series bold
+\emph on
+temps courts
+\series default
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ qui correspond à un apprentissage classique de descente de gradient à chaque
+ cycle de reproduction, et à 
+\begin_inset Quotes eld
+\end_inset
+
+
+\series bold
+\emph on
+temps long
+\series default
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ où l'on va selectionner à chaque étapes les reseau qui auront le mieux
+ reussi pendant de l'entrainement à temps court.
+ La premiere étapes correspond à une methodes classique en apprentissage
+ par renforcement, le Q-learning, la seconde, plus exploratoire, correspond
+ à l'ajout de mutation dans le graphe du reseau qui va changer les connections
+ entre les différents noeuds.
+\end_layout
+
+\begin_layout Subsection
+Temps courts : Q-Learning
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Temps-courts-:"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A temps courts on cherche un algorithme de descente de gradient adapté à
+ notre probleme.
+ La plupart du temps, on donne un jeu de donnée d'entrainement adapté à
+ un probleme, comme par exemple 
+\emph on
+MNIST
+\emph default
+ pour la reconnaissance des chiffres au format image, ou encore, 
+\emph on
+ImageNet
+\emph default
+ pour la detection et classification d'image d'objet.
+ Dans notre cas, on a essaie de reproduire un systeme 
+\begin_inset Quotes eld
+\end_inset
+
+vivant
+\begin_inset Quotes erd
+\end_inset
+
+ caractérisé par un automate cellulaire [Voir partie suivante].
+ Ainsi, le système suit une succession d'états et d'action distincts dans
+ le temps et ceci en fonction de probabilités de transitions.
+ L'evolution du systeme correspond à un processus de decision markovien,
+ representé par une chaine de markov.
+ Une chaine de markov est une suite de variable aléatoire 
+\begin_inset Formula $(X_{n})$
+\end_inset
+
+ dans l'espace probabilisé 
+\begin_inset Formula $(E,B,P)$
+\end_inset
+
+, où pour chaque 
+\series bold
+n
+\series default
+, sachant 
+\begin_inset Formula $X_{n}$
+\end_inset
+
+, 
+\begin_inset Formula $X_{n+1}$
+\end_inset
+
+ indépendant de 
+\begin_inset Formula $X_{k}$
+\end_inset
+
+, on a la probabilité de transition (Hypothèse de Markov) : 
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $P(X_{n+1}=i_{n+1}|X_{1}=i_{1},\ldots,X_{n}=i_{n})=P(X_{n+1}=i_{n+1}|X_{n}=i_{n})$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dans notre cas, on associe à chaque transition, des action et des récompense
+ associé à l'agent de facon à le guider dans le temps.
+ On peut représenter cela suivant le couple de matrices 
+\begin_inset Formula $(T,R),$
+\end_inset
+
+ où 
+\series bold
+\emph on
+T
+\series default
+\emph default
+ correspond à la matrice de transition et 
+\series bold
+\emph on
+R
+\series default
+\emph default
+, la matrice des récompense.
+ La complexité est que l'on ne connait pas la probabilité de transition.
+ Le but dans un processus décisionnel markovien est de trouver une bonne
+ « politique » pour le décideur : une fonction 
+\series bold
+π
+\series default
+ qui spécifie l'action 
+\series bold
+
+\begin_inset Formula $π(s)$
+\end_inset
+
+
+\series default
+ que le décideur choisira lorsqu'il sera dans l'état 
+\series bold
+s
+\series default
+.
+ Une politique décrit les choix des actions à jouer par l'agent dans chaque
+ état.
+ L'agent choisit une politique à l'aide de la fonction de récompense R.
+ Lorsqu'une politique et un critère sont déterminés, deux fonctions centrales
+ peuvent être définies : 
+\series bold
+V
+\series default
+, la fonction valeurs des etats qui représente le gain engrangé par l'agent
+ s'il démarre à l'état s et 
+\series bold
+Q
+\series default
+, la fonction de valeur des états-actions qui représente le gain engrangé
+ par l'agent s'il démarre à l'état s et commence par effectuer l'action
+ a.
+ Les expressions de V et Q, sont ainsi déterminer par les relations de récurrenc
+e :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $\begin{array}{c}
+V_{k+1}(s)=(1-\alpha)V_{k}(s)+\alpha[r+\gamma V_{k}(s')]\\
+Q_{k+1}(s,a)=(1-\alpha)Q_{k}(s,a)+\alpha[r+\gamma\max_{a'}Q_{k}(s',a')]
+\end{array}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cette derniere correspond à l'
+\emph on
+\bar under
+équation de Bellman
+\emph default
+\bar default
+ et c'est elle qui est utilisé pour calculer la fonction de coût du reseau
+ de neurone lorsqu'on realise une action.
+ La premiere equation ne peut etre utilisé seul car elle nous donne l'efficassit
+é de l'agent pour une action donnée, mais peut utiliser en cas d'utilisation
+ de reseau adversariaux [Ref actor-critic].
+ Dans notre cas, on realise initalement une suite d'evenement avec une matrice
+ de transition aléatoire (reseau non entrainé), puis on calcul de la fonction
+ de perte entre la prédiction des valeurs Q obtenu au cours de l'experience
+ 
+\bar under
+avant l'action
+\bar default
+ et le resultat de l'equation de Bellman Q 
+\bar under
+apres l'action
+\bar default
+ d'un batch d'entrainement donnée, puis on repete 
+\begin_inset Formula $N_{cycle}$
+\end_inset
+
+ fois cette etapes avant le prochain cycle de reproduction.
+ 
+\end_layout
+
+\begin_layout Standard
+Code PyTorch :
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+old_state, action, new_state, reward, DONE = MEMORY
+\end_layout
+
+\begin_layout Plain Layout
+
+actor = MODEL(old_state)
+\end_layout
+
+\begin_layout Plain Layout
+
+pred_q_values_batch = torch.sum(actor.gather(1, action),dim=1).detach()
+\end_layout
+
+\begin_layout Plain Layout
+
+pred_q_values_next  =  MODEL(new_state)
+\end_layout
+
+\begin_layout Plain Layout
+
+target_q_values_batch = reward+(1DONE)*GAMMA*torch.max(pred_q_values_next,
+ 1)[0]
+\end_layout
+
+\begin_layout Plain Layout
+
+MODEL.zero_grad()
+\end_layout
+
+\begin_layout Plain Layout
+
+loss = criterion(pred_q_values_batch,target_q_values_batch)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+L'action 
+\begin_inset Quotes eld
+\end_inset
+
+acteur
+\begin_inset Quotes erd
+\end_inset
+
+ correspond à la sortie du reseau, et correspond à la probabilité d'action
+ optimale.
+ Normalement, à chaque pas de temps, on choisi la valeurs maximale en sortie
+ du reseau et l'on attribu une probabilité d'action aléatoire, c'est le
+ 
+\series bold
+dilemne exploration-exploitation
+\series default
+.
+ Ce dilemne permet au reseau de neurone d'explorer des parametre et de ne
+ pas se stabiliser dans une valée non optimale.
+ Mais dans notre cas, nous avons choisi d'attribuer une probabilité d'action
+ à chaque 
+\begin_inset Quotes eld
+\end_inset
+
+
+\series bold
+\emph on
+pas
+\series default
+\emph default
+
+\begin_inset Quotes erd
+\end_inset
+
+ de l'entrainement à partir de la sortie du reseau, qui est equivalent à
+ un dilemne d'exploration-exploitation.
+\end_layout
+
+\begin_layout Standard
+Code Python :
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+DILEMNA = np.squeeze(action_probs.detach().numpy())
+\end_layout
+
+\begin_layout Plain Layout
+
+p_norm = DILEMNA/DILEMNA.sum()
+\end_layout
+
+\begin_layout Plain Layout
+
+next_action = np.random.choice(self.IO[1], p=p_norm)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Temps longs : Structure neuronale
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Temps-longs-:"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A partir des différents modele de réseau entrainée à temps courts, l'objectif
+ qui suit est de selectionner ceux qui on eu le meilleurs score d'entrainement,
+ puis de modifier legerement la structure du graph neuronal.
+ Le calcul des scores est relatif à l'environement d'entrainement et est
+ tres utiliser dans les modele evolutif.
+ L'attribution des points sera plus detaillé dans la partie 3.
+ Le principe est le suivant : Lors du premier entrainement à temps court,
+ on a 
+\begin_inset Formula $N_{r}$
+\end_inset
+
+ reseau en parallele et distinct, chacun vont suivre le processus d'entrainement
+ vue dans la sous-partie précedante.
+ Ensuite, les 
+\begin_inset Formula $N_{b}$
+\end_inset
+
+ reseau ayant le meilleurs score sont selectionné, 
+\begin_inset Formula $N_{b}$
+\end_inset
+
+ reseau garde la meme topologie pour le le cycle suivant, 
+\begin_inset Formula $N_{m}$
+\end_inset
+
+ reseau par 
+\begin_inset Formula $N_{b}$
+\end_inset
+
+ meilleurs reseau hérite d'une mutation alétoire.
+ Enfin 
+\begin_inset Formula $N_{c}$
+\end_inset
+
+ nouveau reseau aléatoire sont introduit dans le processus d'entrainement
+ suivant, ceux ci peuvent hériter de parametre optimisé des reseau precedant,
+ mais pas de la structure du reseau, c'est les reseau 
+\begin_inset Quotes eld
+\end_inset
+
+compétiteur
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Les nombre d'agent sont definit comme 
+\begin_inset Formula $N_{r}=(N_{b}+1)^{2}$
+\end_inset
+
+, de facon à ce que 
+\begin_inset Formula $N_{r}$
+\end_inset
+
+ est une racine entiere, 
+\begin_inset Formula $N_{m}=N_{b}$
+\end_inset
+
+, tel que le nombre total de mutation soit 
+\begin_inset Formula $N_{mtot}=N_{b}^{2}$
+\end_inset
+
+ et enfin 
+\begin_inset Formula $N_{c}=N_{b}+1$
+\end_inset
+
+, de cette facon, on a bien 
+\begin_inset Formula $N_{r}=N_{b}+N_{mtot}+N_{c}$
+\end_inset
+
+.
+ Dans notre modèle, on distingue 5 types de mutations sur le graphe neuronal
+ :
+\end_layout
+
+\begin_layout Enumerate
+
+\bar under
+Ajouter une connection :
+\bar default
+ Ne change pas le nombre de couche neural, mais ajoute une connection à
+ l'une d'entre elle.
+ Comme on n'ajoute pas de neurone, la liste des connections possible ne
+ change pas et la nouveau noeud va etre connecté aléatoirement à une neurone
+ pre-existant.
+\end_layout
+
+\begin_layout Enumerate
+
+\bar under
+Ajouter un neurone à l'une des couches :
+\bar default
+ Comme on ajoute une connection de sortie possible, on renouvelle la liste
+ des connection.
+ Mais vue que le reseau doit etre complet, on rajoute également une connection
+ dans l'une des couches qui va se connecter exclusiement à cette derniere
+ connection de sortie.
+\end_layout
+
+\begin_layout Enumerate
+
+\bar under
+Ajouter une couche 1*1 :
+\bar default
+ L'ajout d'une couche n'est composé que d'une connection d'entrée et d'une
+ seule et unique sortie, ce qu'y est equivalent à un seul neurone.
+ La position de la couche doit etre différent de celle precedante et compris
+ entre 
+\begin_inset Formula $[1,31]$
+\end_inset
+
+.
+ L'entrée de cette nouvelle couche se connecte uniquement 
+\bar under
+vers l'arriere (pas forcement ? juste position différente ?)
+\bar default
+, par contre, il n'est pas necessaire que la sortie soit connecté vers l'avant,
+ le reseau etant complet, seul lui meme est interdit.
+ Si ce neurone se connecte vers l'arriere, il devient equivalent à un générateur
+ d'entrée virtuelle.
+ Comme on ajoute une connection de sortie, la liste de connection et une
+ nouvelle connection est ajouté tout comme l'ajout d'un neurone.
+
+\series bold
+ (necessite correction)
+\end_layout
+
+\begin_layout Enumerate
+
+\bar under
+Enlever une connection doublon :
+\bar default
+ Enlever une connection quelquonque n'a pas été envisagé dans notre cas,
+ car ils changerait radicalement la structure du reseau.
+ En effet, elle supprimerai possiblement plusieurs connection, ce qui rendrait
+ fortement le reseau imcomplet.
+ Par contre, comme le reseau peut etre connecté plusieurs fois à la meme
+ sortie, il est possible d'enlever une connection doublon.
+ Cela ne changerait pas la liste des connections de sortie possible.
+
+\series bold
+ (necessite correction)
+\end_layout
+
+\begin_layout Enumerate
+
+\bar under
+Enlever un neurone :
+\bar default
+ Cette opération contient deux contrainte, on ne peut pas supprimer un neurone
+ qui correspond au premier lien d'une couche donnée et que le décallage
+ des connections soit possible.
+ Corrolaire des définitions : on ne peut pas supprimer une couche qui ne
+ contient qu'un seul et unique neurone et de meme pour la connection d'entrée.
+ Tout comme l'ajout de neurone, la liste des connections de sortie possible
+ est mise à jours.
+
+\series bold
+ (necessite correction)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/M_2_2.png
+	lyxscale 33
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Algorithme visuel des mutations.
+ Respectivement les 5 types de mutations citer en paragraphes.
+ De gauche à droite, l'etats initial vers l'etat final.
+ Les propriétés du graphe sont à titre indicatives, cette representation
+ tres simplifié ne reflete pas l'optimum d'une fonction.
+ Les opérations 
+\begin_inset Formula $1\leftrightarrow4$
+\end_inset
+
+ et 
+\begin_inset Formula $2\leftrightarrow5$
+\end_inset
+
+ sont symetriques, l'operation 3, n'a pas de symetrique stable simple.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dans notre modele, on conserve au minimum un neurone par couche et toujours
+ le premier, et on ne supprime pas les couches de neurone.
+ Ce choix plus simple permet de conserver la symetrie des opérations 
+\begin_inset Formula $1\leftrightarrow4$
+\end_inset
+
+ et 
+\begin_inset Formula $2\leftrightarrow5$
+\end_inset
+
+ [voir Fig 3], mais aussi de maintenir une structure vestigiale du reseau.
+ En effet, au cours de l'evolution certaine structure sont maintenu, mais
+ ne sont pas les choix optimums por remplir certaine fonction.
+ Par exemple, le chemin qu'emprunte les vaiseau sanguin entre la tete et
+ le coeur chez les mammifere emprunte un chemin non optimal, pourtant il
+ est maintenu car serait trop couteux evolutivement pour changer de trajectoire
+ [ref necessaire].
+ La vallée de stabilité evolutive lié à ce choix criticable est plus abordé
+ en discussion.
+\end_layout
+
+\begin_layout Section
+Regles du jeu : TAG-GAME
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Regles-du-jeu"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dans le cadre des processus de decision markovien, les donnée sont généré
+ au cours de l'entrainement, c'est l'
+\series bold
+environement
+\series default
+ d'entrainement.
+ Cet environement contient des regles et s'apparente à un jeu, la biblioteques
+ la plus utilisé en python est 
+\emph on
+OpenGym
+\emph default
+ et sa structure à servi d'exemple pour realiser l'environement de notre
+ probleme.
+ Dans notre cas, on souhaite reproduire certaine stratégie de survie que
+ l'on observe dans le vivant, en particulier, les stratégies de prédations
+ et de fuites d'une proie.
+ On a choisi pour cela le 
+\series bold
+jeu du chat et de la souris
+\series default
+, ou 
+\emph on
+Tag game
+\emph default
+ en anglais, en effet, on alterne entre proie lorsqu'on est souris, et prédateur
+s lorsqu'on est chat, ce qui pousse le modele à s'adapter à deux configurations
+ différente.
+ Le chats et la souris ont des 
+\begin_inset Quotes eld
+\end_inset
+
+couleurs
+\begin_inset Quotes erd
+\end_inset
+
+ différentes suivant les états chat/souris/adversaire/agent.
+ Les étapes d'une partie sont les suivantes :
+\end_layout
+
+\begin_layout Enumerate
+Initialement, l'agent est une proie 
+\begin_inset Quotes eld
+\end_inset
+
+la souris
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Il doit eviter de se faire attraper par le prédateur, 
+\begin_inset Quotes eld
+\end_inset
+
+le chat
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Le prédateur n'est pas un agent 
+\begin_inset Quotes eld
+\end_inset
+
+intelligent
+\begin_inset Quotes erd
+\end_inset
+
+, celui-ci calcul uniquement le déplacement optimal qui minimise la distance
+ euclidienne entre le chat et la souris pour l'etat suivant.
+ 
+\series bold
+\emph on
+\bar under
+Chat = 1, Souris = 2
+\series default
+\emph default
+\bar default
+.
+\end_layout
+
+\begin_layout Enumerate
+Lorsque l'agent se fait 
+\begin_inset Quotes eld
+\end_inset
+
+attraper
+\begin_inset Quotes erd
+\end_inset
+
+ par le prédateur, il en devient lui meme un et les role s'inverse.
+ L'agent doit maintenant attraper la proie, la nouvelle souris.
+ La souris cette fois n'est pas un agent 
+\begin_inset Quotes eld
+\end_inset
+
+intelligent
+\begin_inset Quotes erd
+\end_inset
+
+, celui ci calcul uniquement le déplacement optimal qui maximise la distance
+ euclidienne entre le chat et la souris pour l'etat suivant.
+ 
+\series bold
+\emph on
+\bar under
+Chat = 3, Souris = 4
+\series default
+\emph default
+\bar default
+.
+ La nouvelle position des agents/adversaire est calculer comme la collision
+ entre les deux pour ne pas rester bloquer sur la meme position au temps
+ t+1.
+ La collision est définit comme la symmetrie axiale des deux vecteurs de
+ deplacement à l'instant t, soit l'équation 
+\series bold
+(à implementer)
+\series default
+ :
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\begin{cases}
+Thales\\
+Pythagore
+\end{cases}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+On revient à l'etapes 1 si l'agent attrape la souris, la partie s'arrete
+ apres 
+\begin_inset Formula $N_{g}$
+\end_inset
+
+ pas de temps.
+\end_layout
+
+\begin_layout Standard
+On a dans ce cas, un agent qui interagit avec un environement de jeu.
+ L'agent contient les informations de 
+\series bold
+vue
+\series default
+ et d'
+\series bold
+action
+\series default
+ qui va transmettre à l'environment.
+ L'environement contient les information de la position de l'agent et son
+ adversaire, ainsi que les regles de jeu et comptage de points.
+ L'environement peut etre vue comme une grille à limite périodique (CLP)
+ de dimension 
+\begin_inset Formula $N\times M$
+\end_inset
+
+ où les agents et adversaire sont des automates cellulaires avec des fonctionnem
+ent différents.
+ L'agent dispose de 9 entrée 
+\begin_inset Quotes eld
+\end_inset
+
+états
+\begin_inset Quotes erd
+\end_inset
+
+, 3 sortie 
+\begin_inset Quotes eld
+\end_inset
+
+action
+\begin_inset Quotes erd
+\end_inset
+
+ et un reseau de neurone entre les deux, où les propriété positionnel entrée/sor
+tie sur la grille sont généré aléatoirement en debut d'experience, puis
+ maintenu à la descendance.
+ Ainsi, l'agent lit 9 case sur une grille 
+\begin_inset Formula $5\times5$
+\end_inset
+
+ centré sur la position de l'agent, soit 36% de son environement local,
+ et l'agent se déplace d'une seul case parmit 3 mouvement d'une grille 
+\begin_inset Formula $3\times3$
+\end_inset
+
+ centré sur la position de l'agent, soit 33,3% de son environement local.
+ Par contre, l'adversaire voit uniquement la position de l'agent et de lui-meme,
+ mais n'est qu'une fonction mathématique se deplacant suivant 4 trajectoires,
+ haut 
+\begin_inset Formula $(0,1)$
+\end_inset
+
+, bas 
+\begin_inset Formula $(0,-1)$
+\end_inset
+
+, gauche 
+\begin_inset Formula $(-1,0)$
+\end_inset
+
+ et droite 
+\begin_inset Formula $(1,0)$
+\end_inset
+
+, minimisant ou maximisant la distance entre elle et l'agent suivant son
+ état 
+\begin_inset Quotes eld
+\end_inset
+
+chat
+\begin_inset Quotes erd
+\end_inset
+
+ ou 
+\begin_inset Quotes eld
+\end_inset
+
+souris
+\begin_inset Quotes erd
+\end_inset
+
+.
+ La informations positionnel sont discretisé (grille), le calcul du déplacement
+ de l'adversaire revient à :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $\begin{cases}
+d_{2}=\sqrt{(v_{adv}-v_{agent})^{2}}\\
+m_{vt}=\begin{cases}
+m_{vt}-min(d_{2}) & if\,IT\\
+m_{vt}+max(d_{2}) & else
+\end{cases}
+\end{cases}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Enfin, l'environement attribue des points à chaque étapes du jeu, l'ensemble
+ des points donne le score de l'agent.
+ L'attribution des points à l'agent est un parametre important en apprentissage
+ par renforcement, un desequilibre des points peut rendre soit un agent
+ tres 
+\begin_inset Quotes eld
+\end_inset
+
+agressif
+\begin_inset Quotes erd
+\end_inset
+
+ ou encore à l'opposé 
+\begin_inset Quotes eld
+\end_inset
+
+passif
+\begin_inset Quotes erd
+\end_inset
+
+ [ref necessaire et importante].
+ Pour cela, les points ont été reflechi en fonction de la taille de grille
+ de jeu, pour une grille de jeu 
+\begin_inset Formula $16\times16$
+\end_inset
+
+, la moyenne des déplacement pour atteindre le centre quelque soit la position
+ est d'environs 8 déplacement.
+ Dans cette configuration, pour un calcul equilibré, les comptages des points
+ sont les suivants :
+\end_layout
+
+\begin_layout Itemize
+-1 par 
+\begin_inset Quotes eld
+\end_inset
+
+pas
+\begin_inset Quotes erd
+\end_inset
+
+ de temps où l'agent est un prédateur 
+\begin_inset Quotes eld
+\end_inset
+
+chat
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
++10 si l'agent attrape la proie 
+\begin_inset Quotes eld
+\end_inset
+
+souris
+\begin_inset Quotes erd
+\end_inset
+
+ et devient la proie à son tour.
+\end_layout
+
+\begin_layout Itemize
++1 par 
+\begin_inset Quotes eld
+\end_inset
+
+pas
+\begin_inset Quotes erd
+\end_inset
+
+ de temps où l'agent est une proie 
+\begin_inset Quotes eld
+\end_inset
+
+souris
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+-10 si l'agent est attrapé par le prédateur 
+\begin_inset Quotes eld
+\end_inset
+
+chat
+\begin_inset Quotes erd
+\end_inset
+
+ et devient le prédateur à son tour.^
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Corrolaire :
+\bar default
+ L'agent restant le plus longtemps sous l'état proie (souris) et le moins
+ longtemps sous l'état prédateur (chats) à le plus grand score de jeu.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/M_3_0.png
+	lyxscale 33
+	scale 150
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Les interactions entre un agent et un environement de jeu.
+ En haut, la génération alétoire des positions relative possible des entree
+ et sortie.
+ Suivi des interactions entre l'agent en haut et l'environement de jeu en
+ bas.
+ 1 : envoi de l'environement des informations d'entrée (pixel) à l'agent;
+ 2 : envoi de l'information de sortie de l'agent (mouvement) à l'environement;
+ 3 : mise à jour de la carte de jeu, l'adversaire effectue son déplacement
+ à ce moment.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Les case des positions relative d'entrée et de sortie sont défini aléatoirement,
+ mais comme le pourcentage des case utilisé sur la grille est au alentour
+ de 35%, les combinaisons possibles sont de l'ordre factoriel.
+ Pour la sortie, on a 3 positions parmi un total de 9 cases, ce qui donne
+ 
+\begin_inset Formula $\left(\begin{array}{c}
+9\\
+3
+\end{array}\right)=84$
+\end_inset
+
+ et comme le probleme est symetrique au 4 mouvement de l'adversaire (exemple
+ : 
+\begin_inset Formula $(1,2,3)\Longleftrightarrow(7,8,9)$
+\end_inset
+
+), le nombre de combinaison est de l'ordre du nombre du nombre d'agent par
+ génération.
+ Par contre, pour l'entrée, on a 9 positions parmi un total de 25 cases,
+ ce qui donne 
+\begin_inset Formula $\left(\begin{array}{c}
+25\\
+9
+\end{array}\right)=2042975$
+\end_inset
+
+ ce qui pose un probleme de convergence de la vision optimal.
+ Mais, comme les quadrant d'observation sont equivalent, on peut considerer
+ uniquement les 9 cases par quadrant, ce qui nous donne par ratio de 36%
+ 
+\begin_inset Formula $\left(\begin{array}{c}
+9\\
+3
+\end{array}\right)=84$
+\end_inset
+
+, cela est presque un ordre au dessus du nombre de génération et ne pose
+ moins probleme de stabilité.
+ Les cases ayant obtenu les meilleurs scores sont classé dans l'ordre et
+ l'on attribu la somme des points par case sur les grilles d'observation
+ et d'action.
+ La normalisation de la grille donne la probabilité de choisir l'une des
+ cases pour les etapes suivantes des 
+\begin_inset Quotes eld
+\end_inset
+
+challenger
+\begin_inset Quotes erd
+\end_inset
+
+ et sera plus abordé dans la partie résultats.
+ Pour les action, on observe quelque cas typique : 3-cyclique (Exemple :
+ 
+\begin_inset Formula $(1,6,8)\Rightarrow(\nwarrow,\downarrow,\rightarrow)$
+\end_inset
+
+), 4-cyclique (Exemple : 
+\begin_inset Formula $(1,3,8)\Rightarrow(\nwarrow,\downarrow,\downarrow,\nearrow)$
+\end_inset
+
+), semi-2-cyclique (Exemple : 
+\begin_inset Formula $(2,6,8)$
+\end_inset
+
+), asymétrique (Exemple : 
+\begin_inset Formula $(1,2,3)$
+\end_inset
+
+) et statique (Exemple : 
+\begin_inset Formula $(1,5,8)$
+\end_inset
+
+).
+ Les positions des entrée et des sorties sont donc aussi selectionné dans
+ le processus evolutif des agents.
+\end_layout
+
+\begin_layout Part*
+Résultats
+\end_layout
+
+\begin_layout Standard
+Pour générer l'ensemble des données experiementale, il est necessaire d'avoir
+ plusieurs agents par génération pour la convergence de la densité de probabilit
+é des positions d'entre/sortie et plusieurs génération pour verifier s'il
+ y a une convergence des structures neuronales.
+ Pour que le nombre d'agent par génération soit de l'ordre du nombre de
+ combinaison d'entree/sortie, nous avons choisi 25 agents par cycle de reproduct
+ion.
+ 25 est le carré de 5, ce qui compatible avec l'algorithme de mutation de
+ la structure neuronale.
+ Ce qui donne, 4 meilleurs agents par cycle, ceux ci sont maintenu au prochain
+ cycle et chacun recoit 4 mutation, ce qui fait 20 agents ayant des propriétés
+ analgogue à la génération precedante, les 5 restants sont des nouveaux
+ agents avec des structures neuronale aléatoire, mais avec informations
+ d'entrée/sortie hérité de la densité de probabilité des evement precedant.
+ Les grilles de jeu sont de 
+\begin_inset Formula $16\times16$
+\end_inset
+
+, ce qui permet à l'agent de pas voir tout le plan de jeu, mais ne pas que
+ l'adversaire soit trop loin lorsque l'agent est un prédateur.
+ L'avantage de cette configuration est que l'on peut representer l'ensemble
+ des environement à un temps donnée par une grille 
+\begin_inset Formula $(5*16)\times(5*16)$
+\end_inset
+
+, ce qui facilité la visualisation et l'interpretation des resultats.
+ Il est possible aussi de representer cette grille par décomposition de
+ deux nombre premier si le nombre d'agents par cycle n'est pas le carré
+ d'un nombre.
+ Cette methodes correpond à la verification de la parité puis recurrance
+ des nombre impaire jusqu'a la racine entiere supérieur du module du nombre
+ d'agent par génération : 
+\begin_inset Formula $n\%\begin{cases}
+2\\
+impair(\sqrt{n})
+\end{cases}$
+\end_inset
+
+.
+ Cette derniere n'a pas été utilisé ici, mais est inclu dans le programme.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_0_0.png
+	lyxscale 33
+	scale 66
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Representation d'une donnée experimentale à un instant t.
+ En encadré, les différentes catégories d'agent (survivant, mutation et
+ compétiteur).
+ En points bleu, les adversaires et en orange, l'agent intelligent.
+ Les cases grisé corresponde à la vue de l'agent à un instant t.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Le nombre de génération n'est pas clairement défini, mais peut, tout comme
+ le nombre d'agent par génération, etre justifié par la loi des grands nombres,
+ si l'on considère que la loi de proabilité à une esperance.
+ On va donc verifier, pour 25 agents par génération, combien, il faudrait
+ pour que la densité moyenne des entrée et des sortie converge.
+ Soit 
+\begin_inset Formula $N_{a}=25$
+\end_inset
+
+, le nombre de d'agent par génération, 
+\begin_inset Formula $N_{c}=84$
+\end_inset
+
+ le nombre de configuration de combinaison maximal entre entrée et sortie
+ et 
+\begin_inset Formula $N_{g}$
+\end_inset
+
+ le nombre de génération que l'on cherche.
+ Soit 
+\begin_inset Formula $X_{n}$
+\end_inset
+
+, la variable aléatoire indépendante nous donnant une combinaison à chaque
+ tirage, la limite à l'infini de l'inégalité de markov devient :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $\lim_{n\rightarrow+\infty}P\left(\left|\frac{1}{N_{g}}X-p\right|\leq\varepsilon\right)=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+De cette facon, la moyenne est un estimateur de l'esperance.
+ On trouve pour un 
+\begin_inset Formula $\varepsilon$
+\end_inset
+
+ de 1% et d'un calcul par itération directe, une valeurs de 10 générations
+ pour que la moyenne converge.
+ Cette approximation n'est pas valable pour la convergence du reseau de
+ neurone, ainsi, on considere que les données experiementale seront exploitable
+ qu'a partir de 
+\begin_inset Formula $N_{g}>10$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Caractérisation de la convergence de la densité positionnelle des entrées/sortie
+s
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Caractérisation-de-la"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+L'entrée de l'agent est définit comme la combinaison de 9 cases parmis 25,
+ sa sortie est défini comme la combinaison de 3 cases parmis 9 [
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "sec:Regles-du-jeu"
+plural "false"
+caps "true"
+noprefix "false"
+
+\end_inset
+
+].
+ On cherche à verifier l'existance ou non des configurations 
+\begin_inset Quotes eld
+\end_inset
+
+vue
+\begin_inset Quotes erd
+\end_inset
+
+ et 
+\begin_inset Quotes eld
+\end_inset
+
+déplacement
+\begin_inset Quotes erd
+\end_inset
+
+ optimales au probleme du jeu du chat et la souris.
+ Dans notre cas, à chaque cycle de reproduction, on ordonne les scores pour
+ chacun des agents, et on additionne les scores obtenu par case de la grille
+ de l'agent sur la grille complete.
+ Comme le probleme est symetrique suivant les 4 directions, on considere
+ les 4 rotation de 
+\begin_inset Formula $k\pi/2$
+\end_inset
+
+ dans le comptage des points.
+ On réalise cela par le produit matriciel des positions centré avec la matrice
+ de rotation 
+\begin_inset Formula $\left(\begin{array}{cc}
+x_{0}+x_{c} & y_{0}+y_{c}\\
+\vdots & \vdots\\
+x_{n}+x_{c} & y_{n}+y_{c}
+\end{array}\right).\left(\begin{array}{cc}
+\cos\theta & -\sin\theta\\
+\sin\theta & \cos\theta
+\end{array}\right)$
+\end_inset
+
+.
+ La normalisation de la grille nous donne la proportion des meilleurs scores
+ obtenus des évenement aléatoire.
+ Si l'on considère que la distribution suit une loi avec esperance, alors
+ le 
+\emph on
+théoreme de transfert
+\emph default
+ nous permet d'exprimer l'espérance d'une fonction d'une variable aléatoire
+ 
+\begin_inset Formula $X_{n}$
+\end_inset
+
+ en fonction d'une intégrale convergente.
+ Numériquement, il correspond à l'agorithme de 
+\emph on
+Monte-Carlo
+\emph default
+, décrit comme :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $G=E[g(X)]=\intop g(x)f_{X}(x)dx$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A partir de ce calcul, on obtient la densité de probabilité de succes lorsqu'on
+ génère une nouvelle grille d'entrée 
+\begin_inset Quotes eld
+\end_inset
+
+vue
+\begin_inset Quotes erd
+\end_inset
+
+ et de sortie 
+\begin_inset Quotes eld
+\end_inset
+
+déplacement
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Par la loi des grands nombres, on a vue que cette densité convergent au
+ moins à partir de 10 cycle de reproduction.
+ On peut ainsi representer ces deux densités sur des grilles à deux dimensions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_1_1.png
+	lyxscale 20
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mesure de la densité positionnel de succes des entree/sorties.
+ A gauche, l'entree correspondant à la vue de l'agent et à droite la sortie,
+ correspondant au mouvement relatif de l'agent.
+ En nuance de gris le niveau de probabilité d'avoir plus de succes avec
+ cette case.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Mesure-de-la"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On obtient pour l'entrée et la sortie deux distributions spatiale différente
+ [voir 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Mesure-de-la"
+plural "false"
+caps "true"
+noprefix "false"
+
+\end_inset
+
+].
+ Pour l'entrée on observe 4 positions dominantes et 1 position centrale
+ faible.
+ Pour la sortie, on observe 4 positions en diagonal forte.
+ En entree, l'ensemble des positions 
+\begin_inset Formula $\left(0,1\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(1,4\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(3,0\right)$
+\end_inset
+
+ et 
+\begin_inset Formula $\left(4,3\right)$
+\end_inset
+
+ à la probabilité la plus forte et est symétrique à l'ensemble 
+\begin_inset Formula $\left(1,0\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(0,3\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(4,1\right)$
+\end_inset
+
+ et 
+\begin_inset Formula $\left(3,4\right)$
+\end_inset
+
+.
+ Cet ensemble d'entrée correspond au position au quasi-extremité de la grille
+ 
+\begin_inset Formula $5\times5$
+\end_inset
+
+, ce qui pourrait permettre d'anticiper le mouvement de l'adversaire.
+ Ensuite, les positions d'entree 
+\begin_inset Formula $\left(1,2\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(2,3\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(2,1\right)$
+\end_inset
+
+ et 
+\begin_inset Formula $\left(3,2\right)$
+\end_inset
+
+ corresponde au case qui entoure le centre de la grille, celle-ci permettent
+ de 
+\begin_inset Quotes eld
+\end_inset
+
+voir
+\begin_inset Quotes erd
+\end_inset
+
+ l'adversaire lorsque celui ci est au plus proche en terme de mouvement.
+ De plus, ces dernieres prolonge les cases en diagonale precedante.
+ En sortie, on l'ensemble des position 
+\begin_inset Formula $\left(0,0\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(0,2\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(2,0\right)$
+\end_inset
+
+ et 
+\begin_inset Formula $\left(2,2\right)$
+\end_inset
+
+ ont par somme, la probabilité la plus forte.
+ Cette ensemble de sortie correspond au position en diagonale.
+ On remarque que les positions qui entoure le centre 
+\begin_inset Formula $\left(0,1\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(1,0\right)$
+\end_inset
+
+, 
+\begin_inset Formula $\left(1,2\right)$
+\end_inset
+
+ et 
+\begin_inset Formula $\left(2,1\right)$
+\end_inset
+
+ ont les probabilités les plus faibles.
+ Ces deux observations sur la sortie impliques que le mouvements est privilégié
+ en diagonale et semi-2-cycliques.
+ Ces cases pourrait etre privilégier car l'adversaire n'a que 4 deplacement
+ 
+\begin_inset Formula $(\uparrow,\downarrow,\leftarrow,\rightarrow)$
+\end_inset
+
+ non diagonaux, ce qui donne un avantage en cas de déplacement diagonal.
+ Par contre, l'absence de symetrie complete des mouvements de l'agents ne
+ semble pas etre un désavantage pour l'obtention d'un meilleurs score.
+ 
+\end_layout
+
+\begin_layout Standard
+On remarque que les positions optimales en entrée pourrait etre corrélé
+ avec les mouvements optimaux de sortie.
+ En effet, les mouvements diagonaux necessite de savoir si un adversaire
+ est positionné à sa diagonale avant que l'adversaire est fait le mouvement
+ à 
+\begin_inset Formula $t+1$
+\end_inset
+
+.
+ Par exemple, si l'agent peut faire les mouvements 
+\begin_inset Formula $\left(1,6,9\right)\Longleftrightarrow\left(\nwarrow,\textrm{Ø},\searrow\right)$
+\end_inset
+
+, si l'adversaire est en position relative 
+\begin_inset Formula $\left(3,0\right)$
+\end_inset
+
+, alors en 
+\begin_inset Formula $t+1$
+\end_inset
+
+, l'adversaire sera en 
+\begin_inset Formula $\left(3,1\right)$
+\end_inset
+
+, si l'agent fait le mouvement 
+\begin_inset Formula $\left(\searrow\right)$
+\end_inset
+
+, dans ce cas, il sera à la meme position que l'adversaire ce qui lui fera
+ perdre des points, alors qu'il sera à la position a plus eloigné si il
+ fait le mouvement 
+\begin_inset Formula $\left(\nwarrow\right)$
+\end_inset
+
+.
+ Pour vérifier la correlation entre l'entrée et la sortie, on peut regarder
+ la convergence des familles de densité des entrées et sorties.
+ Pour cela, on mesure la densité projeté suivant une seule dimension spatiale
+ entre 
+\begin_inset Formula $t=0$
+\end_inset
+
+ et 
+\begin_inset Formula $t=N_{g}$
+\end_inset
+
+, ainsi que sa variation entre chaque génération.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_1_2.png
+	lyxscale 15
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mesure de la densité positionnel projeté de succes des entree/sorties en
+ fonction du temps.
+ À gauche, l'entrée et à droite la sortie.
+ En haut, la densité de probabilité avec en nuance de gris le niveau de
+ probabilité d'avoir plus de succes avec cette case.
+ Au milieu, la variation de probabilité avec en nuance de gris le niveau
+ de variation.
+ En bas, les frequences harmoniques au cours du temps.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Mesure-de-la-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On obtient l'evolution de la distribution spatiale des entrée et des sorties
+ [Voir 
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "fig:Mesure-de-la-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+].
+ On observe que pour l'entrée, certaine position se stabilise à partir de
+ la 4eme génération, mais qu'il peut y avoir une alternance des positions
+ en quasi-limite avec des positions plus centrale.
+ Par contre, pour la sortie, les positions sont plus stable et se stabilise
+ completement à partir de la 5eme générations, la variation de la distribution
+ devient quasi-homogène et semble tendre à etre constant.
+ La variation de l'entrée est bien plus importante, on n'atteind pas d'homogénéi
+té, meme apres 10 cycles, ce qui semble montrer qu'il y a des positions
+ dominante, mais celle-ci oscilleront tout le temps entre plusieurs position
+ : la suite d'entrée est semble etre semi-alternée convergente.
+ La convergence de la suite semi-alternée pour chaque position d'entrée
+ 
+\begin_inset Formula $u_{n}$
+\end_inset
+
+ est verifié par le rayon de convergence 
+\begin_inset Formula $R_{n}$
+\end_inset
+
+ du critere de Leibnitz :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $\begin{array}{ccc}
+u_{n}=(-1)^{n}\epsilon_{n} & \Longleftrightarrow & R_{n}\leq\left|a_{n+1}\right|\end{array}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Comme la densité de sortie semble etre un invariant, et que l'entrée oscille
+ entre quelques position d'instabilité, on peut considerer qu'il n'influencera
+ pas trop fortement le processus de selection de reseau une fois stabilisé.
+ De meme l'ecart frequenciel des positions defini par la transformée de
+ fourier 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Formula $f_{j}=\sum_{k=0}^{n-1}x_{k}e^{-\frac{2\pi i}{n}jk}$
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ se stabilise (pas sur).
+ Ainsi les challenger qui hériterons de la densité de probabilité d'I/O
+ ne devrait pas influencer leur victoire par leurs propriétés d'entrée/sortie,
+ mais de la nouvelle structure aléatoire.
+ Cette hypothèse forte, sera vérifié dans les parties suivantes et plus
+ discutté en fin de partie.
+\end_layout
+
+\begin_layout Section
+Caractérisation de la connectivité du reseau de neurone
+\end_layout
+
+\begin_layout Standard
+Le reseau de neurone est défini comme un graphe orienté acyclique [
+\begin_inset CommandInset ref
+LatexCommand formatted
+reference "subsec:Construction-du-graphe"
+plural "false"
+caps "true"
+noprefix "false"
+
+\end_inset
+
+].
+ Comme celui-ci est généré aléatoirement, il est necessaire d'explorer l'etudes
+ de certain parametre de graphes pour caractériser s'il existe ou non des
+ propriétés dominantes au cours de la selection.
+ 
+\end_layout
+
+\begin_layout Standard
+Contrairement à la mesure de la densité, au cours de la selection, les agents
+ ayants les meilleurs scores sont selectionnées, mais, les nouvelles structures
+ sont defini aléatoirement comme à l'instant initial.
+ Les agents selectionnée subissent 5 mutations aléatoire, on cherche à mesurer
+ l'effet de la mutation sur la structure du reseau et la selection.
+ Pour cela, on peut representer l'ensemble des matrice adjacente ayant eu
+ le meilleurs resultats au cours des générations.
+ Le graphes etant dirigée acyclique, il n'y a pas de probleme de 
+\emph on
+clique
+\emph default
+ à prendre en compte.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_2_1.png
+	lyxscale 9
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Evolution des reseaux des 4 meilleurs agents par générations.
+ A gauche, de la premiere génération à la 5eme et à droite, de la 5eme à
+ la derniere génération.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On obtient ainsi un ensemble de grille de matrice adjancte de taille 
+\begin_inset Formula $N_{b}\times N_{g}$
+\end_inset
+
+, avec 
+\begin_inset Formula $N_{g},$
+\end_inset
+
+ le nombre de génération et 
+\begin_inset Formula $N_{b}$
+\end_inset
+
+, le nombre de meilleurs agents par génération.
+ On n'obsere pas de structure tres organisé dominante au dixieme cycle,
+ le reseau ne semble pas convergé vers une structure d'equilibre.
+ Pour autant, la matrice adjacente n'est pas suffisante pour avoir les informati
+ons des graphes, il est necessaire de verifier certain parametre si l'on
+ veut caractériser le reseau.
+ Pour cela, on va comparer les 
+\series bold
+indicateurs de centralité
+\series default
+, tel que les 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+degrées
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+proximité/excentricité
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph default
+intermédiarité
+\begin_inset Quotes erd
+\end_inset
+
+ et 
+\begin_inset Quotes eld
+\end_inset
+
+
+\emph on
+centralité propre
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\emph default
+entre les 4 meilleurs reseaux et les 4 pires reseaux au cours du temps.
+\end_layout
+
+\begin_layout Standard
+Le degré (ou valence) d'un sommet d'un graphe est le nombre de liens (arêtes
+ ou arcs) reliant ce sommet, avec les boucles comptées deux fois.
+ Il est défini pour un graphes orienté comme (...), tel que 
+\begin_inset Formula $deg(s)=d^{+}(s)+d^{-}(s)$
+\end_inset
+
+.
+ L'intermédiarité, 
+\emph on
+betweenness
+\emph default
+ en anglais, est une mesure de centralité d'un sommet d'un graphe.
+ Elle est égale au nombre de fois que ce sommet est sur le chemin le plus
+ court entre deux autres nœuds quelconques du graphe 
+\begin_inset Formula $g(v)=\sum_{s\neq v\neq t}\frac{\sigma_{st}(v)}{\sigma_{st}}$
+\end_inset
+
+ (...) .
+ La proximité, 
+\emph on
+closeness
+\emph default
+ en anglais, d'un nœud x est défini comme la somme des distances à tous
+ les autres nœuds, et la proximité est définie par Bavelas comme l'inverse
+ de l'éloignement 
+\begin_inset Formula $C(x)=\frac{1}{\sum_{y}d(y,x)}$
+\end_inset
+
+.
+ Enfin la centralité propre, ou 
+\emph on
+eigencentrality
+\emph default
+ en anglais, est une mesure de l'influence d'un noeud dans un réseau et
+ est défini par l'equation du vecteur propre de l'ensemble des voisin 
+\begin_inset Formula $x_{v}=\frac{1}{\lambda}\sum_{t}x_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_2_2.png
+	lyxscale 20
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Comparaison des indicateurs de centralité entre les meilleurs et les pire
+ agents.
+ Pour chaque graphe, en abscisse le temps, en ordonnée le parametre 
+\begin_inset Quotes eld
+\end_inset
+
+degree
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+betweeness
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+closeness
+\begin_inset Quotes erd
+\end_inset
+
+ et 
+\begin_inset Quotes eld
+\end_inset
+
+eigen
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Attention, les points sont tres proches, les effets de courbures sont accentué.
+ 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Comparaison-des-parametre"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ces différent indicateurs nous donnes l'evolution de la centralité des graphes
+ au cours des génération.
+ Elles sont des mesures censées capturer la notion d'importance dans un
+ graphe, en identifiant les sommets les plus significatifs indépendament
+ des algorithme d'apprentissage.
+ On obtient ainsi 4 courbes temporelles.
+ On remarque que les courbes de centralité propre et de degrée n'ont pas
+ d'impact significatif.
+ Par contre on observe 2 tendances différentes suivant l'indicateurs de
+ proximité et de d'intermédiarité : L'intermédiarité augmente, mais la proximité
+ diminu pour les agents ayant obtenu le plus grands score.
+ Ces deux indicateurs sont plus lié à la structure des chemins qu'au flux
+ de reseau.
+\end_layout
+
+\begin_layout Standard
+Ces deux observations implique que les reseaux les plus optimaux au dernier
+ instant sont plus efficasse si le chemins entre l'entrée et la sortie est
+ le plus longs possible, mais avec plus de proximité entre couches.
+ Pour autant, les données sont tres comprimé, ces indicateurs ne sont probableme
+nt pas tres correlé avec l'efficassité du reseau sur le long termes.
+\end_layout
+
+\begin_layout Section
+Caractérisation de la convergence évolutive
+\end_layout
+
+\begin_layout Standard
+Les deux observations precedante nous ont montré qu'il y a une correlation
+ entre la convergence des entrée et des sorties, mais qu'il n'y a pas de
+ convergence significative de la centralité du reseau de neurone.
+ Néanmoins, il est possible que la structure du reseau de neurone se conserve
+ et est un impact sur l'efficacité de resolution du probleme du jeu du chat
+ et la souris.
+ Pour cela, il est necessaire de suivre l'arbre des relation de parenté
+ entre les agents entre génération, c'est la phylogénése.
+ Chacun des nœuds de l'arbre représente l'ancêtre commun de ses descendants,
+ soit une 
+\begin_inset Quotes eld
+\end_inset
+
+fratrie
+\begin_inset Quotes erd
+\end_inset
+
+ de taille 
+\begin_inset Formula $N_{b}$
+\end_inset
+
+.
+ On associe à chaque noeud la valeur du score obtenu, puis on mesure la
+ distance qui sépare le premiere génération mere à la derniere génération
+ pour chaque branche du reseau.
+\end_layout
+
+\begin_layout Standard
+Cette approche consiste à resoudre un probleme de plus court chemin d'un
+ graphe orienté acyclique.
+ Tel qu'on minimise 
+\begin_inset Formula $\sum_{i,j\in A}w(i,j)x_{ij}$
+\end_inset
+
+, avec 
+\begin_inset Formula $w(i,j)$
+\end_inset
+
+, le cout de l'arc 
+\begin_inset Formula $\left(i,j\right)$
+\end_inset
+
+.
+ L'approche permet de quantifier le nombre de génération où une famille
+ d'agent arrive à etre conservé au cours du temps et à partir de combien
+ de génération, on observe un agents qui est le plus efficace quelque soit
+ l'ajout de nouveau challenger dans le processus evolutif.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_3_1.png
+	lyxscale 50
+	scale 150
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Arbres phylogenetique des agents en fonction de leurs score.
+ De haut en bas, les generation successive.
+ Les couleurs des noeud corresponde au score de l'agent à la fin de l'experience
+, leurs taille est proportionnele à leur nombre de descendance.
+ En rouge le meilleurs scores.
+ Les encadrés corresponde au catégorie d'agents : survivant, mutant et compétite
+urs.
+ (améliorer la representation graphique)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+En sommant l'ensemble des plus courts chemin, on obtient un reseau de flot,
+ où chaque arête correspond à celle qui a mener au plus de descendance.
+ On observe qu'un seul agent de la premiere génération a reussi à se maintenir
+ jusqu'a la derniere génération, celui ci a meme été le meilleurs de la
+ génération 5eme génération et deuxieme de la génération suivante, ce qui
+ l'a fait maintenir deux fois sans mutations.
+ Un agent 
+\begin_inset Quotes eld
+\end_inset
+
+challenger
+\begin_inset Quotes erd
+\end_inset
+
+ de la 4eme génération a reussi a se distinguer et se maintenir jusqu'a
+ la derniere génération.
+ Seul deux agents de la 4eme générations se sont maintenu jusqu'a la derniere,
+ mais ceux-ci domine à 50% la population d'agent à la derniere.
+ Meme apres la stabilisation des densité positionnel d'entrée et de sortie,
+ aucun agent challenger n'arrive à se maintenir plus d'une génération.
+ On remarque que l'agent ayant eu le meilleurs score de l'ensemble des parties
+ est apparu à la 2eme générations, mais celui-ci n'a pas tenu plus d'une
+ génération ensuite.
+\end_layout
+
+\begin_layout Standard
+On a donc 2 populations à la génération finale, pourtant, on aimerait savoir
+ par quel moyen, ces agents ont reussi à ce maintenir autant.
+ Est-ce qu'il y a une stategies mis en place par les agents pour rester
+ le plus longtemps proie, et le moins longtemps prédateurs ? Est ce qu'il
+ y a une strategie qui converge au fil des génération ? La convergence évolutive
+ est le résultat de mécanismes évolutifs ayant conduit des espèces, soumises
+ aux mêmes contraintes environnementales, ici le jeu du chat et la souris,
+ à adopter indépendamment plusieurs traits semblables.
+ Dans notre cas, pour deux reseau de neurone different, on aurait 2 stratégie
+ similaire.
+ Pour cela, on va mesurer pour les deux groupes agents de la derniere génération
+ ayant le plus grands ancetre, les mouvement recurant des agents par la
+ dispersion des trajectoire et la périodicité des actions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_3_2.png
+	lyxscale 20
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Convergence des strategie en fonction des embranchement les plus long :
+ mesure de la dispersion moyenne, position moyenne et schéma recurrance
+ (mouvement repeter de l'agent).
+ De gauche à droite, de celui qui a le plus d'ancetre à celui qui en a le
+ moins.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+On mesure l'angle des vecteurs de deplacement par l'arc tangente 
+\begin_inset Formula $\arctan(\frac{x}{y})$
+\end_inset
+
+.
+ Ces mesure montre qu'il y a convergence des mouvements des meilleurs agents,
+ où l'on observe que les agents oscillant entre mouvement statique (30%)
+ et mouvement en diagonal (70%) est favorisé au cours de l'evolution.
+ Néamoins, nous sommes en conditions de limites périodique ou l'adversaire
+ ne se déplace que sur les quatres directions 
+\begin_inset Formula $\left(\uparrow\downarrow\leftarrow\rightarrow\right)$
+\end_inset
+
+, ce qui donne un nette avantage à n'importe qu'elle reseau ne se déplaceant
+ qu'en diagonale.
+ D'autant plus que la condition limites periodique 
+\begin_inset Formula $mod(v,N)$
+\end_inset
+
+ permet d'envoyer l'agent à l'opposé de l'adversaire sans que lui puisse
+ le suivre car ne peut franchir la limite.
+\end_layout
+
+\begin_layout Standard
+Ces dernieres observations montre bien qu'il y a une stratégie dominante,
+ mais qu'un reseau quelquonque suffit pour resoudre se probleme, il est
+ necessaire de modifier les regles du jeu pour avoir un probleme plus optimal
+ :
+\end_layout
+
+\begin_layout Itemize
+Déplacement 
+\begin_inset Quotes eld
+\end_inset
+
+collision
+\begin_inset Quotes erd
+\end_inset
+
+ apres changement d'états (évite stabilisation).
+\end_layout
+
+\begin_layout Itemize
+Pénaliser l'agent si répétion du meme mouvement 
+\begin_inset Formula $N$
+\end_inset
+
+ fois (à définir) .
+\end_layout
+
+\begin_layout Itemize
+Pénaliser 
+\begin_inset Quotes eld
+\end_inset
+
+legerement
+\begin_inset Quotes erd
+\end_inset
+
+ l'agent s'il franchit la limite périodique de la grille.
+ (probleme : l'agent doit voir limite : si on pose un valeurs au bord, c'est
+ une condition limite semi-periodique)
+\end_layout
+
+\begin_layout Part*
+Discussion
+\end_layout
+
+\begin_layout Standard
+L'etudes de l'apparition de la vie et de la resolution des problemes d'apprentis
+sage font partie de deux domaines tres différents en science.
+ Pourtant, ces deux domaine ont souvent été impliqué l'un dans l'autre,
+ l'un dans l'analyse des données expériementales de probleme de regression,
+ classification et partitionnement (correlation de gene, transcriptome,
+ etc, [source]), l'autre dans l'inspiration pour creer des modeles d'apprentissa
+ge lié au reseau de neurone.
+ Ici on a vue un probleme qui lie les deux, comment les reseau de neurones
+ peuvent se structurer au cours de l'evolution ? Cette problematique permettrait
+ de modeliser l'apparition de vie intelligente, tout en creant de nouveaux
+ outils pour l'apprentissage non supervisé.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+CONTRAINTE GÉOMÉTRIQUE :
+\series default
+\emph default
+ Néamoins cette études peut comporter plusieurs contrainte limitante.
+ La premieres est directement lié à la géométrie des problemes d'automates
+ cellulaire dans des grilles 2D.
+ Lorsque les bord du haut sont relié à ceux du bas, et ceux de gauche, sont
+ relier à ceux de droite, on obtient des conditions limite périodique de
+ type géométrique torique.
+ Cette géométrie simple à mettre en oevre comporte plusieurs probleme ''LISTER
+ LES PROBLEMES + REF
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Une autre facons, serait soit d'avoir des d'autre lient entre les limites,
+ mais cela changerait completement la symetrie du probleme, tel que d'avoir
+ une grille avec des limites décallés comme un pavage, ou encore d'avoir
+ un rayon de limite, de facons à ce que le probleme corresponde à un cercle,
+ plutot qu'a un carré.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+VALLÉE DE STABILITÉ LIMITÉ :
+\series default
+\emph default
+ L'autre contrainte est lié au modele de construction du reseau : il ne
+ peut y avoir de suppression de couche de neurone.
+ Ce choix est motivé par le fait de ne pas destructurer completement la
+ topologie du reseau à chaque suppression de couche.
+ Mais en faisant cela, on se peut se retrouver avec des couches avantageuse
+ à une génération donnée, mais inutile voir desavantageuse à une génération
+ futur.
+ A cette génération, il est plus probable que l'agent soit plus efficasse
+ qu'un agent généré aléatoirement, on se retouve avec un probleme connu
+ en biologie evolutive : l'apparition de structure vestigiale.
+ Ces structures ne sont pas les plus optimale pour atteindre la vallé de
+ stabilité du probleme 
+\begin_inset Quotes eld
+\end_inset
+
+physique
+\begin_inset Quotes erd
+\end_inset
+
+ la plus basse, mais leurs suppression necessiterai trop de mutation, ce
+ qui ferait sortir l'agent de la vallé de stabilité obtenu par le reseau
+ de neurone.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+COMPORTEMENT DE TRICHE :
+\series default
+\emph default
+ Malgrés cela, on a obtenu une stratégie convergente au cours du processus
+ evolutif et cela pour deux reseau de neurone différents.
+ Néamoins le faite que le probleme soit de condition limite periodique et
+ que l'adversaire ne peut pas se déplacer en diagonale, on se retrouve avec
+ un artefact de trajectoire.
+ En effet, l'agent est favorisé s'il fuit la grille suivant une trajectoire
+ diagonale.
+ Ce critere est donc à prendre en considération pour ne pas surinterpreter
+ les resultats.
+ Cette observation de 
+\begin_inset Quotes eld
+\end_inset
+
+triche
+\begin_inset Quotes erd
+\end_inset
+
+ du reseau de neurone dans le cadre d'apprentissage par renforcement n'est
+ pas quelque chose d'inconnu.
+ En effet, plusieurs modeles, comme le NEAT peuvent générer des structures
+ qui exploite les failles d'un jeu, comme le cas ou l'agent tourne en rond
+ entre l'arrivé et le départ dans un jeu de course, ou encore l'araignée
+ qui marche à l'envers pour optimiser sa marche [ref].
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+VERS UNE SYSTÉMISATION :
+\series default
+\emph default
+ L'optimisation de la structure du reseau est un probleme qui pourrait etre
+ plus envisagé dans l'avenir des reseaux de neurones.
+ Comme on l'a vu, il existe déjà des modèle qui optimise la structure comme
+ NEAT, mais il en exite d'autre.
+ Pour ne citer que lui, il y a le modele GNN, 
+\emph on
+Graph Neural Network
+\emph default
+, celui-ci est par contre reservé à l'analyse des graphes.
+ Le modele GNN va construire un sous-graphe resultant de la convolution
+ de plusieurs graphes à étudier, ce sous graphes correspond au reseau de
+ neurone le plus optimisé pour donner les informations d'un graphes de grande
+ taille [Jie Zhou 2020].
+ Dans notre cas, nous avons utilisé un processus evolutif qui va changer
+ les connections entre couches uniquement, pour n'importe qu'elle type d'informa
+tion d'entree, meme les graphes [articles maximilien, vectorisation graph].
+ Néamoins, il est possible de rendre notre modele modulaire, en effet, il
+ peut-y avoir un niveau supplementaire de connection si celui ci contient
+ plus de fonction, ou que les entrée change au cours du temps, comme par
+ exemple le cas de l'etude l'evolution de la morphologie [Michał Joachimczak
+ 2015 : passe science trouvaille].
+ On aurait plusieurs fonction defini evolutivement via notre modele, ceux
+ ci serait lié à des sortie d'action, mais aussi quelque connection entre
+ module neuronaux, elle meme générer par un processus evolutif similaire.
+ L'ensemble formerai ce qu'on pourrait appeller un système.
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+VERS DES MODELS COMPLETS :
+\series default
+\emph default
+ Notre modele repond à la question : Comment constuire un reseau de neurone
+ où aussi bien la structure que le processus d'apprentissage pour que soit
+ fonctionnalisé ? Cela reste dans le cadre d'un systeme capable d'apprentissage
+ évolutif, mais la pour le completer, il faudrait que le systeme s'auto-entretie
+nne, et pour cela, il faudrait ajouter la notion de nourriture/nutriment.
+ De plus, nos agent sont indépendant les uns des autres, ce qui ne reproduit
+ pas ce qu'il se passerait dans un écosysteme réel.
+ On pourra ainsi avoir une mesure de la valeurs selective, ou 
+\series bold
+\emph on
+fitness
+\series default
+\emph default
+ en anglais.
+ Pour completer l'approche, on faudrait creer un environment ou l'ensemble
+ des agents y serait contenu et où leurs survie et reproduction serait inclu
+ dans les regles du jeu.
+ On peut penser le cas, ou il y a des agents et de la nouriture distribuer
+ aléatoirement avec des 
+\begin_inset Quotes eld
+\end_inset
+
+taille/ressousce
+\begin_inset Quotes erd
+\end_inset
+
+ différente.
+ Lorsqu'un agent prend de la nouriture, il gagne en taille jusqu'a sa limite,
+ et s'il double en quantité de ressource, il va engendrer une descendance
+ avec une mutation.
+ Si l'agent rencontre un autre agent plus grand que lui, celui ci peut lui
+ faire perdre des ressources jusqu'a sa disparition et réciproquement.
+ L'environment contiendrait un certain nombre limité d'agent, ou lorsque
+ se nombre diminu, il y a une certaine probabilité de génération spontanée
+ d'agent contenant certaine propriété optimal des agents precedant, et si
+ celui ci dépasse, un des agents avec le moins de succes evolutif meurt
+ aléatoirement, on qualifierai cela d'accident.
+ Le nombre de ressource dans l'environement apparaitrait par génération
+ spontanée et serait plus probable que la génération spontanée d'agent.
+ Ce type de modele semble favoriser la compétition du plus fort, il serait
+ interessant de voir si l'on observe des comportements de coopération émerger.
+ Aussi, on pourrait ajouter de la complexité au modele en rajoutant des
+ regles connu en science sociale, comme la dynamique de ségregation lié
+ à l'erreur fondamental d'attribution [Polygon, SCHELLING 1971 + Attribution],
+ les mouvement collectif et l'exploration [Vicsek], le dilemme du prisonnier
+ lié à la coopération [Donnant-donnant], les contrainte géographique et
+ de langues [Braudel, Marshall], ou encore, l'héritage culturel [Bourdieu].
+ Ces outils pourrait etre interessant pour des simulations de vie et pour
+ mieux comprendre l'emergence des structure sociale [Strauss, Sim's].
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\emph on
+VERS UNE GÉNÉRALISATION :
+\series default
+\emph default
+ Pour aller plus loin, notre modele de structuration neuronal peut etre
+ utiliser dans le cadre d'un probleme plus pratique et plus simple : la
+ fonctionnalisation de la classification.
+ En effet, il est possible d'utiliser une version 
+\begin_inset Formula $\beta$
+\end_inset
+
+ implémenté et modulaire de notre modele dans le cas d'un probleme d'analyse
+ de données.
+ Les nombres de reseaux aléatoire par processus d'apprentissage sont appellé
+ des graines, à l'image des methodes de partitionnelent.
+ Celui ci s'utilise de cette facons en Python :
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+import functional_fillet as ff
+\end_layout
+
+\begin_layout Plain Layout
+
+# init
+\end_layout
+
+\begin_layout Plain Layout
+
+model = ff.model(BATCH_SIZE, NB_GEN, NB_SEEDER)
+\end_layout
+
+\begin_layout Plain Layout
+
+# training
+\end_layout
+
+\begin_layout Plain Layout
+
+model.fit(DATA, LABEL)
+\end_layout
+
+\begin_layout Plain Layout
+
+# predict
+\end_layout
+
+\begin_layout Plain Layout
+
+result = model.predict(DATA_NEW)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+L'avantage de cela est qu'on peut aussi comparer l'efficacité de notre reseau
+ evolutif 
+\begin_inset Quotes eld
+\end_inset
+
+structuré
+\begin_inset Quotes erd
+\end_inset
+
+ avec un reseau de neurone classique predefini.
+ Un base de donnée simple et qui ne dispose pas d'un nombre elevé d'etiquette
+ est le jeux de donnée MNIST, adapté pour la reconnaissance de chiffre sur
+ une image.
+ Il sera possible ensuite d'analyser l'effet de différent parametre comme
+ la taille du 
+\begin_inset Quotes eld
+\end_inset
+
+batch
+\begin_inset Quotes erd
+\end_inset
+
+ et la taille du nombre de graine par génération.
+ Il sera aussi possible d'etudier la vitesse d'apprentissage d'un reseau
+ : Est ce qu'un reseau tres adapté à un probleme apprend vite au debut,
+ mais atteint un plafond moins optimale qu'un reseau moins adapté au debut,
+ mais à la suite devient plus performant ? Cette question de comparasion
+ entre le cycle d'hérédité et cycle d'entrainement est un probleme ouvert
+ et pourra etre abordé dans le cadre d'un futur projet.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "BIBLIO/LIBRARY"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
