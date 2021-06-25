@@ -43,9 +43,10 @@
 \use_package stackrel 1
 \use_package stmaryrd 1
 \use_package undertilde 1
-\cite_engine basic
-\cite_engine_type default
+\cite_engine biblatex
+\cite_engine_type authoryear
 \biblio_style plain
+\biblatex_bibstyle authoryear
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
@@ -100,8 +101,8 @@ F.
 \begin_layout Abstract
 L'idée de vie artificielle remonte au année 1940 par principe d'autoréplication,
  meme époque ou les concepts sur l'intelligence artificielle sont crées.
- Nous proposons un modele à définition incomplete, mais suffisante pour
- etudier la fonctionnalisation des structure cerebrale lors de l'evolution.
+ Nous proposons un modele à définition incomplete, mais utile pour etudier
+ la fonctionnalisation des structure cerebrale lors de l'evolution.
  On combine l'apprentissage par renforcement et la modification aléatoire
  des connections intercouche.
  Pour tester notre modele, le jeu du chat et la souris est un exemple de
@@ -132,66 +133,77 @@ Introduction
 
 \begin_layout Standard
 La vie est apparu il y a 3,8 milliards d'année et n'a pas cessé d'évoluer
- et de coloniser l'environnement 
+ et de coloniser l'environnement [
 \begin_inset CommandInset citation
-LatexCommand cite
+LatexCommand citet
 key "huxley_evolution_1942"
 literal "false"
 
 \end_inset
 
-.
- Elle a commencer de maniere unicellulaire sans noyau 
+].
+ Elle a commencer de maniere unicellulaire sans noyau [
 \begin_inset CommandInset citation
-LatexCommand cite
+LatexCommand citet
 key "buick_when_2008,mojzsis_evidence_1996"
 literal "false"
 
 \end_inset
 
-, à un large panel de forme avec l'appartition du noyau 
+], à un large panel de forme avec l'appartition du noyau [
 \begin_inset CommandInset citation
-LatexCommand cite
+LatexCommand citet
 key "hedges_molecular_2004,knoll_ediacaran_2006"
 literal "false"
 
 \end_inset
 
- et de la multicellularité 
+] et de la multicellularité [
 \begin_inset CommandInset citation
-LatexCommand cite
+LatexCommand citet
 key "bonner_origins_1998"
 literal "false"
 
 \end_inset
 
-, et en parallele, l'apparition du potentiel d'action [ref] suivi d'une
- explosion de des variétés des systeme nerveux [ref], avec plus recement
- les systeme centraux [ref].
+], et en parallele, l'apparition du potentiel d'action [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "matthews_neurobiology_2000"
+literal "false"
+
+\end_inset
+
+] suivi d'une explosion de des variétés des systeme nerveux [Anctil, Michel
+ (2015)], avec plus recement les systeme centraux [Child, Charles Manning.
+ (1921)].
  Pour autant, il est assez difficiele de definir ce qui est vraiment vivant
  et cette question est toujours débatu.
  L'une des definition les plus simple est celle donnée par la NASA lors
  des programme de recherche de vie extra-terrestre : Un systeme chimique
- auto-entretenu capable d'évolution darwinienne.
+ auto-entretenu capable d'évolution darwinienne [NASA].
  L'evolution darwinienne est un principe fondamentale dans l'etude des systeme
  complexe disposant d'heredité, de variation et de selection.
  On ne le retrouve pas seulement en biologie, mais on peut l'obervers dans
  l'evolution des courants musicaux, artistique, philosophique, technologique,
- societal et culturel [ref].
+ societal et culturel [Daniel H.
+ Chitwood 2014, Deborah S.
+ Rogers 2007].
  Une autres définition de la Vie existe, et elle est plus lié à l'une des
  transformation thermodynamique fondamentale : L'entropie.
  La vie serait : Une structure dissipative capable d'auto-catalyse, d'homéostati
-e et d'apprentissage 
+e et d'apprentissage [
 \begin_inset CommandInset citation
-LatexCommand cite
+LatexCommand citet
 key "bartlett_defining_2020"
 literal "false"
 
 \end_inset
 
-.
+].
  Ce qui diminu localement l'entropie en favorisant l'auto-organisation.
- Mais ces deux definitions se restreigne à un systeme 
+ Meme si tout probleme n'est pas définissable, ces deux definitions se restreign
+e à un systeme 
 \begin_inset Quotes eld
 \end_inset
 
@@ -200,11 +212,11 @@ chimique
 \end_inset
 
 , est ce qu'un robot dotée d'une intelligence, voirent d'emotion humaine
- serait vivant dans cette définition ? (tout probleme n'est pas définissable).
- Aujourd'hui, il existe un grand nombre de simulation de vie sur ordinateurs
- (liste de 2-3) et certaine sont encore en cours d'execution depuis 1990.
- Et sont d'une grande importance pour comprendre l'emergence de la vie (avec
- les experiences de cellules minimaliste)
+ serait vivant dans cette définition ? Aujourd'hui, il existe un grand nombre
+ de simulation de vie sur ordinateurs, comme par exemple Polyworld [Larry
+ Yaeger 1995], et sont avec la construction de cellules minimaliste [Julius
+ Fredens 2019], d'une grande importance pour comprendre l'emergence de la
+ vie.
 \end_layout
 
 \begin_layout Standard
@@ -231,7 +243,7 @@ un systeme capable d'apprentissage évolutif
  On se base sur deux outils : les automates cellulaires et les reseaux de
  neurones évolutifs.
  Les automates sont a l'origine des objets mathématique permettant de resoudre
- des probleme de decidabilité mathématique [Von Newman].
+ des probleme de decidabilité mathématique [Von Newman 1966].
  On en retrouva ensuite des utilisation experiementale comme le plus connu
  
 \begin_inset Quotes eld
@@ -242,7 +254,9 @@ jeu de la vie
 \end_inset
 
  [Conway], qui à partir de 2 regles simple, faire emerger une forte complexité,
- voir meme reproduire une machine de Turing [ref à revoir].
+ voir meme reproduire une machine de Turing par l'existence de porte logiques
+ [Elwyn R.
+ Berlekamp 2003].
  L'état d'une cellule au temps t+1 est fonction de l'état au temps t d'un
  nombre fini de cellules appelé son « voisinage ».
  Le probleme est donc une grille ou l'on a des case 
@@ -293,7 +307,7 @@ STATISTIQUE :
 \series default
 \emph default
  Les reseaux neuronaux ont ete construit à partir du modele de neurone biologiqu
-e, le neurone formel [McCulloch & Pitts], ou l'on constate qu'une neurone
+e, le neurone formel [McCulloch & Pitts 1960], ou l'on constate qu'une neurone
  est une fonction 
 \begin_inset Quotes eld
 \end_inset
@@ -303,21 +317,22 @@ affine
 \end_inset
 
  avec une fonction d'activation.
- Aujourd'hui il s'est rapproché des methodes statistique non inductive (descript
-ive : on ne sait pas la loi de probabilité) pour resoudre des probleme de
- régression, classification et partitionnement.
+ Aujourd'hui il s'est rapproché des methodes statistique non inductive pour
+ resoudre des probleme descriptif comme la régression, la classification
+ et le partitionnement.
  Les principaux outils d'analyse de grosse donnée en statistiques sont,
  pour ne citer que les plus connu : La PCA, analyse de composante principale,
  qui permet de projeter l'ensemble des points sur les regression multilinéaire
- des variable corrélé entre elle, ce qui reduit la dimension [Karl Pearson],
+ des variable corrélé entre elle, ce qui reduit la dimension [Karl Pearson
+ 1901].
  Les SVM, séparateurs à vaste marge, generalisant les classificateur linéaire
- par des vecteurs supports (théorie de la « régularisation statistique »
- + surapprentissage) [Vapnik] et enfin Le K-mean qui divise un ensemble
- de points par minimisation d'un certain nombre de graine barycentrique
- [Steinhauss, Llyod].
+ par des vecteurs supports, mais formalisant la régularisation statistique
+ et les concept de surapprentissage [Vapnik 1995].
+ Enfin Le K-mean qui divise un ensemble de points par minimisation d'un
+ certain nombre de graine barycentrique [Hans-Hermann Bock 2007].
  Tout ces outils encore utilisé aujourd'hui, sont peu à peu remplacé par
  des reseau de neurone vers 2000s apres le succes de l'apprentissage profond
- en compétition.
+ en compétition [Hinton 2007].
 \end_layout
 
 \begin_layout Standard
@@ -334,18 +349,18 @@ APPRENTISAGE :
  XOR ou connexité [Minsky 1969].
  Mais ce probleme fut resolu par les perceptron multicouche, mais cette
  fois la modification des poids était plus compliqué.
- C'est le systeme de retropropagtion du gradient [1984] qu'on retrouve aussi
- dans le cerveau [Stuart 1997] et l'algorithme du gradient, par minimisation
- itérative de l'erreurs, qui permit de resoudre ce probleme.
- En parallele, inspirer par les neurone moteurs de la vue, on devellopa
- les reseau de neurone convolutif qui reduit fortement le calcul des poids
- en entrée du reseau, car n'est pas entiereement connecté [Lecun, mais pas
- que].
+ C'est le systeme de retropropagtion du gradient [Rumelhart 1986] qu'on
+ retrouve aussi dans le cerveau [Stuart 1997] et l'algorithme du gradient,
+ par minimisation itérative de l'erreurs, qui permit de resoudre ce probleme.
+ En parallele, inspirer par les neurone moteurs de la vue [Hubel 1968],
+ on devellopa les reseau de neurone convolutif qui reduit fortement le calcul
+ des poids en entrée du reseau, car n'est pas entiereement connecté [Dan
+ Cireşan 2012].
  Le souci de ce genre de reseau est qu'il faut un grand nombre de donnée
  pour adapté les poids, pour reseoudre un probleme de decision markovien,
  il y eu l'apparition du Q-learning convergent par l'apprentissage des récompens
-e [Watkins 1989 Dayan 1992] qui ont encore était amélioré par des reseau
- adversariaux 
+e [Dayan 1992] qui ont encore était amélioré par des reseau adversariaux
+ 
 \begin_inset Quotes eld
 \end_inset
 
@@ -375,7 +390,7 @@ vanishing gradient
 \begin_inset Quotes erd
 \end_inset
 
-, surtout pour le traitement du texte.
+ [Hochreiter 1997], surtout pour le traitement du texte.
  Une autre catégorie de reseau est apparu dans la fin des années 1990, les
  reseau NEAT, ou les poids et les connexion sont 
 \begin_inset Quotes eld
@@ -385,17 +400,17 @@ appris
 \begin_inset Quotes erd
 \end_inset
 
- par un processus de selection.
+ par un processus de selection [Stanley 2002].
  Hors le cerveau n'a pas des poids qui ont été selectionné par l'evolution,
- mais ce qui est le cas la structure [Ref] dans la limite de la plasticité
- cerebrale des neurones à piques [WOLFGANG MAASS 1996].
+ mais ce qui est le cas la structure, dans la limite de la plasticité cerebrale
+ des neurones à piques [WOLFGANG MAASS 1996].
  L'idée est donc de s'impirer des donnée en neuroscience recente, ou il
  est montré le principe de fonctionnalisation cerebrale que le cerveau est
- pré-cablé pour voir certain danger ou encore marcher à la naissance [araignées
- Rakison, D.
+ pré-cablé pour voir certain danger ou encore marcher à la naissance [Rakison,
+ D.
  H.
- & Derringer, J 2008 et sommeil] et il n'y a pas eu besoin d'avoir un temps
- d'apprentissage long.
+ & Derringer, J 2008] et il n'y a pas eu besoin d'avoir un temps d'apprentissage
+ long, hormi le sommeil et son role dans la memoire [Björn Rasch 2013].
  A cette image, on a donc develloper un algorithme ou les couches interconnecté
  de maniere aléatoire de façon à fonctionnaliser le probleme 
 \begin_inset Quotes eld
@@ -481,7 +496,7 @@ Le perceptron est un algorithme d'apprentissage fonctionnant comme une fonction
  Une fonction de seuil est un classifieurs linéaire qui a pour entrée un
  vecteurs à valeurs réelle (virgule flottante) et une valeurs f(z) en sortie,
  qui peut etre suivant la fonction d'activation : binaire (Heaviside), reel
- (Sigmoid) ou entre les deux (ReLu).
+ (Sigmoid) ou entre les deux (ReLu) [Gupta 2020].
  Le perceptrons se represente par le produit scalaire entre le vecteurs
  d'entrée et le vecteurs poids des neurones, soit l'application multilinéaire
  suivante :
@@ -581,8 +596,9 @@ w
 \emph on
 regles delta
 \emph default
- [Russell Ingrid 2002] est la plus simple et consiste à comparer linéairement
- la valeurs obtenu par la sortie du reseau 
+ (Widrow-Hoff) est la plus adapté pour les probleme de descente de gradient
+ [Juergen Schmidhuber 2014] et consiste à comparer linéairement la valeurs
+ obtenu par la sortie du reseau 
 \series bold
 
 \begin_inset Quotes eld
@@ -632,7 +648,7 @@ Stochastic Gradiant Descent
 \begin_inset Quotes erd
 \end_inset
 
- plutot adapté à classification et 
+ plutot utilisé dans classification et 
 \begin_inset Quotes eld
 \end_inset
 
@@ -640,7 +656,7 @@ Adam
 \begin_inset Quotes erd
 \end_inset
 
- plutot adapté au problème de regression [ref car pas sûr].
+ plutot utilisé au problème de regression [Sebastian Ruder 2016].
 \end_layout
 
 \begin_layout Standard
@@ -831,7 +847,8 @@ b_{n}
 
 \begin_layout Standard
 Pour que l'algorithme mette à jours efficassement les poids du réseau, on
- utilise un certain lot de donnée d'apprentissage, qu'on appele 
+ utilise un certain lot de donnée d'apprentissage iterativement, qu'on appele
+ 
 \begin_inset Quotes eld
 \end_inset
 
@@ -848,9 +865,10 @@ mini-batch
 \begin_inset Quotes erd
 \end_inset
 
- pour eviter la sur-utilisation de la mémoire et augmente la vitesse de
- convergence de la vallé de stabilité, le taille du lot ne doit pas etre
- trop petit non plus car augmente le bruit [ref mini-batch].
+ stochastique pour eviter la sur-utilisation de la mémoire et augmente la
+ vitesse de convergence de la vallé de stabilité, le taille du lot ne doit
+ pas etre trop petit non plus car augmente le bruit [Krzysztof C.
+ Kiwiel 2001].
  Dans ce cas, le vecteurs d'entrée devient une matrice 
 \series bold
 
@@ -929,7 +947,9 @@ x = Layers(x)
 
 \begin_layout Standard
 Pour autant, les reseaux linéaire ne sont pas les seules à etres employé
- et ne sont pas forcement les plus adapté pour les problemes d'images [ref].
+ et ne sont pas forcement les plus adapté pour les problemes d'images [Dan
+ C.
+ Ciresan 2011].
  En effet, une image est une donnée 2D dont les données spatiale sont localement
  lié, mais les informations ne sont pas interconnecté, c'est pour cela qu'il
  existe les reseaux de convolution.
