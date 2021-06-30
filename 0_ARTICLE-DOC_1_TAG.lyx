@@ -26,7 +26,7 @@
 \graphics default
 \default_output_format default
 \output_sync 0
-\bibtex_command default
+\bibtex_command bibtex
 \index_command default
 \paperfontsize default
 \spacing single
@@ -46,7 +46,7 @@
 \cite_engine biblatex
 \cite_engine_type authoryear
 \biblio_style plain
-\biblatex_bibstyle authoryear
+\biblatex_bibstyle savetrees
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
@@ -99,32 +99,30 @@ F.
 \end_layout
 
 \begin_layout Abstract
-L'idée de vie artificielle remonte au année 1940 par principe d'autoréplication,
- meme époque ou les concepts sur l'intelligence artificielle sont crées.
- Nous proposons un modele à définition incomplete, mais utile pour etudier
- la fonctionnalisation des structure cerebrale lors de l'evolution.
- On combine l'apprentissage par renforcement et la modification aléatoire
- des connections intercouche.
- Pour tester notre modele, le jeu du chat et la souris est un exemple de
- choix pour etudier l'evolution des comportement basique de proie/predateurs,
- tout en etant assez complet pour une approche évolutive.
- Ces outils n'ont pas la prétentions de reproduire la vie sur ordinateurs,
- mais peuvent donner des idée, minime soit elle, pour l'optimisation des
- structure de reseau de neurones et d'avancer vers la creation de vie articiel.
- En effet, lors du processus d'apprentissage (evolution + descente de gradient),
- on on observe par l'apparition de structure et stratégie convergente.
- Ces structures sont conservé pendant un grand nombre de cycle alors meme
- que des reseau 
-\begin_inset Quotes eld
-\end_inset
-
-challenger
-\begin_inset Quotes erd
-\end_inset
-
- sont toujours ajouter à chaque cycle de reproduction.
- En dehors, on observe que ce type d'algorithme peut s'averer efficasse
- avec moins de neurone pour la classification MNIST.
+L'idée de vie artificielle remonte à 1940 avec le concept d'auto-réplication,
+ au même moment où les concepts sur l'intelligence artificielle ont été
+ créés.
+ Nous proposons un modèle à définition incomplète, mais utile pour étudier
+ la fonctionnalisation des structures cérébrales au cours de l'évolution.
+ Nous combinons l'apprentissage par renforcement et la modification aléatoire
+ des connexions intercouches pour résoudre un problème « fonctionnalisable
+ ».
+ Pour tester notre modèle, le jeu du chat et de la souris est un exemple
+ de choix pour étudier l'évolution du comportement simplifié « proie/prédateur
+ », tout en étant suffisamment complet pour une approche évolutive.
+ Ces outils ne prétendent pas reproduire la vie sur ordinateur, mais peuvent
+ donner des idées, pour l'optimisation des structures de réseaux de neurones
+ et pour avancer vers la création de vie artificielle.
+ En effet, lors du processus d'apprentissage via l'optimisation de la descente
+ de gradient par l'évolution des connexions du réseau, nous observons par
+ l'apparition de différentes structures, des stratégies convergentes pour
+ notre problème.
+ Ces structures sont conservées pendant un grand nombre de cycles alors
+ que même des réseaux « concurrents » sont toujours ajoutés à chaque cycle
+ de reproduction.
+ En plus, on observe que ce type d'algorithme peut s'avérer utile pour des
+ problèmes de classification, comme nous le proposons avec la base de données
+ MNIST.
 \end_layout
 
 \begin_layout Part*
@@ -132,7 +130,7 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-La vie est apparu il y a 3,8 milliards d'année et n'a pas cessé d'évoluer
+La vie est apparue il y a 3,8 milliards d’année et n’a pas cessé d'évoluer
  et de coloniser l'environnement [
 \begin_inset CommandInset citation
 LatexCommand citet
@@ -142,7 +140,7 @@ literal "false"
 \end_inset
 
 ].
- Elle a commencer de maniere unicellulaire sans noyau [
+ Elle a commencé de maniere unicellulaire sans noyau [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "buick_when_2008,mojzsis_evidence_1996"
@@ -150,7 +148,7 @@ literal "false"
 
 \end_inset
 
-], à un large panel de forme avec l'appartition du noyau [
+], à un large panel de forme avec l’apparition du noyau [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "hedges_molecular_2004,knoll_ediacaran_2006"
@@ -166,7 +164,9 @@ literal "false"
 
 \end_inset
 
-], et en parallele, l'apparition du potentiel d'action [
+].
+ En parallele, il y eu l'apparition du potentiel d'action, permettant la
+ communication entre cellules [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "matthews_neurobiology_2000"
@@ -174,7 +174,7 @@ literal "false"
 
 \end_inset
 
-] suivi d'une explosion de des variétés des systeme nerveux [
+], suivi de l'explosion de la diversité des systemes nerveux [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "anctil_dawn_2015"
@@ -182,7 +182,7 @@ literal "false"
 
 \end_inset
 
-], avec plus recement les systeme centraux [
+] et avec plus recement les systeme centraux [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "child_nervous_1921"
@@ -204,9 +204,9 @@ literal "false"
 \end_inset
 
 ].
- L'evolution darwinienne est un principe fondamentale dans l'etude des systeme
+ L'evolution darwinienne est un principe fondamental dans l'etude des systeme
  complexe disposant d'heredité, de variation et de selection.
- On ne le retrouve pas seulement en biologie, mais on peut l'obervers dans
+ On ne le retrouve pas uniquement en biologie, il se retrouve aussi dans
  l'evolution des courants musicaux, artistique, philosophique, technologique,
  societal et culturel [
 \begin_inset CommandInset citation
@@ -217,8 +217,16 @@ literal "false"
 \end_inset
 
 ].
- Une autres définition de la Vie existe, et elle est plus lié à l'une des
- transformation thermodynamique fondamentale : L'entropie.
+ Une autres définition de la 
+\begin_inset Quotes eld
+\end_inset
+
+Vie
+\begin_inset Quotes erd
+\end_inset
+
+ existe, et elle est plus lié à l'une des transformation thermodynamique
+ fondamentale : L'entropie.
  La vie serait : Une structure dissipative capable d'auto-catalyse, d'homéostati
 e et d'apprentissage [
 \begin_inset CommandInset citation
@@ -230,8 +238,15 @@ literal "false"
 
 ].
  Ce qui diminu localement l'entropie en favorisant l'auto-organisation.
- Meme si tout probleme n'est pas définissable, ces deux definitions se restreign
-e à un systeme 
+ Meme si tout probleme n'est pas définissable [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "james_lecture_1907"
+literal "false"
+
+\end_inset
+
+], ces deux definitions ce restreigne à un systeme 
 \begin_inset Quotes eld
 \end_inset
 
@@ -239,8 +254,9 @@ chimique
 \begin_inset Quotes erd
 \end_inset
 
-, est ce qu'un robot dotée d'une intelligence, voirent d'emotion humaine
- serait vivant dans cette définition ? Aujourd'hui, il existe un grand nombre
+.
+ Est ce qu'un robot dotée d'une intelligence, d'emotion, voire de conscience,
+ serait vivant avec ces définition ? Aujourd'hui, il existe un grand nombre
  de simulation de vie sur ordinateurs, comme par exemple Polyworld [
 \begin_inset CommandInset citation
 LatexCommand citet
@@ -249,7 +265,7 @@ literal "false"
 
 \end_inset
 
-], et sont avec la construction de cellules minimaliste [
+], et sont, avec la construction de cellules minimaliste [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "fredens_total_2019"
@@ -280,7 +296,8 @@ un systeme capable d'apprentissage évolutif
 
  pour en developper les outils futurs.
  Pour cela on a creer un enviromment de jeu simple : le jeu du chat et la
- souris, alternant ainsi deux comportements : proie/prédateur.
+ souris, alternant ainsi deux comportements : L'attaque d'un prédateur et
+ la fuite d'une proie.
  On se base sur deux outils : les automates cellulaires et les reseaux de
  neurones évolutifs.
  Les automates sont a l'origine des objets mathématique permettant de resoudre
@@ -414,7 +431,7 @@ literal "false"
 \end_inset
 
 ].
- Enfin Le K-mean qui divise un ensemble de points par minimisation d'un
+ Enfin, le K-mean qui divise un ensemble de points par minimisation d'un
  certain nombre de graine barycentrique [
 \begin_inset CommandInset citation
 LatexCommand citet
@@ -426,7 +443,7 @@ literal "false"
 ].
  Tout ces outils encore utilisé aujourd'hui, sont peu à peu remplacé par
  des reseau de neurone vers 2000s apres le succes de l'apprentissage profond
- en compétition [
+ lors des compétition de classification d'objets sur des images [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "hinton_learning_2007"
@@ -454,8 +471,9 @@ literal "false"
 \end_inset
 
 ] qui modifier simplemnt la valeurs des coefficient synaptique d'un reseau
- simple couche, il eue un declin en fin 1970 par l'impossibilité de reseont
- probleme non linéaire XOR ou connexité [
+ simple couche.
+ Il eue un declin en fin 1970 par l'impossibilité de résoudre des probleme
+ non linéaire XOR ou de connexité [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "minsky_perceptrons_1988"
@@ -518,8 +536,9 @@ literal "false"
 \end_inset
 
 ].
- Pour resoudre un probleme de decision markovien, il y eu l'apparition du
- Q-learning convergent par l'apprentissage des récompense [
+ Pour resoudre un probleme de transition d'états stochastique, dit de decision
+ markovien, il y eu l'apparition du Q-learning convergent par l'apprentissage
+ des récompense [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "watkins_q-learning_1992"
@@ -527,7 +546,9 @@ literal "false"
 
 \end_inset
 
-] qui ont encore était amélioré par des reseau adversariaux 
+].
+ Ces reseau, à l'image des reseau génératif, ont encore était amélioré par
+ des reseau adversariaux 
 \begin_inset Quotes eld
 \end_inset
 
@@ -535,8 +556,7 @@ actor-critic
 \begin_inset Quotes erd
 \end_inset
 
- à l'image des reseau génératif, il permette d'accelerer la convergence
- des poids [
+ et permette d'accelerer la convergence des poids [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "konda_onactor-critic_2003"
@@ -568,12 +588,12 @@ vanishing gradient
  [
 \begin_inset CommandInset citation
 LatexCommand citet
-key "hochreiter_long_1997"
+key "hochreiter_long_1997,vaswani_attention_2017"
 literal "false"
 
 \end_inset
 
-], surtout pour le traitement du texte.
+], en particulier pour le traitement du texte.
  Une autre catégorie de reseau est apparu dans la fin des années 1990, les
  reseau NEAT, ou les poids et les connexion sont 
 \begin_inset Quotes eld
@@ -5225,7 +5245,6 @@ batch
 LatexCommand bibtex
 btprint "btPrintCited"
 bibfiles "BIBLIO/LIBRARY"
-options "plain"
 
 \end_inset
 
