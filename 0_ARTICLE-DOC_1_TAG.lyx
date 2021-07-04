@@ -451,7 +451,8 @@ literal "false"
 
 \end_inset
 
-].
+] et l'augmentation de la puissance de calcul des processeurs [Moore 1975]
+ .
 \end_layout
 
 \begin_layout Standard
@@ -820,7 +821,82 @@ x = Layers(x)
 \begin_layout Standard
 Le perceptrons est un classifieurs linéaire, il converge uniquement si l'ensembl
 e des donnée d'entrée sont linéairement séparable (droite).
- Mettre à jours les poids 
+ Lorsqu'on place à la suite plusieurs sequence de neurones, on obtient un
+ classificateurs polynomiale (à détailler).
+ Tel que :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $y=\ocircle_{n}w_{i}.x_{n}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cette operation revient à une suite de composition de fonction ...
+ Correspond à la formation d'un graphe computationnel.
+\end_layout
+
+\begin_layout Standard
+Code PyTorch :
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="1" columns="1">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Layers = nn.ModuleList([nn.Sequential(nn.Linear(1, 1), nn.ReLU())
+\end_layout
+
+\begin_layout Plain Layout
+
+                        nn.Sequential(nn.Linear(1, 1), nn.ReLU()])
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+x = 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mettre à jours les poids 
 \series bold
 
 \begin_inset Quotes eld
@@ -879,6 +955,19 @@ on tout aussi simple (Least Mean Square), mais ici présenté, la regle delta
 \begin_layout Standard
 \align center
 \begin_inset Formula $w_{i}(t+1)=w_{i}(t)+(d-z)x_{i}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Lorsqu'on a une suite de neurone, pour remonter, on a ...
+ descente de gradient ..., soit :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Formula $\frac{\partial}{\partial x}$
 \end_inset
 
 
