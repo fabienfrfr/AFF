@@ -451,8 +451,15 @@ literal "false"
 
 \end_inset
 
-] et l'augmentation de la puissance de calcul des processeurs [Moore 1975]
- .
+] et l'augmentation de la puissance de calcul des processeurs [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "moore_progress_2006"
+literal "false"
+
+\end_inset
+
+] .
 \end_layout
 
 \begin_layout Standard
@@ -822,7 +829,7 @@ x = Layers(x)
 Le perceptrons est un classifieurs linéaire, il converge uniquement si l'ensembl
 e des donnée d'entrée sont linéairement séparable (droite).
  Lorsqu'on place à la suite plusieurs sequence de neurones, on obtient un
- classificateurs polynomiale (à détailler).
+ classificateurs linéairement composée (à détailler).
  Tel que :
 \end_layout
 
@@ -863,12 +870,7 @@ status open
 
 \begin_layout Plain Layout
 
-Layers = nn.ModuleList([nn.Sequential(nn.Linear(1, 1), nn.ReLU())
-\end_layout
-
-\begin_layout Plain Layout
-
-                        nn.Sequential(nn.Linear(1, 1), nn.ReLU()])
+Layers = nn.ModuleList([nn.Linear(10, 10) for i in range(10)])
 \end_layout
 
 \begin_layout Plain Layout
@@ -877,7 +879,12 @@ Layers = nn.ModuleList([nn.Sequential(nn.Linear(1, 1), nn.ReLU())
 
 \begin_layout Plain Layout
 
-x = 
+for i, l in enumerate(self.Layers):
+\end_layout
+
+\begin_layout Plain Layout
+
+            x = self.Layers[i // 2](x) + l(x)
 \end_layout
 
 \end_inset
@@ -962,12 +969,17 @@ on tout aussi simple (Least Mean Square), mais ici présenté, la regle delta
 
 \begin_layout Standard
 Lorsqu'on a une suite de neurone, pour remonter, on a ...
- descente de gradient ..., soit :
+ descente de gradient ..., soit à chaque itération, on calcul le gradient de
+ chaque couche entre t-1 et t+1, et on remonte vers les premieres couche,
+ c'est le processus de retropropagation (simplifier) du gradient :
 \end_layout
 
 \begin_layout Standard
 \align center
-\begin_inset Formula $\frac{\partial}{\partial x}$
+\begin_inset Formula $\begin{cases}
+\frac{\partial}{\partial x} & gradient\\
+ & retroprop
+\end{cases}$
 \end_inset
 
 
@@ -985,7 +997,7 @@ Stochastic Gradiant Descent
 \begin_inset Quotes erd
 \end_inset
 
- plutot utilisé dans classification et 
+ et 
 \begin_inset Quotes eld
 \end_inset
 
@@ -993,7 +1005,7 @@ Adam
 \begin_inset Quotes erd
 \end_inset
 
- plutot utilisé au problème de regression [
+, plutot utilisé dans regression et classification [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "ruder_overview_2017"
