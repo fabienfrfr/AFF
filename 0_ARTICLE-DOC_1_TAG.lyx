@@ -560,7 +560,11 @@ literal "false"
 \begin_inset Quotes eld
 \end_inset
 
+
+\emph on
 actor-critic
+\emph default
+
 \begin_inset Quotes erd
 \end_inset
 
@@ -615,6 +619,15 @@ appris
 \begin_inset CommandInset citation
 LatexCommand citet
 key "stanley_evolving_2002"
+literal "false"
+
+\end_inset
+
+] et les reseaux de Kononen, ou des stimuli de même nature excitent une
+ partition d'une grille de neurones pour reorganiser la structure [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "kohonen_self-organized_1982"
 literal "false"
 
 \end_inset
@@ -829,8 +842,7 @@ x = Layers(x)
 Le perceptrons est un classifieurs linéaire, il converge uniquement si l'ensembl
 e des donnée d'entrée sont linéairement séparable (droite).
  Lorsqu'on place à la suite plusieurs sequence de neurones, on obtient un
- classificateurs linéairement composée (à détailler).
- Tel que :
+ classificateurs à composition linéaire, tel que :
 \end_layout
 
 \begin_layout Standard
@@ -842,8 +854,13 @@ e des donnée d'entrée sont linéairement séparable (droite).
 \end_layout
 
 \begin_layout Standard
-Cette operation revient à une suite de composition de fonction ...
- Correspond à la formation d'un graphe computationnel.
+Cette operation revient à une suite de composition de fonction, ou à chaque
+ couche, les donnée d'entrée non linéaire se déforme à chaque étapes par
+ transformation linéaire.
+ L'ensemble des petites déformation transforme les données d'entrée pour
+ etre linéairement séparable en sortie de reseau.
+ Ce type d'opération à la suite revient numériquement à la construction
+ d'un graphe computationnel.
 \end_layout
 
 \begin_layout Standard
@@ -870,7 +887,7 @@ status open
 
 \begin_layout Plain Layout
 
-Layers = nn.ModuleList([nn.Linear(10, 10) for i in range(10)])
+Layers = nn.ModuleList([nn.Linear(1, 1) for i in range(10)])
 \end_layout
 
 \begin_layout Plain Layout
@@ -884,7 +901,7 @@ for i, l in enumerate(self.Layers):
 
 \begin_layout Plain Layout
 
-            x = self.Layers[i // 2](x) + l(x)
+            x = self.Layers[i](x) # == l(x)
 \end_layout
 
 \end_inset
@@ -968,17 +985,27 @@ on tout aussi simple (Least Mean Square), mais ici présenté, la regle delta
 \end_layout
 
 \begin_layout Standard
-Lorsqu'on a une suite de neurone, pour remonter, on a ...
- descente de gradient ..., soit à chaque itération, on calcul le gradient de
- chaque couche entre t-1 et t+1, et on remonte vers les premieres couche,
- c'est le processus de retropropagation (simplifier) du gradient :
+Lorsqu'on a une suite de neurone, on appelle cette relation sur l'ensemble
+ du reseau, la descente de gradient.
+ Cette derniere est dite stochastique lorsqu'on introduit un terme de variaton
+ aléatoire et permet de trouver un minimum grobal plus efficassement.
+ Le calcul de l'erreur global est assez complexe si le reseau de neurone
+ est grand.
+ C'est pour cela qu'il existe des methode ou l'on remonte l'erreur de sortie
+ vers l'entrée pour trouver l'ensemble des minimums locaux.
+ On parle alors de retropropagation du gradient, qui revient à chaque iteraton
+ de calculer le gradient de chaque couche entre t-1 et t+1 par le produit
+ tensoriel symmetrique de la couche prededante.
+ Pour le cas d'un seul neurone par couche, le produit tensoriel, n'est autre
+ qu'une multiplication.
+ Dans un cas plus général, on a :
 \end_layout
 
 \begin_layout Standard
 \align center
 \begin_inset Formula $\begin{cases}
-\frac{\partial}{\partial x} & gradient\\
- & retroprop
+w\leftarrow w-\eta\left[\frac{\partial R(w)}{\partial w}+\frac{\partial L(w_{i})}{\partial w}\right] & Gradient\\
+\delta^{x,l}\leftarrow((w^{l+1})^{T}\delta^{x,l+1})\odot\sigma^{,}(z^{x,l}) & BackProp
 \end{cases}$
 \end_inset
 
@@ -1005,7 +1032,7 @@ Adam
 \begin_inset Quotes erd
 \end_inset
 
-, plutot utilisé dans regression et classification [
+, plutot utilisé dans les problemes de regression et de classification [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "ruder_overview_2017"
