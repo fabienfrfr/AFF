@@ -857,6 +857,16 @@ e des donnée d'entrée sont linéairement séparable (droite).
 Cette operation revient à une suite de composition de fonction, ou à chaque
  couche, les donnée d'entrée non linéaire se déforme à chaque étapes par
  transformation linéaire.
+ C'est l'equivalent de l'astuce du noyau qui remplace un produit scalaire
+ par une fonction d'estimation pour obtenir un probleme linéaire [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "aizerman_theoretical_1964"
+literal "false"
+
+\end_inset
+
+].
  L'ensemble des petites déformation transforme les données d'entrée pour
  etre linéairement séparable en sortie de reseau.
  Ce type d'opération à la suite revient numériquement à la construction
@@ -985,8 +995,9 @@ on tout aussi simple (Least Mean Square), mais ici présenté, la regle delta
 \end_layout
 
 \begin_layout Standard
-Lorsqu'on a une suite de neurone, on appelle cette relation sur l'ensemble
- du reseau, la descente de gradient.
+Lorsqu'on a une suite de neurone, on appelle la variation de cette relation
+ sur l'ensemble du reseau, la descente de gradient, car on calcul le différentie
+l entre t+1 et t.
  Cette derniere est dite stochastique lorsqu'on introduit un terme de variaton
  aléatoire et permet de trouver un minimum grobal plus efficassement.
  Le calcul de l'erreur global est assez complexe si le reseau de neurone
@@ -994,10 +1005,18 @@ Lorsqu'on a une suite de neurone, on appelle cette relation sur l'ensemble
  C'est pour cela qu'il existe des methode ou l'on remonte l'erreur de sortie
  vers l'entrée pour trouver l'ensemble des minimums locaux.
  On parle alors de retropropagation du gradient, qui revient à chaque iteraton
- de calculer le gradient de chaque couche entre t-1 et t+1 par le produit
+ de calculer le gradient de chaque couche entre t et t+1 par le produit
  tensoriel symmetrique de la couche prededante.
  Pour le cas d'un seul neurone par couche, le produit tensoriel, n'est autre
- qu'une multiplication.
+ qu'une multiplication provenant de la dérivée des fonctions composée 
+\begin_inset Formula $\sigma$
+\end_inset
+
+, la fonction d'activation, avec 
+\begin_inset Formula $\delta$
+\end_inset
+
+, les biais pour chaque couche.
  Dans un cas plus général, on a :
 \end_layout
 
