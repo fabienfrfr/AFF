@@ -15,3 +15,9 @@ Tree structure :
 * * * * GRAPH_EAT.py
 * * * * * GRAPH_GEN.py
 * * * * pRNN_GEN.py
+
+
+### LYX GRAMMAR-CHECKER
+
+https://github.com/languagetool-org/languagetool
+https://github.com/gmatht/lyx-gc
