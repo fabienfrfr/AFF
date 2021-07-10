@@ -9,7 +9,7 @@
 \maintain_unincluded_children false
 \language english
 \language_package default
-\inputencoding auto
+\inputencoding utf8
 \fontencoding global
 \font_roman "default" "default"
 \font_sans "default" "default"
@@ -310,7 +310,7 @@ literal "false"
 \end_inset
 
 ].
- On en retrouva ensuite des utilisation experiementale comme le plus connu
+ On en retrouva ensuite des utilisation experimentale comme le plus connu
  
 \begin_inset Quotes eld
 \end_inset
@@ -338,8 +338,8 @@ literal "false"
 \end_inset
 
 ].
- L'état d'une cellule au temps t+1 est fonction de l'état au temps t d'un
- nombre fini de cellules appelé son « voisinage ».
+ Dans notre cas, l'état d'une cellule au temps t+1 est fonction de l'état
+ au temps t d'un nombre fini de cellules appelé son « voisinage ».
  Le probleme est donc une grille ou l'on a des case 
 \begin_inset Quotes eld
 \end_inset
@@ -377,7 +377,15 @@ vue
 \begin_inset Quotes erd
 \end_inset
 
- de l'automate que les actions ou la structure du réseau.
+ de l'automate que les 
+\begin_inset Quotes eld
+\end_inset
+
+actions
+\begin_inset Quotes erd
+\end_inset
+
+ ou la structure du réseau.
 \end_layout
 
 \begin_layout Standard
@@ -421,7 +429,7 @@ literal "false"
 
 ].
  Les SVM, séparateurs à vaste marge, generalisant les classificateur linéaire
- par des vecteurs supports, mais formalisant la régularisation statistique
+ par des vecteurs supports, et formalisant la régularisation statistique
  et les concept de surapprentissage [
 \begin_inset CommandInset citation
 LatexCommand citet
@@ -635,7 +643,7 @@ literal "false"
 ].
  Hors le cerveau n'a pas des poids qui ont été selectionné par l'evolution,
  mais ce qui est le cas la structure, dans la limite de la plasticité cerebrale
- des neurones à piques [
+ des neurones à piques/impulsion [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "maass_networks_1997"
@@ -645,8 +653,8 @@ literal "false"
 
 ].
  L'idée est donc de s'impirer des donnée en neuroscience recente, ou il
- est montré le principe de fonctionnalisation cerebrale que le cerveau est
- pré-cablé pour voir certain danger ou encore marcher à la naissance [
+ est montré que le cerveau est pré-cablé/fonctionnalisé pour voir certain
+ danger ou encore marcher à la naissance [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "rakison_infants_2008"
@@ -654,8 +662,10 @@ literal "false"
 
 \end_inset
 
-] et il n'y a pas eu besoin d'avoir un temps d'apprentissage long, hormi
- le sommeil et son role dans la memoire [
+].
+ De meme, il n'y a pas eu besoin d'avoir un temps d'apprentissage long pour
+ optimisé une fonction, hormi les cas où il y a besoin de mémoire et où
+ le sommeil est necessaire [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "rasch_about_2013"
@@ -664,7 +674,7 @@ literal "false"
 \end_inset
 
 ].
- A cette image, on a donc develloper un algorithme ou les couches interconnecté
+ A cette image, on a donc devellopé un algorithme où les couches interconnecté
  de maniere aléatoire de façon à fonctionnaliser le probleme 
 \begin_inset Quotes eld
 \end_inset
@@ -858,7 +868,8 @@ Cette operation revient à une suite de composition de fonction, ou à chaque
  couche, les donnée d'entrée non linéaire se déforme à chaque étapes par
  transformation linéaire.
  C'est l'equivalent de l'astuce du noyau qui remplace un produit scalaire
- par une fonction d'estimation pour obtenir un probleme linéaire [
+ par une fonction d'estimation avec ou sans dimensition supplémentaire pour
+ obtenir un probleme linéaire [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "aizerman_theoretical_1964"
@@ -1259,8 +1270,9 @@ batch
 \begin_inset Quotes erd
 \end_inset
 
-, soit il contient l'ensemble des données de l'experience, soit il est réparti
- en 
+.
+ Pour ce batch, soit il contient l'ensemble des données de l'experience,
+ soit il est réparti en 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1269,8 +1281,9 @@ mini-batch
 \end_inset
 
  stochastique pour eviter la sur-utilisation de la mémoire et augmente la
- vitesse de convergence de la vallé de stabilité, le taille du lot ne doit
- pas etre trop petit non plus car augmente le bruit [
+ vitesse de convergence de la vallé de stabilité.
+ La taille du lot ne doit pas etre trop petit non plus car augmente le bruit
+ [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "kiwiel_convergence_2001"
@@ -1624,9 +1637,9 @@ visions
 \begin_inset Quotes erd
 \end_inset
 
- sont à l'image des cones de la rétines càd des neurones connecté à des
- batonnée de vue unique, qu'on represente dans notre cas comme une couches
- de convolution 
+ sont à l'image des cones de la rétines, c'est à dire des neurones connecté
+ à des batonnée de vue unique, qu'on represente dans notre cas comme une
+ couches de convolution 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1794,7 +1807,7 @@ entrée virtuelle
 .
  Cette entrée virtuelle, n'est pas la solution la plus elegante, mais est
  la plus flexible dans le cas ou les connections sont completement desordonné
- et reduit le temps de calculs car taille de l'entrainement est linéaire.
+ et reduit le temps de calculs car la taille de l'entrainement reste linéaire.
  Une couche connecté à une entrée virtuelle d'une couche elle meme connecté
  à une entrée virtuelle, permet de stocker une information à 
 \begin_inset Quotes eld
@@ -2371,7 +2384,9 @@ literal "false"
 
 \end_inset
 
-].
+], et l'on peut apprendre de plusieurs facons, soit par la répétition, soit
+ par le jeu [E.
+ Stengel].
  Dans certain cas, le cerveau est meme pré-cablé chez certaine espece pour
  repondre à certaine fonction, on peut citer comme exemple la marche des
  enfants à la naissance [
@@ -2382,7 +2397,15 @@ literal "false"
 
 \end_inset
 
-] ou des mammifere juvénile proie [
+] ou des mammifere juvénile 
+\begin_inset Quotes eld
+\end_inset
+
+proie
+\begin_inset Quotes erd
+\end_inset
+
+ [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "garwicz_unifying_2009"
@@ -2809,7 +2832,11 @@ R
  Le but dans un processus décisionnel markovien est de trouver une bonne
  « politique » pour le décideur : une fonction 
 \series bold
-π
+
+\begin_inset Formula $\mathbf{\pi}$
+\end_inset
+
+
 \series default
  qui spécifie l'action 
 \series bold
@@ -3441,7 +3468,7 @@ Chat = 3, Souris = 4
  entre les deux pour ne pas rester bloquer sur la meme position au temps
  t+1.
  La collision est définit comme la symmetrie axiale des deux vecteurs de
- deplacement à l'instant t, soit l'équation 
+ deplacement à l'instant t, soit les deux équations 
 \series bold
 (à implementer)
 \series default
@@ -5245,7 +5272,8 @@ literal "false"
 
 \end_inset
 
-], ou encore, l'héritage culturel [
+], les attachements entre parent-enfant [Bretherton 1992], ou encore, l'héritage
+ culturel [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "bourdieu_distinction_1984"
