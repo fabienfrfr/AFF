@@ -296,8 +296,8 @@ un systeme capable d'apprentissage évolutif
 
  pour en developper les outils futurs.
  Pour cela on a creer un enviromment de jeu simple : le jeu du chat et la
- souris, alternant ainsi deux comportements : L'attaque d'un prédateur et
- la fuite d'une proie.
+ souris [Reynolds 1994], alternant ainsi deux comportements : L'attaque
+ d'un prédateur et la fuite d'une proie.
  On se base sur deux outils : les automates cellulaires et les reseaux de
  neurones évolutifs.
  Les automates sont a l'origine des objets mathématique permettant de resoudre
@@ -2365,6 +2365,14 @@ literal "false"
 
 \end_inset
 
+] et peut-etre considéré par certain comme une fausse piste [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "fjelland_why_2020"
+literal "false"
+
+\end_inset
+
 ].
  Pour autant, dans le vivant et d'apres les théories de l'apprentissage,
  il n'y a pas besoin d'un tres grand nombre d'experience pour qu'un cerveau
@@ -2385,8 +2393,15 @@ literal "false"
 \end_inset
 
 ], et l'on peut apprendre de plusieurs facons, soit par la répétition, soit
- par le jeu [E.
- Stengel].
+ par le jeu [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "stengel_human_1965"
+literal "false"
+
+\end_inset
+
+].
  Dans certain cas, le cerveau est meme pré-cablé chez certaine espece pour
  repondre à certaine fonction, on peut citer comme exemple la marche des
  enfants à la naissance [
@@ -5136,11 +5151,17 @@ literal "false"
 ].
  Comme on l'a vu, il existe déjà des modèle qui optimise la structure comme
  NEAT, mais il en exite d'autre.
- Pour ne citer que lui, il y a le modele GNN, 
+ Pour n'en citer que deux, il y a le modele GNN, 
 \emph on
 Graph Neural Network
 \emph default
-, celui-ci est par contre reservé à l'analyse des graphes.
+, celui-ci est par contre reservé à l'analyse des graphes et le modèle SOC,
+ 
+\emph on
+Self-Organized Criticality
+\emph default
+, d'utilisation plus général, mais qui répresente une approche alternative
+ au modele du neurone formel : un point critique comme attracteur d'optimisation.
  Le modele GNN va construire un sous-graphe resultant de la convolution
  de plusieurs graphes à étudier, ce sous graphes correspond au reseau de
  neurone le plus optimisé pour donner les informations d'un graphes de grande
@@ -5153,9 +5174,20 @@ literal "false"
 \end_inset
 
 ].
+ Le modele SOC correspond à un reseau où les noeud sont soit des entrée,
+ des sortie ou des neurones intermédiaire et l'action d'apprentissage correspond
+ à la tension des different lien entre noeud à optimiser [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "bak_adaptive_2001"
+literal "false"
+
+\end_inset
+
+].
  Dans notre cas, nous avons utilisé un processus evolutif qui va changer
  les connections entre couches uniquement, pour n'importe qu'elle type d'informa
-tion d'entree, meme les graphes par vectorisation de Louvain [
+tion d'entree et meme les graphes par vectorisation de Louvain [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "bhowmick_louvainne_2020"
