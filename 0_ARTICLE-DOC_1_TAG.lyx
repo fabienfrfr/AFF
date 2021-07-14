@@ -626,7 +626,7 @@ appris
  par un processus de selection [
 \begin_inset CommandInset citation
 LatexCommand citet
-key "stanley_evolving_2002"
+key "stanley_evolving_2002,poli_parallel_1996"
 literal "false"
 
 \end_inset
@@ -1785,7 +1785,7 @@ vanishing gradient
  des reseau recurrent [
 \begin_inset CommandInset citation
 LatexCommand citet
-key "hochreiter_long_1997"
+key "hochreiter_long_1997,pearlmutter_gradient_1995"
 literal "false"
 
 \end_inset
@@ -5272,8 +5272,15 @@ literal "false"
 
 \end_inset
 
-], les attachements entre parent-enfant [Bretherton 1992], ou encore, l'héritage
- culturel [
+], les attachements entre parent-enfant [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "holmes_john_2014"
+literal "false"
+
+\end_inset
+
+], ou encore, l'héritage culturel [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "bourdieu_distinction_1984"
