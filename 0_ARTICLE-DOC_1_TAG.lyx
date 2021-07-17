@@ -86,7 +86,7 @@
 \begin_body
 
 \begin_layout Title
-Evolutionnary Neural Network Tools for Life Emergence and More
+Evolutionary Neural Network Tools for Life Emergence and More
 \end_layout
 
 \begin_layout Author
@@ -653,11 +653,11 @@ literal "false"
 
 ].
  L'idée est donc de s'impirer des donnée en neuroscience recente, ou il
- est montré que le cerveau est pré-cablé/fonctionnalisé pour voir certain
- danger ou encore marcher à la naissance [
+ est montré que le cerveau est pré-cablé/fonctionnalisé par module pour
+ voir certain danger ou encore marcher à la naissance [
 \begin_inset CommandInset citation
 LatexCommand citet
-key "rakison_infants_2008"
+key "rakison_infants_2008,ohman_fears_2001"
 literal "false"
 
 \end_inset
