@@ -1,0 +1,1135 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass beamer
+\begin_preamble
+%\usetheme{Warsaw}
+\usetheme{Boadilla}
+% or ...
+
+\usecolortheme{orchid}
+\setbeamertemplate{footline}[text line]{} % makes the footer EMPTY
+
+\setbeamercovered{transparent}
+% or whatever (possibly just delete it)
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "times" "default"
+\font_sans "lmss" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 1
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Evolutionary Neural Network Tools for Life Emergence and More
+\end_layout
+
+\begin_layout Author
+F.
+ Furfaro - 2021
+\end_layout
+
+\begin_layout Date
+Conference on Fabulous Presentations, 2021
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+De technicien à chercheurs en (Bio)Physique.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Mon parcours, mes compétences et mes centres interêts de 2006 à aujourd'hui
+\end_layout
+
+\begin_layout Itemize
+2006-2012 : Métiers de l'électricité avec alternance.
+\end_layout
+
+\begin_layout Itemize
+2012-2014 : L3-M1 en Physique appliquée 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Buckling along boundaries of elastic contrast as a mechanism for early vertebrat
+e morphogenesis, V.Fleury 2015
+\end_layout
+
+\end_inset
+
+.
+ 
+\color gray
+(
+\emph on
+Num & Exp
+\emph default
+)
+\end_layout
+
+\begin_layout Itemize
+2014-2015 : M2 Spécialisation en BioPhysique.
+\end_layout
+
+\begin_layout Itemize
+2015-2019 : 
+\bar under
+Doctorat :
+\bar default
+ Caractérisation temporel de la voie de signalisation TGF-
+\begin_inset Formula $\beta$
+\end_inset
+
+.
+ 
+\color gray
+(
+\emph on
+µ-fluidique, Bio-Cells & IMG-Analysis
+\emph default
+)
+\end_layout
+
+\begin_layout Itemize
+2019-2020 : Projet sur l'endosymbiose synthétique et Math appliquée à l'Art
+ visuel.
+ 
+\color gray
+(OpenSource, Instagram : @fabienfrfr)
+\end_layout
+
+\begin_layout Itemize
+2020-2021 : Préparation Agrégation Mathématique et Projet IA-Life.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+De l'IA vers la vie artificielle ? ou l'inverse ?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Résumé, Questionnement et Plan.
+\end_layout
+
+\begin_layout Itemize
+1940 : Période de réflexion des concepts de 
+\begin_inset Quotes eld
+\end_inset
+
+vie artificiel
+\begin_inset Quotes erd
+\end_inset
+
+ et d'IA.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Le cerveau :
+\series default
+ Interconnecté et Fonctionnalisé.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Connexionisme vs Cognitivisme
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Modèle évolutif simple :
+\series default
+ Le jeu du chat et de la souris.
+\end_layout
+
+\begin_layout Itemize
+Optimisation de la structure d'ANNs avec des regles d'apprentissages simples.
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Observation :
+\series default
+ Convergence évolutive.
+\end_layout
+
+\begin_layout Itemize
+La vie pour la généralisation des modèles d'IA ?
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Comment définir le vivant 
+\begin_inset Quotes eld
+\end_inset
+
+artificiel
+\begin_inset Quotes erd
+\end_inset
+
+ ?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Introduction 1/1.
+\end_layout
+
+\begin_layout Block
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+
+\bar under
+Tentatives de définitions :
+\end_layout
+
+\begin_layout Enumerate
+Système chimique auto-entretenu capable d'evolution darwinienne.
+\end_layout
+
+\begin_layout Enumerate
+Structure dissipative capable d'auto-catalyse, d'homéostasie et d'apprentissage.
+\end_layout
+
+\end_deeper
+\begin_layout ExampleBlock
+\begin_inset Argument 2
+status collapsed
+
+\begin_layout Plain Layout
+Jeu de la vie de Conway (Principe d'émergence)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename SCHEMA/I_1_1_SLIDE.png
+	scale 55
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Peut-on s'inspirer de la fonctionnalisation cérébrale en IA ?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Introduction 2/2.
+\end_layout
+
+\begin_layout ColumnsTopAligned
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Fact
+
+\bar under
+Apprentissage et classifieur :
+\bar default
+ 
+\end_layout
+
+\begin_layout Fact
+\begin_inset Graphics
+	filename SCHEMA/I_2_1_SLIDE.png
+	lyxscale 50
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Column
+5cm
+\end_layout
+
+\begin_layout Fact
+
+\bar under
+Fonctionnalisation :
+\end_layout
+
+\begin_layout Fact
+\begin_inset Graphics
+	filename SCHEMA/I_2_2_SLIDE.png
+	lyxscale 50
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\paragraph_spacing single
+\align center
+Comment construire un 
+\series bold
+\emph on
+A
+\series default
+rtificial 
+\series bold
+N
+\series default
+eural 
+\series bold
+N
+\series default
+etworks
+\emph default
+ fonctionnalisé ?
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Une première approche d'ANNs 
+\begin_inset Quotes eld
+\end_inset
+
+fonctionnalisé
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Méthodes 1/4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/M_1_1_A5-SLIDE.png
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Réseau monocouche à connection aléatoire à 2 temps différents.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Des graphes pour reconstruire l'ANNs.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Méthodes 2/4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/M_1_2.png
+	lyxscale 50
+	scale 120
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Matrice adjacente des liens entre perceptron et entrée.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Les modifications du réseau comme processus de mutation.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Méthodes 3/4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/M_2_2.png
+	lyxscale 30
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Algorithme des mutations du réseau.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Le jeu du chat et de la souris comme modèle de vie.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Méthodes 4/4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/M_3_0.png
+	lyxscale 50
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Les interactions entre un agents et un environement de jeu.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+L'environement de selection est parallélisé.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Résultats 1/4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_0_0.png
+	lyxscale 30
+	scale 40
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Representation d'un ensemble de donnée expériementale à un instant t.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Caractérisation de la convergence des I/O.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Résultats 2/4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_1_1.png
+	lyxscale 25
+	scale 45
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mesure de la densité positionnel de succes des I/O en fin d'experience.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Caractérisation de la connectivité du réseau.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Résultats 3/4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_2_2.png
+	lyxscale 20
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Comparaison des indicateurs de centralité au fil des générations.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Caractérisation de la convergence évolutive.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Résultats 4/4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename SCHEMA/R_3_1.png
+	lyxscale 50
+	scale 80
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Arbres phylogénétiques des agents.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Un modèle adapté pour le prototypage de vie ?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Conclusion.
+\end_layout
+
+\begin_layout Itemize
+
+\bar under
+Observations 
+\bar default
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Convergence evolutive des comportements indépendant du reseau.
+\end_layout
+
+\begin_layout Itemize
+Le jeu du chat et de la souris est fonctionnalisable.
+\end_layout
+
+\begin_layout Itemize
+Pas de structure artificiel necessaire pour l'optimisation des poids du
+ reseau
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\bar under
+Limitations 
+\bar default
+:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+La géométrie du probleme est asymétrique.
+\end_layout
+
+\begin_layout Itemize
+Structure vestigiale non optimale possible.
+\end_layout
+
+\begin_layout Itemize
+Modelisation du probleme peut favoriser la triche 
+\emph on
+(à revoir)
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Vers la modularité et des applications ?
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Ouvertures et Discussions.
+\end_layout
+
+\begin_layout Itemize
+Un ensembles de 
+\color red
+module
+\color inherit
+ pour une fonctionnalisation cérébrale complète.
+\end_layout
+
+\begin_layout Itemize
+Vers des modèles à 
+\color red
+agents-dépendants
+\color inherit
+ : un meme environement.
+\end_layout
+
+\begin_layout Itemize
+
+\bar under
+Application :
+\bar default
+ Fonctionnalisation de la classification.
+\end_layout
+
+\end_deeper
+\end_body
+\end_document

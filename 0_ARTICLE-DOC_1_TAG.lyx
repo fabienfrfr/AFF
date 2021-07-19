@@ -237,7 +237,16 @@ literal "false"
 \end_inset
 
 ].
- Ce qui diminu localement l'entropie en favorisant l'auto-organisation.
+ Ce qui diminu localement l'entropie en favorisant l'auto-organisation et
+ l'émergence de la vie [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "oconnor_emergent_2002"
+literal "false"
+
+\end_inset
+
+].
  Meme si tout probleme n'est pas définissable [
 \begin_inset CommandInset citation
 LatexCommand citet
@@ -296,8 +305,16 @@ un systeme capable d'apprentissage évolutif
 
  pour en developper les outils futurs.
  Pour cela on a creer un enviromment de jeu simple : le jeu du chat et la
- souris [Reynolds 1994], alternant ainsi deux comportements : L'attaque
- d'un prédateur et la fuite d'une proie.
+ souris [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "reynolds_competition_1994"
+literal "false"
+
+\end_inset
+
+], alternant ainsi deux comportements : L'attaque d'un prédateur et la fuite
+ d'une proie.
  On se base sur deux outils : les automates cellulaires et les reseaux de
  neurones évolutifs.
  Les automates sont a l'origine des objets mathématique permettant de resoudre
@@ -653,8 +670,17 @@ literal "false"
 
 ].
  L'idée est donc de s'impirer des donnée en neuroscience recente, ou il
- est montré que le cerveau est pré-cablé/fonctionnalisé par module pour
- voir certain danger ou encore marcher à la naissance [
+ est montré qu'en plus d'etre interconnecté, le cerveau est pré-cablé/fonctionna
+lisé par module [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "rescorla_computational_2020"
+literal "false"
+
+\end_inset
+
+], comme par exemple pour voir certain danger ou encore marcher à la naissance
+ [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "rakison_infants_2008,ohman_fears_2001"
