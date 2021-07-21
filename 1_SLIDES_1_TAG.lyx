@@ -62,13 +62,13 @@
 \paperorientation portrait
 \suppress_date false
 \justification true
-\use_refstyle 0
+\use_refstyle 1
 \use_minted 0
 \index Index
 \shortcut idx
 \color #008000
 \end_index
-\secnumdepth 2
+\secnumdepth 4
 \tocdepth 2
 \paragraph_separation indent
 \paragraph_indentation default
@@ -89,20 +89,27 @@
 \begin_body
 
 \begin_layout Title
-Evolutionary Neural Network Tools for Life Emergence and More
+
+\bar under
+E
+\bar default
+volutionary 
+\bar under
+N
+\bar default
+eural 
+\bar under
+N
+\bar default
+etwork Tools for Life Emergence and More
 \end_layout
 
 \begin_layout Author
-F.
- Furfaro - 2021
+F.Furfaro - 2021
 \end_layout
 
 \begin_layout Date
 Conference on Fabulous Presentations, 2021
-\end_layout
-
-\begin_layout Standard
-
 \end_layout
 
 \begin_layout Frame
@@ -113,10 +120,6 @@ status open
 De technicien à chercheurs en (Bio)Physique.
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -190,7 +193,7 @@ Doctorat :
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
 \end_inset
 
 
@@ -201,13 +204,21 @@ Doctorat :
 status open
 
 \begin_layout Plain Layout
-De l'IA vers la vie artificielle ? ou l'inverse ?
+
+\series bold
+E
+\series default
+volutionary 
+\series bold
+N
+\series default
+eural 
+\series bold
+N
+\series default
+etwork Tools for Life Emergence
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -215,27 +226,51 @@ De l'IA vers la vie artificielle ? ou l'inverse ?
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Résumé, Questionnement et Plan.
+Sommaire.
 \end_layout
 
+\begin_layout Block
+\begin_inset Argument 2
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
 \begin_layout Itemize
-1940 : Période de réflexion des concepts de 
+Comment la vie c'est développée ? Comment le cerveau et l'intelligence ont
+ émergé ? (1940 : point de vue 
 \begin_inset Quotes eld
 \end_inset
 
-vie artificiel
+artificiel
 \begin_inset Quotes erd
 \end_inset
 
- et d'IA.
+)
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
 
+\bar under
+Observation :
+\bar default
+ le cerveau est répartie en 
 \series bold
-Le cerveau :
+structure fonctionnel interconnecté
 \series default
- Interconnecté et Fonctionnalisé.
+ permettant l'
+\series bold
+apprentissage
+\series default
+.
  
 \begin_inset Note Note
 status open
@@ -249,33 +284,116 @@ Connexionisme vs Cognitivisme
 
 \end_layout
 
+\end_deeper
 \begin_layout Itemize
 
-\series bold
-Modèle évolutif simple :
-\series default
- Le jeu du chat et de la souris.
-\end_layout
+\color red
+Peut-on developper une 
+\begin_inset Quotes eld
+\end_inset
 
-\begin_layout Itemize
-Optimisation de la structure d'ANNs avec des regles d'apprentissages simples.
-\end_layout
+vie artificielle
+\begin_inset Quotes erd
+\end_inset
 
-\begin_layout Itemize
-
-\series bold
-Observation :
-\series default
- Convergence évolutive.
-\end_layout
-
-\begin_layout Itemize
-La vie pour la généralisation des modèles d'IA ?
+ permettant l'apparition de structure neuronale fonctionnelle ?
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Block
+\begin_inset Argument 2
+status open
+
+\begin_layout Plain Layout
+Modélisation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\bar under
+Evolutif :
+\bar default
+ Jeu du chat et de la souris pour la prise de décision.
+\end_layout
+
+\begin_layout Itemize
+
+\bar under
+Apprentissage :
+\bar default
+ ANN + Graphes + Algo évolutif = ENN
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+\bar under
+Observation :
+\series default
+\bar default
+ Convergence évolutive vers une stratégie optimale.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Frame
+
+\end_layout
+
+\begin_deeper
+\begin_layout Block
+\begin_inset Argument 2
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Construction d'ANN fonctionnel minimisant le lot d'entrainement.
+\end_layout
+
+\begin_layout Itemize
+Creer une IA généraliste doit passer par une expérience de vie ?
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
 \end_inset
 
 
@@ -286,21 +404,9 @@ La vie pour la généralisation des modèles d'IA ?
 status open
 
 \begin_layout Plain Layout
-Comment définir le vivant 
-\begin_inset Quotes eld
-\end_inset
-
-artificiel
-\begin_inset Quotes erd
-\end_inset
-
- ?
+Comment définir le vivant ?
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -308,29 +414,36 @@ artificiel
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Introduction 1/1.
+Introduction 1/5.
 \end_layout
 
 \begin_layout Block
-\begin_inset Separator latexpar
+\begin_inset Argument 2
+status open
+
+\begin_layout Plain Layout
+Tentatives de définitions :
+\end_layout
+
 \end_inset
 
 
 \end_layout
 
 \begin_deeper
-\begin_layout Standard
-
-\bar under
-Tentatives de définitions :
-\end_layout
-
 \begin_layout Enumerate
-Système chimique auto-entretenu capable d'evolution darwinienne.
+Système chimique auto-entretenu capable d'évolution darwinienne.
 \end_layout
 
 \begin_layout Enumerate
 Structure dissipative capable d'auto-catalyse, d'homéostasie et d'apprentissage.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
 \end_layout
 
 \end_deeper
@@ -339,7 +452,7 @@ Structure dissipative capable d'auto-catalyse, d'homéostasie et d'apprentissage
 status collapsed
 
 \begin_layout Plain Layout
-Jeu de la vie de Conway (Principe d'émergence)
+Jeu de la vie de Conway.
 \end_layout
 
 \end_inset
@@ -352,7 +465,24 @@ Jeu de la vie de Conway (Principe d'émergence)
 \align center
 \begin_inset Graphics
 	filename SCHEMA/I_1_1_SLIDE.png
-	scale 55
+	scale 50
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Puffeur en rouge (se déplace vers la droite), laissant une trainée de Canon
+ en vert, lui meme tirant des planeurs en bleu.
+ 
+\bar under
+3 regles :
+\bar default
+ Survie si 2 ou 3 voisine, Meurt si 1 ou plus de 3 voisine, enfin, Nait
+ si 3 voisine.
+\end_layout
 
 \end_inset
 
@@ -360,9 +490,14 @@ Jeu de la vie de Conway (Principe d'émergence)
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\align center
+La vie suit le principe d'émergence.
+\end_layout
+
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
 \end_inset
 
 
@@ -373,13 +508,9 @@ Jeu de la vie de Conway (Principe d'émergence)
 status open
 
 \begin_layout Plain Layout
-Peut-on s'inspirer de la fonctionnalisation cérébrale en IA ?
+L'apprentissage est une propriété émergente du cerveau.
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -387,86 +518,76 @@ Peut-on s'inspirer de la fonctionnalisation cérébrale en IA ?
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Introduction 2/2.
+Introduction 2/5.
 \end_layout
 
-\begin_layout ColumnsTopAligned
-\begin_inset Separator latexpar
-\end_inset
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
 
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_deeper
-\begin_layout Column
-5cm
-\end_layout
-
-\begin_layout Fact
-
-\bar under
-Apprentissage et classifieur :
-\bar default
- 
-\end_layout
-
-\begin_layout Fact
+\begin_layout Plain Layout
 \begin_inset Graphics
 	filename SCHEMA/I_2_1_SLIDE.png
-	lyxscale 50
-	scale 25
+	scale 40
 
 \end_inset
 
 
-\end_layout
+\begin_inset Caption Standard
 
-\begin_layout Column
-5cm
-\end_layout
-
-\begin_layout Fact
-
+\begin_layout Plain Layout
+Le cerveau est répartie en module connecté les uns avec les autres.
+ En rond sur le cerveau, des modules, à droite une structure neurale (
 \bar under
-Fonctionnalisation :
+par exemple :
+\bar default
+ réaction/peur face à un danger)
 \end_layout
-
-\begin_layout Fact
-\begin_inset Graphics
-	filename SCHEMA/I_2_2_SLIDE.png
-	lyxscale 50
-	scale 25
 
 \end_inset
 
 
 \end_layout
 
-\end_deeper
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Standard
-\paragraph_spacing single
 \align center
-Comment construire un 
-\series bold
-\emph on
-A
-\series default
-rtificial 
-\series bold
-N
-\series default
-eural 
-\series bold
-N
-\series default
-etworks
-\emph default
- fonctionnalisé ?
+L'ensemble des modules fait émerger 
+\begin_inset Quotes eld
+\end_inset
+
+apprentissage
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+pensée
+\begin_inset Quotes erd
+\end_inset
+
+, etc.
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
 \end_inset
 
 
@@ -477,7 +598,233 @@ etworks
 status open
 
 \begin_layout Plain Layout
-Une première approche d'ANNs 
+Les fonctions du cerveau ont été faconné par l'évolution.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Introduction 3/5.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename SCHEMA/I_3_1_SLIDE.png
+	scale 40
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Adaptation du module 
+\begin_inset Quotes eld
+\end_inset
+
+réaction face à un danger
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Les émoticones correspondent à la réponse de la structure neurale pour
+ un meme stimuli.
+ 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+La structure du cerveau est spécifique et permet un apprentissage avec peu
+ d'experience (temps court)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Les ANNs
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Artificial Neural Networks
+\end_layout
+
+\end_inset
+
+ usuels n'optimise pas la structure.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Introduction 4/5.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename SCHEMA/I_4_1_SLIDE.png
+	scale 40
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+L'apprentissage peut se réduire à un problème de classification (Ordre 0).
+ Exemple précedant (danger) : combat en rouge, fuite en bleu.
+ En rond, des perceptrons (
+\begin_inset Formula $\Longleftrightarrow$
+\end_inset
+
+ 
+\series bold
+A
+\series default
+rtificial 
+\series bold
+N
+\series default
+eurone).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+\color red
+!
+\series default
+\color inherit
+ Les structures sont prédéfini et necessite beaucoup d'apprentissage.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Des structures sont adaptées à des probléme de décision.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Introduction 5/5.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename SCHEMA/I_5_1_SLIDE.png
+	scale 50
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Peut-on developper une 
+\emph on
+
+\begin_inset Quotes eld
+\end_inset
+
+vie artificielle
+\begin_inset Quotes erd
+\end_inset
+
+
+\emph default
+ permettrant l'apparition de structure neuronale 
+\emph on
+
 \begin_inset Quotes eld
 \end_inset
 
@@ -485,61 +832,36 @@ fonctionnalisé
 \begin_inset Quotes erd
 \end_inset
 
-.
+
+\emph default
+ ?
 \end_layout
 
 \end_inset
 
 
-\begin_inset Separator latexpar
-\end_inset
+\end_layout
 
+\begin_layout Plain Layout
 
 \end_layout
 
-\begin_deeper
-\begin_layout FrameSubtitle
-Méthodes 1/4.
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename SCHEMA/M_1_1_A5-SLIDE.png
-	scale 50
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Réseau monocouche à connection aléatoire à 2 temps différents.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Comment s'en inspirer pour construire des ANN fonctionnalisé 
+\series bold
+et
+\series default
+ les utiliser des applications plus générale en IA ?
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
 \end_inset
 
 
@@ -550,13 +872,9 @@ Réseau monocouche à connection aléatoire à 2 temps différents.
 status open
 
 \begin_layout Plain Layout
-Des graphes pour reconstruire l'ANNs.
+Les critères de modélisations.
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -564,48 +882,16 @@ Des graphes pour reconstruire l'ANNs.
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Méthodes 2/4.
+Méthodes 1/5.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename SCHEMA/M_1_2.png
-	lyxscale 50
-	scale 120
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Matrice adjacente des liens entre perceptron et entrée.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Le cerveau est répartie en fonction interconnecté
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
 \end_inset
 
 
@@ -616,13 +902,10 @@ Matrice adjacente des liens entre perceptron et entrée.
 status open
 
 \begin_layout Plain Layout
-Les modifications du réseau comme processus de mutation.
+Une première approche d'ANN fonctionnalisé.
+ (à revoir)
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -630,48 +913,77 @@ Les modifications du réseau comme processus de mutation.
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Méthodes 3/4.
+Méthodes 2/5.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename SCHEMA/M_2_2.png
-	lyxscale 30
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Algorithme des mutations du réseau.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Le cerveau est répartie en fonction interconnecté
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Les outils pour construire l'ANN.
+ (à revoir...)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Méthodes 3/5.
+\end_layout
+
+\begin_layout Standard
+Le cerveau est répartie en fonction interconnecté
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Les modif du reseau comme processus de mutation.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Méthodes 4/5.
+\end_layout
+
+\begin_layout Standard
+Le cerveau est répartie en fonction interconnecté
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
 \end_inset
 
 
@@ -688,56 +1000,20 @@ Le jeu du chat et de la souris comme modèle de vie.
 \end_inset
 
 
-\begin_inset Separator latexpar
-\end_inset
-
-
 \end_layout
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Méthodes 4/4.
+Méthodes 5/5.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename SCHEMA/M_3_0.png
-	lyxscale 50
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Les interactions entre un agents et un environement de jeu.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Le cerveau est répartie en fonction interconnecté
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
 \end_inset
 
 
@@ -748,13 +1024,9 @@ Les interactions entre un agents et un environement de jeu.
 status open
 
 \begin_layout Plain Layout
-L'environement de selection est parallélisé.
+Les parametre à mesurer.
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -762,48 +1034,16 @@ L'environement de selection est parallélisé.
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Résultats 1/4.
+Résultats 1/5.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename SCHEMA/R_0_0.png
-	lyxscale 30
-	scale 40
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Representation d'un ensemble de donnée expériementale à un instant t.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Le cerveau est répartie en fonction interconnecté
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
 \end_inset
 
 
@@ -814,13 +1054,9 @@ Representation d'un ensemble de donnée expériementale à un instant t.
 status open
 
 \begin_layout Plain Layout
-Caractérisation de la convergence des I/O.
+Le nombre d'agent en parallele (loi statisitque).
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -828,48 +1064,46 @@ Caractérisation de la convergence des I/O.
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Résultats 2/4.
+Résultats 2/5.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename SCHEMA/R_1_1.png
-	lyxscale 25
-	scale 45
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Mesure de la densité positionnel de succes des I/O en fin d'experience.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Le cerveau est répartie en fonction interconnecté
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Caracterisation de la convergence des I/O.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Résultats 3/5.
+\end_layout
+
+\begin_layout Standard
+Le cerveau est répartie en fonction interconnecté
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
 \end_inset
 
 
@@ -886,56 +1120,20 @@ Caractérisation de la connectivité du réseau.
 \end_inset
 
 
-\begin_inset Separator latexpar
-\end_inset
-
-
 \end_layout
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Résultats 3/4.
+Résultats 4/5.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename SCHEMA/R_2_2.png
-	lyxscale 20
-	scale 25
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Comparaison des indicateurs de centralité au fil des générations.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Le cerveau est répartie en fonction interconnecté
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
 \end_inset
 
 
@@ -952,56 +1150,20 @@ Caractérisation de la convergence évolutive.
 \end_inset
 
 
-\begin_inset Separator latexpar
-\end_inset
-
-
 \end_layout
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Résultats 4/4.
+Résultats 5/5.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-placement H
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename SCHEMA/R_3_1.png
-	lyxscale 50
-	scale 80
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption Standard
-
-\begin_layout Plain Layout
-Arbres phylogénétiques des agents.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
+Le cerveau est répartie en fonction interconnecté
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
 \end_inset
 
 
@@ -1012,13 +1174,9 @@ Arbres phylogénétiques des agents.
 status open
 
 \begin_layout Plain Layout
-Un modèle adapté pour le prototypage de vie ?
+Notre modèle adapté pour le prototypage.
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -1029,56 +1187,13 @@ Un modèle adapté pour le prototypage de vie ?
 Conclusion.
 \end_layout
 
-\begin_layout Itemize
-
-\bar under
-Observations 
-\bar default
-:
+\begin_layout Standard
+Le cerveau est répartie en fonction interconnecté
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-Convergence evolutive des comportements indépendant du reseau.
-\end_layout
-
-\begin_layout Itemize
-Le jeu du chat et de la souris est fonctionnalisable.
-\end_layout
-
-\begin_layout Itemize
-Pas de structure artificiel necessaire pour l'optimisation des poids du
- reseau
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-
-\bar under
-Limitations 
-\bar default
-:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-La géométrie du probleme est asymétrique.
-\end_layout
-
-\begin_layout Itemize
-Structure vestigiale non optimale possible.
-\end_layout
-
-\begin_layout Itemize
-Modelisation du probleme peut favoriser la triche 
-\emph on
-(à revoir)
-\end_layout
-
-\end_deeper
 \end_deeper
 \begin_layout Standard
-\begin_inset Separator parbreak
+\begin_inset Separator plain
 \end_inset
 
 
@@ -1089,13 +1204,9 @@ Modelisation du probleme peut favoriser la triche
 status open
 
 \begin_layout Plain Layout
-Vers la modularité et des applications ?
+Vers la modularité et des applications.
 \end_layout
 
-\end_inset
-
-
-\begin_inset Separator latexpar
 \end_inset
 
 
@@ -1106,30 +1217,17 @@ Vers la modularité et des applications ?
 Ouvertures et Discussions.
 \end_layout
 
-\begin_layout Itemize
-Un ensembles de 
-\color red
-module
-\color inherit
- pour une fonctionnalisation cérébrale complète.
-\end_layout
-
-\begin_layout Itemize
-Vers des modèles à 
-\color red
-agents-dépendants
-\color inherit
- : un meme environement.
-\end_layout
-
-\begin_layout Itemize
-
-\bar under
-Application :
-\bar default
- Fonctionnalisation de la classification.
+\begin_layout Standard
+Le cerveau est répartie en fonction interconnecté
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document
