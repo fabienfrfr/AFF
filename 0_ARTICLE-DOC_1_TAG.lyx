@@ -140,7 +140,15 @@ literal "false"
 \end_inset
 
 ].
- Elle a commencé de maniere unicellulaire sans noyau [
+ Elle a commencé par des bloc élémentaire prébiotique [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "kitadai_origins_2018"
+literal "false"
+
+\end_inset
+
+] formant des cellules unique sans noyau [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "buick_when_2008,mojzsis_evidence_1996"
@@ -700,6 +708,19 @@ literal "false"
 \end_inset
 
 ].
+ Aussi, on observe que les lobes cerebraux ont des fonctions particuliere
+ [
+\begin_inset CommandInset citation
+LatexCommand citet
+key "stuss_executive_2000,casillo_history_2020"
+literal "false"
+
+\end_inset
+
+] : frontal pour les actions à coourt terme, temporal pour les souvenir
+ et la comprehension du langage, parietal pour le traitement du langage,
+ occipital pour le traitement visuel, limbique pour les comportement émotionnel
+ et insulaire pour les reaction de peur.
  A cette image, on a donc devellopé un algorithme où les couches interconnecté
  de maniere aléatoire de façon à fonctionnaliser le probleme 
 \begin_inset Quotes eld
