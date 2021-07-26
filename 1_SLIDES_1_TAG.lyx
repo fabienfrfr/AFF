@@ -127,7 +127,7 @@ De technicien à chercheurs en (Bio)Physique.
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Mon parcours, mes compétences et mes centres interêts de 2006 à aujourd'hui
+Mon parcours, mes compétences et mes centres interêts de 2006 à aujourd'hui.
 \end_layout
 
 \begin_layout Itemize
@@ -165,7 +165,7 @@ Num & Exp
 \bar under
 Doctorat :
 \bar default
- Caractérisation temporel de la voie de signalisation TGF-
+ Caractérisation temporelle de la voie de signalisation TGF-
 \begin_inset Formula $\beta$
 \end_inset
 
@@ -226,7 +226,7 @@ etwork Tools for Life Emergence
 
 \begin_deeper
 \begin_layout FrameSubtitle
-Démarche scientifique.
+Démarche scientifique :
 \end_layout
 
 \begin_layout Block
@@ -245,7 +245,7 @@ status open
 \begin_deeper
 \begin_layout Itemize
 Comment la vie c'est développée ? Comment le cerveau et l'intelligence ont
- émergés ? (1940 : point de vue 
+ émergé ? (1940 : point de vue 
 \begin_inset Quotes eld
 \end_inset
 
@@ -262,9 +262,9 @@ artificiel
 \bar under
 Observation :
 \bar default
- le cerveau est répartie en 
+ Le cerveau est organisé en 
 \series bold
-structure fonctionnel interconnecté
+modules interconnectés
 \series default
  permettant l'
 \series bold
@@ -383,11 +383,11 @@ status open
 
 \begin_deeper
 \begin_layout Itemize
-Construction d'ANN fonctionnel minimisant le lot d'entrainement.
+Construction d'ANN fonctionnel minimisant le lot d'entraînement.
 \end_layout
 
 \begin_layout Itemize
-Creer une IA généraliste doit passer par une expérience de vie ?
+Créer une IA généraliste doit passer par une expérience de vie ?
 \end_layout
 
 \end_deeper
@@ -687,7 +687,7 @@ L'apprentissage peut se réduire à un problème de classification (ordre-0)
 !
 \series default
 \color inherit
- Les structures sont prédéfinies et nécessite beaucoup d'apprentissage.
+ Les structures sont prédéfinies et nécessitent beaucoup d'apprentissage.
  
 \end_layout
 
@@ -761,7 +761,7 @@ Comment s'en inspirer pour construire des ANN fonctionnalisé
 \series bold
 et
 \series default
- les utiliser pour des applications plus générale en IA ?
+ les utiliser pour des applications plus générales en IA ?
 \end_layout
 
 \end_deeper
@@ -802,7 +802,11 @@ Méthodes 1/5.
 \end_layout
 
 \begin_layout Itemize
-Doit permettre la rétropropagation : entrée virtuelle si récurrence.
+Doit permettre la rétropropagation : 
+\bar under
+entrée virtuelle
+\bar default
+ si récurrence.
 \end_layout
 
 \begin_layout Itemize
@@ -822,7 +826,7 @@ Les sorties doivent correspondre à l'action de l'agent.
 \end_layout
 
 \begin_layout Itemize
-Le jeu de vie doit combiner des stratégies de proie/prédateurs simple.
+Le jeu de vie doit combiner des stratégies de proies/prédateurs simples.
 \end_layout
 
 \end_deeper
@@ -863,7 +867,7 @@ Méthodes 2/5.
 \end_layout
 
 \begin_layout Itemize
-Chaque couche est associé à une position en 
+Chaque couche peut-être associé à une position dans 
 \begin_inset Formula $\left[0,32\right]$
 \end_inset
 
@@ -871,7 +875,7 @@ Chaque couche est associé à une position en
 \end_layout
 
 \begin_layout Standard
-Comment stocker l'information des connections entre couche ?
+Comment stocker l'information des connections entre couches ?
 \end_layout
 
 \end_deeper
@@ -913,7 +917,7 @@ Méthodes 3/5.
 
 \begin_layout Itemize
 Seule la partie entrée des couches est nécessaire pour la construction du
- reseau
+ réseau :
 \end_layout
 
 \begin_deeper
@@ -1014,12 +1018,13 @@ Méthodes 5/5.
 \end_layout
 
 \begin_layout Itemize
-Les entrées et sorties sont définies aléatoirement.
+Les coordonnées relatives d'entrées (pixel) et de sorties (mouvement) sont
+ définies aléatoirement.
 \end_layout
 
 \begin_layout Itemize
-L'environement de jeu contient les informations d'entrées/sorties pour chaque
- agent.
+L'environnement de jeu contient les informations d'entrées/sorties pour
+ chaque agent.
 \end_layout
 
 \begin_layout Standard
@@ -1061,11 +1066,27 @@ Résultats préliminaires 1/5.
 \end_layout
 
 \begin_layout Itemize
-Combien d'expérience pour que cela soit statistiquement significatif ?
+Combien d'expériences pour que cela soit statistiquement significatif ?
 \end_layout
 
 \begin_layout Itemize
-Quelle stratégie de vue (I) et d'action (O) est la plus optimale ?
+Quelle stratégie de 
+\begin_inset Quotes eld
+\end_inset
+
+vue
+\begin_inset Quotes erd
+\end_inset
+
+ (
+\series bold
+I
+\series default
+nput) et d'action (
+\series bold
+O
+\series default
+utput) est la plus optimale ?
 \end_layout
 
 \begin_layout Itemize
@@ -1105,7 +1126,7 @@ vainqueur
 status open
 
 \begin_layout Plain Layout
-Nombre d'agent en parallele minimal.
+Nombre d'agent en parallèle minimal et scoring.
 \end_layout
 
 \end_inset
@@ -1134,7 +1155,7 @@ Loi des grands nombres pour estimer parallélisation : minimum 10 agents.
 \end_layout
 
 \begin_layout Standard
-Les challengers n'heritent pas de la structure neuronale mais des paramètres
+Les challengers n'héritent pas de la structure neuronale mais des paramètres
  d'entrées/sorties : n'a un sens que si la convergence est significative
  (suit une densité de probabilité).
 \end_layout
@@ -1181,8 +1202,8 @@ Résultats préliminaires 3/5.
 \end_layout
 
 \begin_layout Itemize
-Les paramètres d'entrées/sorties convergent au bout de 10 générations (non
- montrée ici)
+Les paramètres d'entrées/sorties convergent au bout de 10 générations (convergen
+ce non montrée ici)
 \end_layout
 
 \begin_layout Standard
@@ -1227,7 +1248,8 @@ Résultats préliminaires 4/5.
 \end_layout
 
 \begin_layout Itemize
-La centralité du reseau ne semble pas significative (pas de convergence)
+La centralité du réseau ne semble pas significative (pas de convergence)
+ : nécessite plus d'expériences en parallèle ?
 \end_layout
 
 \begin_layout Standard
@@ -1280,7 +1302,7 @@ combat/fuite
 \begin_inset Quotes erd
 \end_inset
 
- même si les challengeurs ont les paramètres d'entrées/sorties optimals.
+ même si les challengeurs ont les paramètres d'entrées/sorties optimaux.
 \end_layout
 
 \begin_layout Standard
@@ -1335,7 +1357,7 @@ Le jeu du chat et de la souris est fonctionnalisable : stratégie optimale.
 \end_layout
 
 \begin_layout Itemize
-Pas de structure artificiel nécessaire pour l'optimisation des poids du
+Pas de structure artificielle nécessaire pour l'optimisation des poids du
  réseau.
 \end_layout
 
@@ -1350,7 +1372,7 @@ Limitations
 
 \begin_deeper
 \begin_layout Itemize
-La géométrie du probleme est asymétrique.
+La géométrie du problème est asymétrique.
 \end_layout
 
 \begin_layout Itemize
@@ -1358,7 +1380,7 @@ Structure vestigiale non optimale possible.
 \end_layout
 
 \begin_layout Itemize
-Modelisation du probleme peut favoriser la triche 
+Modélisation du problème peut favoriser la triche 
 \emph on
 (à revoir)
 \end_layout
