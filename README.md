@@ -17,7 +17,7 @@ Tree structure :
 * * * * pRNN_GEN.py
 
 
-### LYX GRAMMAR-CHECKER
+### UML
 
-https://github.com/languagetool-org/languagetool
-https://github.com/gmatht/lyx-gc
+![IMG UML](UML.png)
+
