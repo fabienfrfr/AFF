@@ -188,7 +188,7 @@ Doctorat :
 \end_layout
 
 \begin_layout Itemize
-2020-2021 : Préparation Agrégation Mathématique et Projet IA-Life.
+2020-2021 : Préparation Agrégation Mathématique et Projet AI-Life.
 \end_layout
 
 \end_deeper
@@ -260,7 +260,7 @@ artificiel
 \begin_layout Itemize
 
 \bar under
-Observation :
+Observation/Hypothèse :
 \bar default
  Le cerveau est organisé en 
 \series bold
@@ -652,6 +652,16 @@ Artificial Neural Networks
 \end_inset
 
  usuels n'optimisent pas la structure.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Critère de comparaison
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_inset
@@ -1326,7 +1336,7 @@ Problème :
 status open
 
 \begin_layout Plain Layout
-Notre modèle adapté pour le prototypage.
+Notre modèle est adapté pour le prototypage de vie-IA.
 \end_layout
 
 \end_inset
@@ -1425,9 +1435,15 @@ Ouvertures et Discussions.
 
 \begin_layout Standard
 \align center
+Faut-il avoir une expérience de vie pour obtenir une IA généraliste ?
+\end_layout
 
-\series bold
-MERCI POUR VOTRE ATTENTION
+\begin_layout Standard
+\align center
+
+\emph on
+\bar under
+Comment optimiser notre modèle pour des problèmes de classification ?
 \end_layout
 
 \end_deeper
@@ -1438,5 +1454,208 @@ MERCI POUR VOTRE ATTENTION
 
 \end_layout
 
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Application.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Applications possibles 1/5.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename SCHEMA/A_1_1_SLIDE.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+TEST 1
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Applications.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Applications possibles 2/5.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename SCHEMA/A_1_1_SLIDE.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+TEST 2
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Applications.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Applications possibles 3/5.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename SCHEMA/A_1_1_SLIDE.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+TEST 3
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Applications.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Applications possibles 4/5.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename SCHEMA/A_1_1_SLIDE.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+TEST 4
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Applications.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Applications possibles 5/5.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename SCHEMA/A_1_1_SLIDE.png
+	scale 60
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+TEST 5
+\end_layout
+
+\end_deeper
 \end_body
 \end_document

@@ -667,8 +667,9 @@ literal "false"
 
 ].
  Hors le cerveau n'a pas des poids qui ont été selectionné par l'evolution,
- mais ce qui est le cas la structure, dans la limite de la plasticité cerebrale
- des neurones à piques/impulsion [
+ mais ce qui est le cas la structure.
+ Il existe des version qui prenne en compte la plasticité cerebrale, comme
+ les neurone à piques [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "maass_networks_1997"
@@ -676,10 +677,12 @@ literal "false"
 
 \end_inset
 
-].
- L'idée est donc de s'impirer des donnée en neuroscience recente, ou il
- est montré qu'en plus d'etre interconnecté, le cerveau est pré-cablé/fonctionna
-lisé par module [
+], ou encore la prise en compte le réseau de production de motifs compositionnel
+s (CPPN) pour construire un reseau ANN à partir d'un motif adapté [Risi
+ et Stanley 2010].
+ L'idée est ici de s'impirer des donnée en neuroscience recente, ou il est
+ montré qu'en plus d'etre interconnecté, le cerveau est pré-cablé/fonctionnalisé
+ par module [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "rescorla_computational_2020"
@@ -687,8 +690,8 @@ literal "false"
 
 \end_inset
 
-], comme par exemple pour voir certain danger ou encore marcher à la naissance
- [
+], comme par exemple la pré-disposition pour voir certain danger ou encore
+ marcher à la naissance [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "rakison_infants_2008,ohman_fears_2001"
@@ -913,7 +916,13 @@ e des donnée d'entrée sont linéairement séparable (droite).
 \begin_layout Standard
 Cette operation revient à une suite de composition de fonction, ou à chaque
  couche, les donnée d'entrée non linéaire se déforme à chaque étapes par
- transformation linéaire.
+ transformation linéaire (Consequence du 
+\emph on
+\bar under
+théoreme d'approximation universelle
+\emph default
+\bar default
+ des ensembles réalisables.).
  C'est l'equivalent de l'astuce du noyau qui remplace un produit scalaire
  par une fonction d'estimation avec ou sans dimensition supplémentaire pour
  obtenir un probleme linéaire [
@@ -5367,7 +5376,7 @@ literal "false"
 
 \end_inset
 
-].
+, Troger 2009].
  Ces outils pourrait etre interessant pour des simulations de vie et pour
  mieux comprendre l'emergence des structure sociale [
 \begin_inset CommandInset citation
@@ -5499,6 +5508,14 @@ batch
  mais à la suite devient plus performant ? Cette question de comparasion
  entre le cycle d'hérédité et cycle d'entrainement est un probleme ouvert
  et pourra etre abordé dans le cadre d'un futur projet.
+ Une autre possibilité serait de le tester dans le cadre du traitement automatiq
+ue des langues, ou 
+\emph on
+Natural language processing
+\emph default
+ en anglais, car il dispose d'un mecanisme de mémoire par récurrance, et
+ est un des enjeux majeurs pour creer une machine universelle [Bates 1995]
+ et en particulier pour valider le test de Turing.
 \end_layout
 
 \begin_layout Standard
