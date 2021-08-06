@@ -1459,7 +1459,7 @@ Comment optimiser notre modèle pour des problèmes de classification ?
 status open
 
 \begin_layout Plain Layout
-Application.
+Pourquoi ca marche ?
 \end_layout
 
 \end_inset
@@ -1485,7 +1485,23 @@ Applications possibles 1/5.
 
 \begin_layout Standard
 \align center
-TEST 1
+
+\bar under
+Théorème d'approximation universelle :
+\bar default
+ un réseau de neurones 
+\begin_inset Quotes eld
+\end_inset
+
+
+\color red
+bien construit
+\color inherit
+
+\begin_inset Quotes erd
+\end_inset
+
+ peut approcher n'importe quelle fonction.
 \end_layout
 
 \end_deeper
@@ -1501,7 +1517,7 @@ TEST 1
 status open
 
 \begin_layout Plain Layout
-Applications.
+Un exemple : la base MNIST.
 \end_layout
 
 \end_inset
@@ -1517,7 +1533,7 @@ Applications possibles 2/5.
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename SCHEMA/A_1_1_SLIDE.png
+	filename SCHEMA/A_2_1_SLIDE.png
 	scale 60
 
 \end_inset
@@ -1527,7 +1543,17 @@ Applications possibles 2/5.
 
 \begin_layout Standard
 \align center
-TEST 2
+La reconnaissance de l'écriture (
+\color red
+image
+\color inherit
+) est un problème difficile.
+ 
+\end_layout
+
+\begin_layout Standard
+\align center
+Base MNIST (standard) pour trouver la configuration optimal d'un réseau.
 \end_layout
 
 \end_deeper
@@ -1543,7 +1569,18 @@ TEST 2
 status open
 
 \begin_layout Plain Layout
-Applications.
+Du NLP
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Natural language processing
+\end_layout
+
+\end_inset
+
+ au Test de Turing.
+ 
 \end_layout
 
 \end_inset
@@ -1559,7 +1596,7 @@ Applications possibles 3/5.
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename SCHEMA/A_1_1_SLIDE.png
+	filename SCHEMA/A_3_1_SLIDE.png
 	scale 60
 
 \end_inset
@@ -1569,7 +1606,8 @@ Applications possibles 3/5.
 
 \begin_layout Standard
 \align center
-TEST 3
+Comprendre la sémantique dans langage est une premiere etapes pour valider
+ le Test de Turing.
 \end_layout
 
 \end_deeper
@@ -1585,7 +1623,7 @@ TEST 3
 status open
 
 \begin_layout Plain Layout
-Applications.
+Retour sur l'agorithme.
 \end_layout
 
 \end_inset
@@ -1601,7 +1639,7 @@ Applications possibles 4/5.
 \begin_layout Standard
 \align center
 \begin_inset Graphics
-	filename SCHEMA/A_1_1_SLIDE.png
+	filename SCHEMA/A_4_1_SLIDE.png
 	scale 60
 
 \end_inset
@@ -1611,7 +1649,7 @@ Applications possibles 4/5.
 
 \begin_layout Standard
 \align center
-TEST 4
+L'algorithme va chercher la structure minimal pour un problème donnée.
 \end_layout
 
 \end_deeper
@@ -1627,7 +1665,7 @@ TEST 4
 status open
 
 \begin_layout Plain Layout
-Applications.
+Applications concrètes.
 \end_layout
 
 \end_inset
@@ -1640,22 +1678,24 @@ Applications.
 Applications possibles 5/5.
 \end_layout
 
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename SCHEMA/A_1_1_SLIDE.png
-	scale 60
+\begin_layout Itemize
 
-\end_inset
-
-
+\bar under
+Domaines/Exemples 
+\bar default
+:
 \end_layout
 
-\begin_layout Standard
-\align center
-TEST 5
+\begin_deeper
+\begin_layout Itemize
+Santé
 \end_layout
 
+\begin_layout Itemize
+Sports
+\end_layout
+
+\end_deeper
 \end_deeper
 \end_body
 \end_document
