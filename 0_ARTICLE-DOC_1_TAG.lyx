@@ -1062,9 +1062,22 @@ on tout aussi simple (Least Mean Square), mais ici présenté, la regle delta
 \end_layout
 
 \begin_layout Standard
-Lorsqu'on a une suite de neurone, on appelle la variation de cette relation
- sur l'ensemble du reseau, la descente de gradient, car on calcul le différentie
-l entre t+1 et t.
+Lorsqu'on a une suite de neurone, on appelle la variation de la relation
+ d'erreur sur l'ensemble du reseau suivant les 
+\begin_inset Quotes eld
+\end_inset
+
+poids+biais
+\begin_inset Quotes erd
+\end_inset
+
+, la 
+\emph on
+\bar under
+descente de gradient
+\emph default
+\bar default
+, car on calcul le différentiel de chacun des parametres du reseau.
  Cette derniere est dite stochastique lorsqu'on introduit un terme de variaton
  aléatoire et permet de trouver un minimum grobal plus efficassement.
  Le calcul de l'erreur global est assez complexe si le reseau de neurone
