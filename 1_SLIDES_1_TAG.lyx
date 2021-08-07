@@ -1665,7 +1665,7 @@ L'algorithme va chercher la structure minimal pour un problème donnée.
 status open
 
 \begin_layout Plain Layout
-Applications concrètes.
+Des applications concrètes ?
 \end_layout
 
 \end_inset
@@ -1678,24 +1678,30 @@ Applications concrètes.
 Applications possibles 5/5.
 \end_layout
 
-\begin_layout Itemize
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename SCHEMA/A_5_1_SLIDE.png
+	scale 55
 
-\bar under
-Domaines/Exemples 
-\bar default
-:
+\end_inset
+
+
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-Santé
+\begin_layout Standard
+\align center
+Un modèle généraliste 
+\begin_inset Quotes eld
+\end_inset
+
+pourrait
+\begin_inset Quotes erd
+\end_inset
+
+ résoudre l'ensemble à la fois.
 \end_layout
 
-\begin_layout Itemize
-Sports
-\end_layout
-
-\end_deeper
 \end_deeper
 \end_body
 \end_document
