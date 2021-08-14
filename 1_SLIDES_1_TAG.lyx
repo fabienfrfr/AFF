@@ -140,23 +140,16 @@ Mon parcours, mes compétences et mes centres interêts de 2006 à aujourd'hui.
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
 \begin_layout Itemize
 2006-2012 : Métiers de l'électricité avec alternance.
 \end_layout
 
 \begin_layout Itemize
-2012-2014 : L3-M1 en Physique appliquée 
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-Buckling along boundaries of elastic contrast as a mechanism for early vertebrat
-e morphogenesis, V.Fleury 2015
-\end_layout
-
-\end_inset
-
-.
+2012-2014 : L3-M1 en Physique appliquée .
  
 \color gray
 (
@@ -175,7 +168,7 @@ Num & Exp
 \bar under
 Doctorat :
 \bar default
- Caractérisation temporelle de la voie de signalisation TGF-
+ Caractérisation temporel de la voie de signalisation TGF-
 \begin_inset Formula $\beta$
 \end_inset
 
@@ -198,7 +191,23 @@ Doctorat :
 \end_layout
 
 \begin_layout Itemize
-2020-2021 : Préparation Agrégation Mathématique et Projet AI-Life.
+2020-2021 : Préparation Agrégation Mathématique et Projet IA-Life.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Buckling along boundaries of elastic contrast as a mechanism for early vertebrat
+e morphogenesis, V.Fleury 2015
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
