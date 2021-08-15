@@ -1625,8 +1625,12 @@ Applications possibles 3/5.
 
 \begin_layout Standard
 \align center
-Comprendre la sémantique dans langage est une premiere etapes pour valider
- le Test de Turing.
+Comprendre la sémantique du langage est une premiere étapes pour valider
+ le 
+\bar under
+Test de Turing
+\bar default
+.
 \end_layout
 
 \end_deeper
