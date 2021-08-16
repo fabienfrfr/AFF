@@ -1466,27 +1466,33 @@ spatiale
 \begin_inset Quotes eld
 \end_inset
 
-N
-\begin_inset Quotes erd
-\end_inset
-
-
-\series default
- perceptron, mais ne represente plus comme un produit tensoriel, mais comme
- un produit de convolution où les entrée sont moyenné pondérément par le
- glissement 
-\series bold
-
-\begin_inset Quotes eld
-\end_inset
-
 C
 \begin_inset Quotes erd
 \end_inset
 
 
 \series default
- d'une fenetre de taille 
+ canaux de 
+\series bold
+
+\begin_inset Quotes eld
+\end_inset
+
+N
+\begin_inset Quotes erd
+\end_inset
+
+
+\series default
+ neurone ou pour l'ensemble des neurone d'un canal, ils se partage les meme
+ poids, ou 
+\emph on
+weight sharing
+\emph default
+ en anglais.
+ De cette facon, les opérations ne represente plus comme un produit tensoriel,
+ mais comme un produit de convolution où les entrée sont moyenné pondérément
+ par le glissement d'une fenetre de taille 
 \series bold
 
 \begin_inset Quotes eld
@@ -1665,7 +1671,16 @@ literal "false"
 
 \end_inset
 
-].
+], mais aussi dans le cadre de trouble 
+\begin_inset Quotes eld
+\end_inset
+
+dys
+\begin_inset Quotes erd
+\end_inset
+
+, comme par exemple l'adaptation de la fonction sémantique en cas de dyslexie
+ [ref necessaire].
  
 \end_layout
 
@@ -5281,6 +5296,9 @@ literal "false"
  ci serait lié à des sortie d'action, mais aussi quelque connection entre
  module neuronaux, elle meme générer par un processus evolutif similaire.
  L'ensemble formerai ce qu'on pourrait appeller un système.
+ Le principal probleme est donc de trouver le moyen de connecter les differents
+ module (Criticalité, Neurogenese [Draelos 2017], etc.) et leurs interaction
+ (auto-encoder [Kingma 2014], arbre de decision [Wagner 1975], spikes, etc.).
 \end_layout
 
 \begin_layout Standard
