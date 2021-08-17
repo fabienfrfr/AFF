@@ -679,7 +679,9 @@ literal "false"
 
 ], ou encore la prise en compte le réseau de production de motifs compositionnel
 s (CPPN) pour construire un reseau ANN à partir d'un motif adapté [Risi
- et Stanley 2010].
+ et Stanley 2010] sur un probleme de comportemental T-Maze [Dostrovsky,
+ J.
+ (1971)].
  L'idée est ici de s'impirer des donnée en neuroscience recente, ou il est
  montré qu'en plus d'etre interconnecté, le cerveau est pré-cablé/fonctionnalisé
  par module [
