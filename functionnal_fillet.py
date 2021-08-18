@@ -3,12 +3,6 @@
 """
 Created on Mon Aug  1 21:09:28 2021
 @author: fabien
-
-dataset test :
-    XOR https://svitla.com/blog/how-to-build-a-neural-network-on-tensorflow-for-xor 
-    MNIST https://www.tensorflow.org/datasets/keras_example
-    IMDb https://www.tensorflow.org/text/tutorials/text_classification_rnn
-
 """
 
 import numpy as np, pylab as plt
