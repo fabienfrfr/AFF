@@ -353,7 +353,9 @@ Modélisation
 \bar under
 Apprentissage :
 \bar default
- ANN + Graphes + Algo évolutif = ENN
+ 
+\color red
+ANN + Graphes + Algo évolutif = ENN
 \end_layout
 
 \begin_layout Itemize
@@ -492,6 +494,14 @@ apprentissage
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+Cette définition est-elle adapté ? 
+\bar under
+Découverte :
+\bar default
+ le principe d'émergence !
+\end_layout
+
 \begin_layout ExampleBlock
 \begin_inset Argument 2
 status collapsed
@@ -510,7 +520,7 @@ Jeu de la vie de Conway, ici le canon à planeur.
 \align center
 \begin_inset Graphics
 	filename SCHEMA/I_1_1_SLIDE.png
-	scale 40
+	scale 30
 
 \end_inset
 
@@ -603,7 +613,7 @@ pensée
 status open
 
 \begin_layout Plain Layout
-Les modules du cerveau ont été faconnés par l'évolution.
+Les modules du cerveau ont été façonnés par l'évolution.
 \end_layout
 
 \end_inset
@@ -838,8 +848,16 @@ entrée virtuelle
  si récurrence.
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
-Les entrées doivent correspondre à la 
+Récurrence = connection vers l'arrière = mémoire
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\color lightgray
+Les entrées correspondent à la 
 \begin_inset Quotes eld
 \end_inset
 
@@ -847,15 +865,19 @@ vue
 \begin_inset Quotes erd
 \end_inset
 
- de l'agent : couche de convolution.
+ : couche de convolution.
 \end_layout
 
 \begin_layout Itemize
+
+\color lightgray
 Les sorties doivent correspondre à l'action de l'agent.
 \end_layout
 
 \begin_layout Itemize
-Le jeu de vie doit combiner des stratégies de proies/prédateurs simples.
+
+\color lightgray
+Le jeu de vie doit combiner des stratégies de proies/prédateurs.
 \end_layout
 
 \end_deeper
@@ -956,7 +978,12 @@ Liste d'adjacence pour chaque couche (stockage de l'information).
 
 \end_deeper
 \begin_layout Standard
-Quelles règles pour changer le réseau au cours des générations ? (mutation)
+\align center
+Quelles règles pour changer le réseau au cours des générations ? (
+\color red
+mutation
+\color inherit
+)
 \end_layout
 
 \end_deeper
@@ -1478,7 +1505,7 @@ Comment optimiser notre modèle pour des problèmes de classification ?
 status open
 
 \begin_layout Plain Layout
-Pourquoi ca marche ?
+Pourquoi ça marche ?
 \end_layout
 
 \end_inset
@@ -1625,7 +1652,7 @@ Applications possibles 3/5.
 
 \begin_layout Standard
 \align center
-Comprendre la sémantique du langage est une premiere étapes pour valider
+Comprendre la sémantique du langage est une première étape pour valider
  le 
 \bar under
 Test de Turing
@@ -1672,7 +1699,7 @@ Applications possibles 4/5.
 
 \begin_layout Standard
 \align center
-L'algorithme va chercher la structure minimal pour un problème donnée.
+L'algorithme va chercher la structure minimal pour un problème donné.
 \end_layout
 
 \end_deeper
@@ -1723,6 +1750,39 @@ pourrait
 \end_inset
 
  résoudre l'ensemble à la fois.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename SCHEMA/F_1_1_SLIDE.png
+	scale 60
+
+\end_inset
+
+
 \end_layout
 
 \end_deeper
