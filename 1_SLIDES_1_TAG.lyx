@@ -1824,6 +1824,8 @@ Mesure des effets plus facile à interprêter.
 \end_layout
 
 \begin_layout Standard
+
+\bar under
 Contre-exemple :
 \end_layout
 
@@ -1870,6 +1872,8 @@ Limite du biomimétisme : Les avions ne battent pas des ailes.
 \end_layout
 
 \begin_layout Standard
+
+\bar under
 Contre-exemple :
 \end_layout
 
@@ -1914,11 +1918,100 @@ Les GPUs sont construits pour ca aujourd'hui !
 
 \end_deeper
 \begin_layout Standard
+
+\bar under
 Contre-exemple :
 \end_layout
 
 \begin_layout Itemize
 MuJoCo and Robotics evolution
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Pourquoi ne pas structurer le réseau à la main ?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Remarques bonus 4/N!
+\end_layout
+
+\begin_layout Itemize
+L'exploration des structures longues et trop de possibilité d'ensemble réalisabl
+e au dela de 2 couches de neurones.
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Contre-exemple :
+\end_layout
+
+\begin_layout Itemize
+Optimisation mathématique permet de trouver la plus petite structure
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+(pas de structure vestigiale)
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Pourquoi ne pas ajouter de structure artificiel ?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Remarques bonus 5/N!
+\end_layout
+
+\begin_layout Itemize
+LSTM n'existe pas dans le vivant.
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Contre-exemple :
+\end_layout
+
+\begin_layout Itemize
+Mécanisme d'attention (artificiel) ont permit de faire un bon dans la recherche.
 \end_layout
 
 \end_deeper
