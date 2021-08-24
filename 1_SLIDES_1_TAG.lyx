@@ -108,8 +108,8 @@ etwork Tools for Life Emergence and More
 F.Furfaro - 2021
 \end_layout
 
-\begin_layout Date
-Conference on Fabulous Presentations, 2021
+\begin_layout Institute
+Conference on AI, Artificial Life and Application
 \end_layout
 
 \begin_layout Frame
@@ -1786,5 +1786,148 @@ status open
 \end_layout
 
 \end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Pourquoi se limiter à la vie 2D ?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Remarques bonus 1/N!
+\end_layout
+
+\begin_layout Itemize
+Paramètre plus facile à contrôler.
+\end_layout
+
+\begin_layout Itemize
+Mesure des effets plus facile à interprêter.
+\end_layout
+
+\begin_layout Itemize
+(...)
+\end_layout
+
+\begin_layout Standard
+Contre-exemple :
+\end_layout
+
+\begin_layout Itemize
+OpenWorm
+\end_layout
+
+\begin_layout Itemize
+Sandbox game
+\end_layout
+
+\begin_layout Itemize
+Darwin Pond
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Pourquoi ne pas copier un vrai neurone ?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Remarques bonus 2/N!
+\end_layout
+
+\begin_layout Itemize
+Limite du biomimétisme : Les avions ne battent pas des ailes.
+\end_layout
+
+\begin_layout Standard
+Contre-exemple :
+\end_layout
+
+\begin_layout Itemize
+Human Brain Project (Spikes)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Pourquoi ne pas réutiliser NEAT ?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout FrameSubtitle
+Remarques bonus 3/N!
+\end_layout
+
+\begin_layout Itemize
+NEAT ne permet pas un calcul tensoriel efficasse :
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Les GPUs sont construits pour ca aujourd'hui !
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Contre-exemple :
+\end_layout
+
+\begin_layout Itemize
+MuJoCo and Robotics evolution
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
 \end_body
 \end_document

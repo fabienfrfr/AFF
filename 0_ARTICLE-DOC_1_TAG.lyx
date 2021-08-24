@@ -282,7 +282,8 @@ literal "false"
 
 \end_inset
 
-], et sont, avec la construction de cellules minimaliste [
+], mais aussi openWorm+DarwinPond, et sont, avec la construction de cellules
+ minimaliste [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "fredens_total_2019"
@@ -677,10 +678,10 @@ literal "false"
 
 \end_inset
 
-], ou encore la prise en compte le réseau de production de motifs compositionnel
-s (CPPN) pour construire un reseau ANN à partir d'un motif adapté [Risi
- et Stanley 2010] sur un probleme de comportemental T-Maze [Dostrovsky,
- J.
+] en recreant un cerveau (Human Brain Project : erreur du biomimétisme ?),
+ ou encore la prise en compte le réseau de production de motifs compositionnels
+ (CPPN) pour construire un reseau ANN à partir d'un motif adapté [Risi et
+ Stanley 2010] sur un probleme de comportemental T-Maze [Dostrovsky, J.
  (1971)].
  L'idée est ici de s'impirer des donnée en neuroscience recente, ou il est
  montré qu'en plus d'etre interconnecté, le cerveau est pré-cablé/fonctionnalisé
@@ -5301,6 +5302,7 @@ literal "false"
  Le principal probleme est donc de trouver le moyen de connecter les differents
  module (Criticalité, Neurogenese [Draelos 2017], etc.) et leurs interaction
  (auto-encoder [Kingma 2014], arbre de decision [Wagner 1975], spikes, etc.).
+ Utilisation possible en robotique [Doncieux 2015] via MuJoCo.
 \end_layout
 
 \begin_layout Standard
