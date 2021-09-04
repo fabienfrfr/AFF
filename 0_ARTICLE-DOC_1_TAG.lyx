@@ -554,7 +554,7 @@ literal "false"
 
 ], on devellopa les reseau de neurone convolutif qui reduit fortement le
  calcul des poids en entrée du reseau, car n'est pas entiereement connecté
- [
+ et partage les poids [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "ciresan_multi-column_2012"
@@ -641,7 +641,11 @@ literal "false"
 
 ], en particulier pour le traitement du texte.
  Une autre catégorie de reseau est apparu dans la fin des années 1990, les
- reseau NEAT, ou les poids et les connexion sont 
+ reseau 
+\emph on
+NEAT
+\emph default
+, ou les poids et les connexion sont 
 \begin_inset Quotes eld
 \end_inset
 
@@ -796,7 +800,7 @@ csv
 \end_layout
 
 \begin_layout Section
-Reseau de neurone évolutif
+Initialisation du réseau de neurone multicouche 
 \begin_inset CommandInset label
 LatexCommand label
 name "sec:Reseau-de-neurone"
@@ -804,6 +808,53 @@ name "sec:Reseau-de-neurone"
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+À REVOIR préambule (résumé + lien code) : 
+\end_layout
+
+\begin_layout Enumerate
+Définir perceptron et exemple fonction d'activation ReLu
+\end_layout
+
+\begin_layout Enumerate
+Définir multicouche, exemple fonction créneau, Logique combinatoire, Th
+ approximation universelle
+\end_layout
+
+\begin_layout Enumerate
+Objectif : poids = Fonction d'erreur, cas linéaire, cas variation d'echelle
+\end_layout
+
+\begin_layout Enumerate
+Formule du gradient : dérivée composée via graphe de calculs, exemple reseau
+ de neurone
+\end_layout
+
+\begin_layout Enumerate
+Algorithme du gradient : estimation de la prochaine valeurs (pour dérivé
+ connu) : stochastique, complet, lots
+\end_layout
+
+\begin_layout Enumerate
+Retropropagation : algorithme du gradient pour le cas 
+\begin_inset Quotes eld
+\end_inset
+
+fonction d'erreur
+\begin_inset Quotes erd
+\end_inset
+
+ : prédiction/modele
+\end_layout
+
+\begin_layout Enumerate
+Nombre de neurone elevée par couche : Tenseur
+\end_layout
+
+\begin_layout Enumerate
+Alternative : Reseau convolutif, exemple de weight sharing
 \end_layout
 
 \begin_layout Standard
@@ -2461,6 +2512,8 @@ literal "false"
 \end_inset
 
 ].
+ Comparaison mon modele avec droppout (mettre des poids à 0, pour trouver
+ d'autre minima de fonction).
  Pour autant, dans le vivant et d'apres les théories de l'apprentissage,
  il n'y a pas besoin d'un tres grand nombre d'experience pour qu'un cerveau
  apprenne efficassement un probleme [
@@ -5303,6 +5356,7 @@ literal "false"
  module (Criticalité, Neurogenese [Draelos 2017], etc.) et leurs interaction
  (auto-encoder [Kingma 2014], arbre de decision [Wagner 1975], spikes, etc.).
  Utilisation possible en robotique [Doncieux 2015] via MuJoCo.
+ Notion de sens commun (citation de Yann LeCun)
 \end_layout
 
 \begin_layout Standard
