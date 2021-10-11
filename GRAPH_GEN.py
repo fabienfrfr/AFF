@@ -16,7 +16,7 @@ class GRAPH():
         # assign parameter
         self.IO = I, O
         # nombre de perceptron dans les couches "hidden"
-        P_MAX = np.rint(np.sqrt(NB_P_GEN)+2).astype(int) # empiric
+        P_MAX = I+O #np.rint(np.sqrt(NB_P_GEN)+2).astype(int)
         NB_PERCEPTRON_HIDDEN = np.random.randint(P_MIN,P_MAX+1)
         
         # nombre de connection minimal (invariant)
@@ -144,3 +144,7 @@ class GRAPH():
             NEW_NEURON_LIST[i,-1] = C_LAYER
             i += 1
         return np.array(NEW_NEURON_LIST)
+    
+if __name__ == '__main__' :
+    g = GRAPH(16,9,3,1)
+    print(g.NEURON_LIST)
