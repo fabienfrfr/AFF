@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Sun Jan 10 16:19:36 2021
-
 @author: fabien
 """
 
@@ -28,7 +27,7 @@ class GRAPH_EAT(GRAPH):
         IO, NEURON_LIST, LIST_C = self.IO, copy.deepcopy(self.NEURON_LIST), copy.deepcopy(self.LIST_C)
         # adding mutation (variation)
         if MUT == None :
-            MUT = np.random.choice(5, p=4*[0.225]+[0.1])
+            MUT = np.random.choice(6)
         #print('Mutation type : '+str(MUT))
         if MUT == 0 :
             # add connection
@@ -45,6 +44,9 @@ class GRAPH_EAT(GRAPH):
         elif MUT == 4 :
             # cut neuron
             NEURON_LIST, LIST_C = self.CUT_NEURON(NEURON_LIST, LIST_C)
+        elif MUT == 5 :
+            # permute 2 connection
+            NEURON_LIST = self.C_PERMUTATION(NEURON_LIST)
         # return neuronList with mutation or not
         return GRAPH_EAT(None,[IO, NEURON_LIST.copy(), LIST_C.copy()])
     
@@ -72,19 +74,42 @@ class GRAPH_EAT(GRAPH):
         # update list_connection
         LIST_C = self.LISTING_CONNECTION(NEURON_LIST.shape[0]-1, NEURON_LIST[:,:-1])
         return NEURON_LIST, LIST_C
-
+    
+    def C_PERMUTATION(self, NEURON_LIST):
+        ## only 2 neuron permut
+        choosable = np.where(NEURON_LIST[:,2]>1)[0]
+        if len(choosable) <= 1 :
+            return NEURON_LIST
+        # select 2 layers
+        i,j = np.random.choice(choosable, 2, replace=False)
+        # select index (first not included)
+        p = np.random.randint(NEURON_LIST[i,2]-1)+1
+        q = np.random.randint(NEURON_LIST[j,2]-1)+1
+        # save values
+        c = NEURON_LIST[i,-1][p]
+        d = NEURON_LIST[j,-1][q]
+        # permute
+        NEURON_LIST[i,-1][p] = d
+        NEURON_LIST[j,-1][q] = c
+        return NEURON_LIST
+    
     def ADD_LAYERS(self, NEURON_LIST, LIST_C):
-        # new one neuron layers (erreur ne doit pas etre au meme endroit)
+        # new one neuron layers test
         idx_new = NEURON_LIST[:,0].max() + 1
-        POS_X_new = np.random.randint(1,NEURON_LIST[:,3].max())
+        max_pos = NEURON_LIST[:,3].max()
+        possible_pos = np.setdiff1d(np.arange(1,max_pos), NEURON_LIST[:,3])
+        if len(possible_pos) == 0:
+            return NEURON_LIST, LIST_C
+        # add position and init
+        POS_X_new = np.random.choice(possible_pos, 1, replace=False)
         NEW_NEURON = np.array([idx_new, 1, 1, POS_X_new, []])
-        # connection of new neuron input
-        IDX_C = np.where(LIST_C[:,0] < POS_X_new)[0]
+        # connection of new neuron input (not downstream neuron necessary)
+        IDX_C = np.where(LIST_C[:,0] < max_pos)[0]
         idx_c = IDX_C[np.random.randint(IDX_C.shape[0])]
         list_c = LIST_C[idx_c, 1:] ; #print(list_c)
         NEW_NEURON[-1] = [list(list_c)]
-        # adding connection of downstream neuron (REVOIR : car pas necessaire de vers l'avant, ne doit pas etre au meme endroit c'est tout! )
-        IDX_N = np.where(NEURON_LIST[:,3] > POS_X_new)[0]
+        # adding connection (not downstream neuron necessary : only in first constructions)
+        IDX_N = np.where(NEURON_LIST[:,3] < max_pos)[0]
         idx_n = IDX_N[np.random.randint(IDX_N.shape[0])]
         NEURON_LIST[idx_n, 2] += 1
         NEURON_LIST[idx_n, -1] += [[idx_new, 0]]
@@ -118,26 +143,31 @@ class GRAPH_EAT(GRAPH):
         # listing of connection
         CONNECT_DATA = self.CONNECTED_DATA(NEURON_LIST)
         ## find possible neuron (no ones connection)
-        c_n, ret = np.unique(CONNECT_DATA[:,0], return_counts=True)
+        c_n, idx_first, ret = np.unique(CONNECT_DATA[:,0], return_counts=True, return_index=True)
         idx_ones = c_n[np.where(ret == 1)[0]]
-        # ones verif
+        # ones verif (unselect neuron with one connection)
         if idx_ones.shape[0] != 0 :
             # select index
             bool_o  = np.any([CONNECT_DATA[:,0] == i for i in idx_ones], axis = 0)
-            C = CONNECT_DATA[bool_o,2:]
+            Co = CONNECT_DATA[bool_o,2:]
             # select doublon
-            bool_o_ = np.any([(CONNECT_DATA[:,2:] == d).all(axis=1) for d in C], axis=0)
+            bool_o_ = np.any([(CONNECT_DATA[:,2:] == d).all(axis=1) for d in Co], axis=0)
             # choose neuron
             C_ = CONNECT_DATA[np.invert(bool_o_), 2:]
         else :
             # choose neuron
             C_ = CONNECT_DATA[:, 2:]
+        # delete first link (vestigial)
+        Cf = CONNECT_DATA[idx_first, 2:]
+        bool_f_ = np.any([(C_ == f).all(axis=1) for f in Cf], axis=0)
+        bool_f = np.invert(bool_f_)
+        C_ = C_[bool_f]
         # delete input
         C_ = C_[C_[:,0] != 0]
         # return if no connection
         if C_.shape[0] == 0 :
             return NEURON_LIST, LIST_C
-        # choise index (REVOIR : ne pas choisir la premiere connection ??? pour garder un lien entre l'entrée et la sortie)
+        # choise index
         idx, idx_ = C_[np.random.randint(C_.shape[0])]
         IDX = np.where(NEURON_LIST[:,0] == idx)[0]
         # return if no neuron
@@ -153,7 +183,7 @@ class GRAPH_EAT(GRAPH):
             # boolean element
             egal = (list_c == [idx, idx_]).all(axis=1)
             sup_ = (list_c[:,0] == idx) * (list_c[:,1] >= idx_)
-            # change connection (permutation)
+            # change connection (shift empty)
             if sup_.any() :
                 list_c[sup_,1] -= 1
                 list_c = list_c[np.invert(egal)]
@@ -173,3 +203,14 @@ class GRAPH_EAT(GRAPH):
             CONNECT_DATA += [np.concatenate((idx,idx_,c),axis=1)]
         CONNECT_DATA = np.concatenate(CONNECT_DATA)
         return CONNECT_DATA
+
+
+if __name__ == '__main__' :
+    g = GRAPH_EAT([9, 9, 3, 1], None)
+    nl = g.NEURON_LIST
+    print('init : ' + str([len(nl), sum(nl[:,1]), sum(nl[:,2])]))
+    mut = ['addco', 'addn', 'addl', 'delco', 'deln','permc']
+    for i in range(6):
+        h = g.NEXT_GEN(i)
+        nl = h.NEURON_LIST
+        print(mut[i] + ' : ' + str([len(nl), sum(nl[:,1]), sum(nl[:,2])]))
