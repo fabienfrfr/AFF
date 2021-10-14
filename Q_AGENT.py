@@ -147,3 +147,7 @@ class Q_AGENT():
         GRAPH = self.NET.NEXT_GEN(MUT)
         XY_TUPLE = (self.X,self.Y)
         return Q_AGENT(*self.ARG, NET = GRAPH, COOR = XY_TUPLE)
+
+if __name__ == '__main__' :
+    ARG = ((9,3),25, 16, 16, 12)
+    q = Q_AGENT(*ARG)

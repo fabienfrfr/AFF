@@ -24,6 +24,7 @@ class TAG_ENV():
         self.UPDATE_MAP()
         ## AGENT INFO
         self.AGENT_VIEW, self.AGENT_MOVE = AGENT_PROP
+        self.MVT = np.array([], dtype=int)
         ## ENDING
         self.SCORE = 0
         self.END = np.inf
@@ -46,6 +47,7 @@ class TAG_ENV():
         return prev_state
         
     def STEP(self, action) :
+        self.MVT = np.append(self.MVT,[action+1])
         ## UPDATE POS 
         # FOR "PNJ" :
         VECT = self.PNJ_POS - self.AG_POS
@@ -54,13 +56,13 @@ class TAG_ENV():
             if VECT[COOR] != 0 :
                 self.PNJ_POS[COOR] -= np.sign(VECT[COOR])
         else :
-            if np.random.choice([True, False], p=[0.9,0.1]) :
+            if np.random.choice([True, False], p=[0.65,0.35]) :
                 COOR = np.where(abs(VECT)==abs(VECT).min())[0][0]
                 SIGN = np.sign(VECT[COOR])
             else :
                 COOR = np.random.randint(2)
                 SIGN = np.random.randint(-1,2)
-            self.PNJ_POS[COOR] = np.mod(self.PNJ_POS[COOR] - SIGN, self.MAP_SIZE)
+            self.PNJ_POS[COOR] = np.mod(self.PNJ_POS[COOR] + SIGN, self.MAP_SIZE)
         self.PNJ_LIST += [list(self.PNJ_POS)]
         # FOR "AGENT" :
         MVT = self.AGENT_MOVE[action]
@@ -74,25 +76,34 @@ class TAG_ENV():
         ## Games rules (politics)
         GAP =  np.linalg.norm(self.PNJ_POS - self.AG_POS)
         reward = 0
+        # Cheating diagonal
+        for i in range(3,6) :
+            if self.MVT.size > i :
+                if np.unique(self.MVT[-i:]).size == 1 :
+                    reward = -i
         # PNJ is "IT"
-        if self.IT :
-            if GAP == 0 :
+        if self.IT and reward == 0 :
+            if GAP <= np.sqrt(2) :
                 reward = -10
                 self.IT = np.invert(self.IT)
-            elif GAP <= np.sqrt(2) :
+            elif GAP <= np.sqrt(5) :
                 reward = -1
-            elif GAP > 10 :
+            else :
                 reward = 1
         # AGENT is "IT"
-        else :
-            if GAP == 0 :
+        elif reward == 0 :
+            if GAP <= np.sqrt(2) :
                 reward = +10
                 self.IT = np.invert(self.IT)
-            elif GAP <= np.sqrt(2) :
+            elif GAP <= np.sqrt(5) :
                 reward = +1
-            elif GAP > 10 :
+            else :
                 reward = -1
         self.IT_LIST += [self.IT]
+        ## change position of PNJ if GAP == 0
+        if GAP == 0 :
+            RANDOM_WALK = np.random.randint(-3,4,2)
+            self.PNJ_POS = np.mod(self.PNJ_POS + RANDOM_WALK, self.MAP_SIZE)
         ## ending condition
         self.SCORE += reward
         if abs(self.SCORE) > self.END :
@@ -100,3 +111,16 @@ class TAG_ENV():
         else :
             DONE = False
         return new_state, reward, DONE
+
+if __name__ == '__main__' :
+    X = np.array([[0,0],[1,1],[0,3],[2,3],[2,4],[3,0],[3,2],[4,1],[4,4]])-[2,2]
+    Y = np.array([[1,0],[0,1],[2,2]])-[1,1]
+    t = TAG_ENV(16,[X,Y])
+    for i in range(25):
+        v = t.STEP(np.random.randint(3))
+        print(v)
+    import pylab as plt
+    pnj = np.array(t.PNJ_LIST)
+    agt = np.array(t.AG_LIST)
+    plt.plot(pnj[:,0], pnj[:,1])
+    plt.plot(agt[:,0], agt[:,1])

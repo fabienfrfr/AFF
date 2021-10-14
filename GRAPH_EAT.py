@@ -101,7 +101,7 @@ class GRAPH_EAT(GRAPH):
         if len(possible_pos) == 0:
             return NEURON_LIST, LIST_C
         # add position and init
-        POS_X_new = np.random.choice(possible_pos, 1, replace=False)
+        POS_X_new = np.random.choice(possible_pos, 1, replace=False)[0]
         NEW_NEURON = np.array([idx_new, 1, 1, POS_X_new, []])
         # connection of new neuron input (not downstream neuron necessary)
         IDX_C = np.where(LIST_C[:,0] < max_pos)[0]
@@ -214,3 +214,4 @@ if __name__ == '__main__' :
         h = g.NEXT_GEN(i)
         nl = h.NEURON_LIST
         print(mut[i] + ' : ' + str([len(nl), sum(nl[:,1]), sum(nl[:,2])]))
+        #print(nl)

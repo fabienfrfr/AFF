@@ -14,20 +14,15 @@ import EXTRA_FUNCTION as EF
 
 ################################ PARAMETER
 # files
-CSV_FILE = 'OUT/LYFE_EXP_20210607_200927_.csv' # 'OUT/LYFE_EXP_20210509_163710_.csv'
+CSV_FILE = 'OUT/LYFE_EXP_20211014_185339_.csv' # 'OUT/LYFE_EXP_20210509_163710_.csv'
 # animation
 N_FRAME = 10 # 10 --> N*50 --> MAX
-# 
 
 ################################ IMPORT DATA (CSV)
-col_type = {'TREE' : ast.literal_eval,
-            'DENSITY_IN' : ast.literal_eval,
-            'DENSITY_OUT' : ast.literal_eval,
-            'IN_COOR' : ast.literal_eval,
-            'OUT_COOR' : ast.literal_eval,
-            'NEURON_LIST' : ast.literal_eval,
-            'AGENT_POS' : ast.literal_eval,
-            'PNJ_POS' : ast.literal_eval}
+with open(CSV_FILE) as f:
+    COL_NAME = f.readline().split('\n')[0].split(';')
+
+col_type = {col : ast.literal_eval for col in COL_NAME}
 
 DF = pd.read_csv(CSV_FILE, sep=';', converters=col_type)
 
@@ -67,8 +62,9 @@ ANIM_MAP = EF.MAP_ANIM(NB_P_GEN, MAP_SIZE)
 # add data
 ANIM_MAP.add_data([AGENT_POS, PNJ_POS, IN_VIEW])
 # animate
-ANIM_MAP.animate(FRAME = N_FRAME)
+ANIM_MAP.animate()
 
+"""
 ### DENSITY CARACTERISATION
 # List of density
 D_IN, D_OUT = [], []
@@ -292,6 +288,14 @@ plt.hist(THETA, density=True)
 
 plt.savefig("OUT/TRAJ_HIST.png", dpi=600)
 plt.show(); plt.close()
+
+"""
+
+
+
+
+
+
 """
 
 ### SCORE DISTRIBUTION

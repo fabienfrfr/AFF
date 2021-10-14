@@ -16,13 +16,15 @@ from LOG_GEN import LOG_INFO
 
 ################################ EXPERIMENTAL PARAMETER (inverted name : need 2 change)
 IO = (9,3) # don't change here (not optimized yet)
-NB_GEN = 10
-batch_size = 16
-MAP_SIZE = 16
-N_TIME = 12
+NB_GEN = 25
+batch_size = 25
+MAP_SIZE = 12
+N_TIME = 25
 NB_P_GEN = 5**2
 
 ARG_TUPLE = (IO,NB_GEN, batch_size, MAP_SIZE, N_TIME, NB_P_GEN)
+
+VIDEO = True
 
 ################################ LYFE EXPERIMENT's 
 class LYFE():
@@ -122,5 +124,9 @@ class LYFE():
             p.INIT_ENV(self.ENV[-1])
         
 if __name__ == '__main__' :
+    # experiment
     EXP = LYFE(ARG_TUPLE)
     EXP.LAUNCH()
+    # video
+    if VIDEO :
+        print("VIDEO : not yet")
