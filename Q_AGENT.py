@@ -12,7 +12,7 @@ from pRNN_GEN import pRNN
 
 ################################ AGENT
 class Q_AGENT():
-    def __init__(self, *arg, NET = None, DENSITY_IO = None, COOR = None):
+    def __init__(self, *arg, CTRL=False, NET = None, DENSITY_IO = None, COOR = None):
         self.P_MIN = 1
         # Parameter
         self.ARG = arg
@@ -21,6 +21,8 @@ class Q_AGENT():
         self.batch_size = arg[2]
         self.N_TIME = arg[4]
         ## Init
+        if CTRL :
+            NET,COOR = self.CONTROL_NETWORK()
         if NET == None :
             self.NET = GRAPH_EAT([self.NB_P_GEN, self.IO[0], self.IO[1], self.P_MIN], None)
         else :
@@ -147,6 +149,20 @@ class Q_AGENT():
         GRAPH = self.NET.NEXT_GEN(MUT)
         XY_TUPLE = (self.X,self.Y)
         return Q_AGENT(*self.ARG, NET = GRAPH, COOR = XY_TUPLE)
+    
+    ## control group
+    def CONTROL_NETWORK(self):
+        # init number of connection per layer
+        """NB_H_LAYER = 2"""
+        """NB_C_P_LAYER = int(np.sqrt(self.IO[0]) + np.sqrt(self.IO[1]))"""
+        # network equivalence
+        NET = np.array([[-1, 3, 4, 32, [[2,0],[2,1],[2,2],[2,3]]],
+                        [ 1, 4, 9, 10, [[0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8]]],
+                        [ 2, 4, 4, 20, [[1,0],[1,1],[1,2],[1,3]]]])
+        # I/O minimalisme
+        X = np.array([[0,0],[0,2],[0,4],[2,0],[2,2],[2,4],[4,0],[4,2],[4,4]])-[2,2]
+        Y = np.array([[0,1],[1,2],[2,0]])
+        return NET, (X,Y)
 
 if __name__ == '__main__' :
     ARG = ((9,3),25, 16, 16, 12)

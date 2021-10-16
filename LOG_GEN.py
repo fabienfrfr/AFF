@@ -116,7 +116,7 @@ class LOG_INFO():
         # MERGE DF1 + DF2 (pointer)
         self.DF = pd.merge(self.DF_1, self.DF_2, on="ID")
     
-    def DENSITY(self, PLAYS, ORDER, NB_GEN):
+    def DENSITY(self, PLAYS, ORDER, NB_GEN, IMSHOW=False):
         IN_DENSITY = np.zeros((5,5))
         OUT_DENSITY = np.zeros((3,3))
         # loop
@@ -149,9 +149,10 @@ class LOG_INFO():
         OUT_DENSITY = OUT_DENSITY/OUT_DENSITY.sum()
         # update density
         self.DENSITY_IO = IN_DENSITY, OUT_DENSITY
-        # PLOT (provisoire)
-        plt.imshow(IN_DENSITY); plt.colorbar(); plt.show(); plt.close()
-        plt.imshow(OUT_DENSITY); plt.colorbar(); plt.show(); plt.close()
+        if IMSHOW :
+            # PLOT (provisoire)
+            plt.imshow(IN_DENSITY); plt.colorbar(); plt.show(); plt.close()
+            plt.imshow(OUT_DENSITY); plt.colorbar(); plt.show(); plt.close()
         
     def ROTATION_3(self, X_CENTER, NEW_CENTER) :
         THETA = np.linspace(np.pi/2, (3./2)*np.pi, 3)

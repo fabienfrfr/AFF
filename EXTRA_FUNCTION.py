@@ -127,7 +127,7 @@ class MAP_ANIM():
             FRAME = self.TIME_DURATION
         self.anim = animation.FuncAnimation(self.fig, self.anim_update, frames=FRAME, interval=1, blit=False)
         self.anim.save(filename= os.getcwd() + os.path.sep + 'OUT' + os.path.sep + 'MAP_LYFE.mp4', writer='ffmpeg', fps=25) # png for alpha
-        plt.savefig(os.getcwd() + os.path.sep + 'OUT' + os.path.sep + 'MAP_LYFE.png', dpi = 120)
+        plt.savefig(os.getcwd() + os.path.sep + 'OUT' + os.path.sep + 'MAP_LYFE.png', dpi = 360)
         plt.show()
 
 def NEURON_2_GRAPH(NEURON_INFO, LINK_LAYERS = True):

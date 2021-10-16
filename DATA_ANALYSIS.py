@@ -14,18 +14,67 @@ import EXTRA_FUNCTION as EF
 
 ################################ PARAMETER
 # files
-CSV_FILE = 'OUT/LYFE_EXP_20211014_185339_.csv' # 'OUT/LYFE_EXP_20210509_163710_.csv'
+CSV_FILE = 'OUT/LYFE_EXP_20211015_190911_.csv' # 'OUT/LYFE_EXP_20210509_163710_.csv'
 # animation
-N_FRAME = 10 # 10 --> N*50 --> MAX
+N_FRAME = None
 
-################################ IMPORT DATA (CSV)
-with open(CSV_FILE) as f:
-    COL_NAME = f.readline().split('\n')[0].split(';')
+################################ MODULE
+class DATA_MEANING():
+    def __init__(self, CSV_PATH):
+        ### import csv 2 dataframe
+        with open(CSV_PATH) as f:
+            COL_NAME = f.readline().split('\n')[0].split(';')
+            print(COL_NAME)
+        col_type = {col : ast.literal_eval for col in COL_NAME}
+        self.DF = pd.read_csv(CSV_FILE, sep=';', converters=col_type)
+        # parameter extract
+        self.ROWS, self.COLUMNS = self.DF.shape
+        self.NB_GEN = self.DF['GEN'].max()+1
+        self.NB_P_GEN = int(self.ROWS / self.NB_GEN)
+        self.MAP_SIZE = int(self.DF['MAP_SIZE'].mean())
+        ### groupby GEN
+        self.GB_GEN = self.DF.groupby('GEN')
+    
+    def animate(self, NB_FRAME):
+        # Generate data map per gen
+        AGENT_POS, PNJ_POS, IN_VIEW = [], [], []
+        for i, GG in self.GB_GEN :
+            # AGENT POS (time, loc, xy)
+            POS = np.array(list((map(list,GG['AGENT_POS']))))
+            AGENT_POS += [np.moveaxis(POS, 0, 1)]
+            # AGENT POS (time, loc, xy)
+            POS = np.array(list((map(list,GG['PNJ_POS']))))
+            PNJ_POS += [np.moveaxis(POS, 0, 1)]
+            # NB ITER 
+            PERIOD = POS.shape[1]
+            # AGENT VIEW (time, loc, xy, id)
+            POS = np.array([list((map(list,GG['IN_COOR'].values)))]*PERIOD)
+            IN_VIEW += [np.moveaxis(POS, -2, -1)]
+        # Concatenate data
+        AGENT_POS, PNJ_POS, IN_VIEW = np.concatenate(AGENT_POS), np.concatenate(PNJ_POS), np.concatenate(IN_VIEW)
+        # View per Grid
+        IN_VIEW += AGENT_POS[:,:,:,None]
+        IN_VIEW = IN_VIEW % self.MAP_SIZE
+        # initialize anim
+        ANIM_MAP = EF.MAP_ANIM(self.NB_P_GEN, self.MAP_SIZE)
+        # add data
+        ANIM_MAP.add_data([AGENT_POS, PNJ_POS, IN_VIEW])
+        # animate
+        ANIM_MAP.animate(NB_FRAME)
+    
+    def SCORE(self):
+        self.GB_GEN.SCORE.describe().plot()
 
-col_type = {col : ast.literal_eval for col in COL_NAME}
 
-DF = pd.read_csv(CSV_FILE, sep=';', converters=col_type)
+if __name__ == '__main__' :
+    # initialize
+    DATA = DATA_MEANING(CSV_FILE)
+    # score
+    DATA.SCORE()
 
+
+
+"""
 ################################ ALGO
 
 ### General parameter EXTRACT
@@ -64,7 +113,6 @@ ANIM_MAP.add_data([AGENT_POS, PNJ_POS, IN_VIEW])
 # animate
 ANIM_MAP.animate()
 
-"""
 ### DENSITY CARACTERISATION
 # List of density
 D_IN, D_OUT = [], []

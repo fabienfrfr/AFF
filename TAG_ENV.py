@@ -77,7 +77,7 @@ class TAG_ENV():
         GAP =  np.linalg.norm(self.PNJ_POS - self.AG_POS)
         reward = 0
         # Cheating diagonal
-        for i in range(3,6) :
+        for i in range(4,6) :
             if self.MVT.size > i :
                 if np.unique(self.MVT[-i:]).size == 1 :
                     reward = -i
@@ -85,20 +85,22 @@ class TAG_ENV():
         if self.IT and reward == 0 :
             if GAP <= np.sqrt(2) :
                 reward = -10
-                self.IT = np.invert(self.IT)
             elif GAP <= np.sqrt(5) :
-                reward = -1
+                reward = -2
             else :
                 reward = 1
         # AGENT is "IT"
         elif reward == 0 :
             if GAP <= np.sqrt(2) :
                 reward = +10
-                self.IT = np.invert(self.IT)
             elif GAP <= np.sqrt(5) :
-                reward = +1
+                reward = +2
             else :
                 reward = -1
+        # Change state :
+        if GAP <= np.sqrt(2) :
+            self.IT = np.invert(self.IT)
+        # save state
         self.IT_LIST += [self.IT]
         ## change position of PNJ if GAP == 0
         if GAP == 0 :
