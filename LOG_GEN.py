@@ -41,7 +41,7 @@ class LOG_INFO():
         NEURON_LIST = []
         # survival, legacy, challenger
         if SLC_LIST != None :
-            s, l, c = 0, 1, self.DF_1['TREE'].max()[0]+1
+            c, s, l, f = -1, 0, 1, self.DF_1['TREE'].max()[0]+1
         # Loop
         for i in range(len(PLAYS_LIST)) :
             ID_ += [self.DF_1.shape[0]+i]
@@ -55,7 +55,7 @@ class LOG_INFO():
                 if L[0] == 's' :
                     TREE += [[L[1]]+[s]]
                 # Legacy
-                if L[0] == 'l' :
+                elif L[0] == 'l' :
                     if L[1] == L_ :
                         TREE += [[L[1]]+[l]]
                         l += 1
@@ -64,9 +64,11 @@ class LOG_INFO():
                         l = 1
                         TREE += [[L[1]]+[l]]
                 # Challenger
-                if L[0] == 'c' :
+                elif L[0] == 'f' :
+                    TREE += [[f]]
+                    f += 1
+                elif L[0] == 'c' :
                     TREE += [[c]]
-                    c += 1
             MAP_SIZE += [ENV_LIST[i].MAP_SIZE]
             D_I, D_O = self.DENSITY_IO
             DENSITY_IN += [list(D_I.reshape(-1))]
@@ -126,18 +128,11 @@ class LOG_INFO():
             Y_ = PLAYS[ORDER[n]].Y
             X_CENTER, Y_CENTER = [2,2], [1,1]
             ## Listing
-            X = [X_ + X_CENTER]
-            Y = [Y_ + Y_CENTER]
-            # include rotation
-            X += self.ROTATION_3(X_, X_CENTER)
-            Y += self.ROTATION_3(Y_, Y_CENTER)
+            X = X_ + X_CENTER
+            Y = Y_ + Y_CENTER
             # update density
-            for x,y in zip(X,Y):
-                IN_DENSITY[tuple(map(tuple, x.T))] += RANK[n]
-                OUT_DENSITY[tuple(map(tuple, y.T))] += RANK[n]
-        # center artefact correction
-        IN_DENSITY[tuple(X_CENTER)] = IN_DENSITY[tuple(X_CENTER)]/2
-        OUT_DENSITY[tuple(Y_CENTER)] = OUT_DENSITY[tuple(Y_CENTER)]/2
+            IN_DENSITY[tuple(map(tuple, X.T))] += RANK[n]
+            OUT_DENSITY[tuple(map(tuple, Y.T))] += RANK[n]
         # 1er norm
         IN_DENSITY = IN_DENSITY/IN_DENSITY.sum()
         OUT_DENSITY = OUT_DENSITY/OUT_DENSITY.sum()        
@@ -153,7 +148,8 @@ class LOG_INFO():
             # PLOT (provisoire)
             plt.imshow(IN_DENSITY); plt.colorbar(); plt.show(); plt.close()
             plt.imshow(OUT_DENSITY); plt.colorbar(); plt.show(); plt.close()
-        
+     
+    # DEPRECIED
     def ROTATION_3(self, X_CENTER, NEW_CENTER) :
         THETA = np.linspace(np.pi/2, (3./2)*np.pi, 3)
         X_ROTATED = []

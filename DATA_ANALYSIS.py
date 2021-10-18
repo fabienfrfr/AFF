@@ -14,7 +14,7 @@ import EXTRA_FUNCTION as EF
 
 ################################ PARAMETER
 # files
-CSV_FILE = 'OUT/LYFE_EXP_20211015_190911_.csv' # 'OUT/LYFE_EXP_20210509_163710_.csv'
+CSV_FILE = 'OUT/LYFE_EXP_20211018_202109_.csv' # 'OUT/LYFE_EXP_20210509_163710_.csv'
 # animation
 N_FRAME = None
 
@@ -63,7 +63,7 @@ class DATA_MEANING():
         ANIM_MAP.animate(NB_FRAME)
     
     def SCORE(self):
-        self.GB_GEN.SCORE.describe().plot()
+        self.GB_GEN.SCORE.describe()[['mean','max']].plot()
 
 
 if __name__ == '__main__' :

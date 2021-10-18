@@ -5,7 +5,7 @@ Created on Tue Jan 26 11:38:14 2021
 @author: fabien
 """
 import torch, torch.nn as nn
-import numpy as np
+import numpy as np, pylab as plt
 
 from GRAPH_EAT import GRAPH_EAT
 from pRNN_GEN import pRNN
@@ -22,8 +22,12 @@ class Q_AGENT():
         self.N_TIME = arg[4]
         ## Init
         if CTRL :
-            NET,COOR = self.CONTROL_NETWORK()
-        if NET == None :
+            # I/O minimalisme
+            X = np.array([[0,0],[0,2],[0,4],[2,0],[2,2],[2,4],[4,0],[4,2],[4,4]])-[2,2]
+            Y = np.array([[0,1],[1,2],[2,0]])-[1,1]
+            COOR = (X,Y)
+            self.NET = GRAPH_EAT(None, self.CONTROL_NETWORK())
+        elif NET == None :
             self.NET = GRAPH_EAT([self.NB_P_GEN, self.IO[0], self.IO[1], self.P_MIN], None)
         else :
             self.NET = NET
@@ -32,7 +36,7 @@ class Q_AGENT():
         # nn optimiser
         self.GAMMA = 0.9
         #self.optimizer = torch.optim.Adam(self.MODEL.parameters())
-        self.optimizer = torch.optim.SGD(self.MODEL.parameters(), lr=1e-6)
+        self.optimizer = torch.optim.SGD(self.MODEL.parameters(), lr=1e-6, momentum=0.9)
         self.criterion = nn.MSELoss(reduction='sum')
         self.loss = None
         ## IO Coordinate
@@ -76,8 +80,7 @@ class Q_AGENT():
         ## Output part
         Y = np.mgrid[-1:2,-1:2].reshape(-1,2)
         ## Density
-        RAND_DENS = np.random.choice([True,False])
-        if (DENSITY == None) or (RAND_DENS) :
+        if (DENSITY == None) :
             p_X, p_Y = None, None
         else :
             p_X, p_Y = DENSITY
@@ -145,13 +148,22 @@ class Q_AGENT():
         return Q_AGENT(*self.ARG, NET = GRAPH, COOR = XY_TUPLE)
     
     ## mutation
-    def MUTATION(self, MUT = None):
+    def MUTATION(self, DENSITY_IO, MUT = None):
+        # low variation of child density
+        DI,DO = DENSITY_IO[0].copy(), DENSITY_IO[1].copy()
+        DI[tuple(map(tuple, (self.X+[2,2]).T))] += np.pi/DI.size
+        DO[tuple(map(tuple, (self.Y+[1,1]).T))] += np.pi/DO.size
+        DENSITY = (DI/DI.sum(), DO/DO.sum())
+        # mutate graph
         GRAPH = self.NET.NEXT_GEN(MUT)
-        XY_TUPLE = (self.X,self.Y)
+        XY_TUPLE = self.FIRST_IO_COOR_GEN(DENSITY)
         return Q_AGENT(*self.ARG, NET = GRAPH, COOR = XY_TUPLE)
     
     ## control group
     def CONTROL_NETWORK(self):
+        """
+        For Lyfe problem : not generalized
+        """
         # init number of connection per layer
         """NB_H_LAYER = 2"""
         """NB_C_P_LAYER = int(np.sqrt(self.IO[0]) + np.sqrt(self.IO[1]))"""
@@ -159,10 +171,11 @@ class Q_AGENT():
         NET = np.array([[-1, 3, 4, 32, [[2,0],[2,1],[2,2],[2,3]]],
                         [ 1, 4, 9, 10, [[0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8]]],
                         [ 2, 4, 4, 20, [[1,0],[1,1],[1,2],[1,3]]]])
-        # I/O minimalisme
-        X = np.array([[0,0],[0,2],[0,4],[2,0],[2,2],[2,4],[4,0],[4,2],[4,4]])-[2,2]
-        Y = np.array([[0,1],[1,2],[2,0]])
-        return NET, (X,Y)
+        # Listing
+        LIST_C = np.array([[0,0,0],[0,0,1],[0,0,2],[0,0,3],[0,0,4],[0,0,5],[0,0,6],[0,0,7],[0,0,8],
+                          [10,1,0],[10,1,1],[10,1,2],[10,1,3],
+                          [20,2,0],[20,2,1],[20,2,2],[20,2,3]])
+        return [(9,3), NET.copy(), LIST_C.copy()]
 
 if __name__ == '__main__' :
     ARG = ((9,3),25, 16, 16, 12)
