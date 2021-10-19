@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 ################################ EXPERIMENTAL PARAMETER (inverted name : need 2 change)
 IO = (9,3) # don't change here (not optimized yet)
-NB_GEN = 200
+NB_GEN = 3
 batch_size = 10 #25
 MAP_SIZE = 9
 N_TIME = 10 #25
@@ -95,7 +95,7 @@ class LYFE():
             ## Recurcivity OR ending
             self.SCORE_LIST = []
         TIME = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-        self.INFO_LOG.SAVE_CSV(TIME)
+        #self.INFO_LOG.SAVE_CSV(TIME)
         print('TRAINNING FINISH')
         
     def SURVIVOR(self, BEST):

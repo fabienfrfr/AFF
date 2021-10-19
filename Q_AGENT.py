@@ -40,6 +40,7 @@ class Q_AGENT():
         self.criterion = nn.MSELoss(reduction='sum')
         self.loss = None
         ## IO Coordinate
+        self.CC = np.mgrid[-2:3,-2:3].reshape(-1,2), np.mgrid[-1:2,-1:2].reshape(-1,2) #complete coordinate
         if COOR == None :
             if DENSITY_IO == None :
                 self.X,self.Y = self.FIRST_IO_COOR_GEN()
@@ -73,12 +74,6 @@ class Q_AGENT():
     
     ## Define coordinate of IN/OUT
     def FIRST_IO_COOR_GEN(self, DENSITY = None) :
-        ## Input part
-        prime = int(np.sqrt(self.IO[0]))+2
-        Xa,Xb = np.mod(np.arange(prime**2),prime)-2, np.repeat(np.arange(prime)-2,prime)
-        X = np.concatenate((Xa[None],Xb[None]), axis = 0).T
-        ## Output part
-        Y = np.mgrid[-1:2,-1:2].reshape(-1,2)
         ## Density
         if (DENSITY == None) :
             p_X, p_Y = None, None
@@ -86,10 +81,19 @@ class Q_AGENT():
             p_X, p_Y = DENSITY
             p_X, p_Y = p_X.reshape(-1), p_Y.reshape(-1)
         ## Get coordinate (no repeat -> replace=False)
-        x = np.random.choice(range(len(X)), self.IO[0], p = p_X, replace=False)
-        y = np.random.choice(range(len(Y)), self.IO[1], p = p_Y, replace=False)
+        x = np.random.choice(range(len(self.CC[0])), self.IO[0], p = p_X, replace=False)
+        y = np.random.choice(range(len(self.CC[1])), self.IO[1], p = p_Y, replace=False)
         # note for output min : cyclic 3,4 if 3 mvt, 2 if 4 mvt
-        return X[x], Y[y]
+        print(self.CC[0][x], self.CC[1][y])
+        return self.CC[0][x], self.CC[1][y]
+    
+    def MUTATION_IO(self, DENSITY):
+        p_X, p_Y = DENSITY
+        ## Get coordinate (no repeat -> replace=False)
+        x = np.random.choice(range(len(self.CC[0])), 1, p = p_X, replace=False)
+        y = np.random.choice(range(len(self.CC[1])), 1, p = p_Y, replace=False)
+        print(self.CC[0][x], self.CC[1][y])
+        return self.X, self.Y
 
     ## Action Exploration/Exploitation Dilemna
     def ACTION(self, Input) :
