@@ -20,6 +20,7 @@ class Q_AGENT():
         self.NB_P_GEN = arg[1]
         self.batch_size = arg[2]
         self.N_TIME = arg[4]
+        self.DENSITY_IO = DENSITY_IO
         ## Init
         if CTRL :
             # I/O minimalisme
@@ -84,15 +85,25 @@ class Q_AGENT():
         x = np.random.choice(range(len(self.CC[0])), self.IO[0], p = p_X, replace=False)
         y = np.random.choice(range(len(self.CC[1])), self.IO[1], p = p_Y, replace=False)
         # note for output min : cyclic 3,4 if 3 mvt, 2 if 4 mvt
-        print(self.CC[0][x], self.CC[1][y])
         return self.CC[0][x], self.CC[1][y]
     
     def MUTATION_IO(self, DENSITY):
         p_X, p_Y = DENSITY
+        p_X, p_Y = p_X.reshape(-1), p_Y.reshape(-1)
         ## Get coordinate (no repeat -> replace=False)
         x = np.random.choice(range(len(self.CC[0])), 1, p = p_X, replace=False)
         y = np.random.choice(range(len(self.CC[1])), 1, p = p_Y, replace=False)
-        print(self.CC[0][x], self.CC[1][y])
+        # test if included
+        TEST_X = ((self.X == self.CC[0][x]).all(axis=1)).any()
+        TEST_Y = ((self.Y == self.CC[1][y]).all(axis=1)).any()
+        if np.invert(TEST_X) :
+            print('OK'); print(self.X)
+            self.X[np.random.randint(len(self.X))] = self.CC[0][x]
+            print(self.X)
+        if np.invert(TEST_Y):
+            print('yeah'); print(self.Y)
+            self.Y[np.random.randint(len(self.Y))] = self.CC[1][y]
+            print(self.Y)
         return self.X, self.Y
 
     ## Action Exploration/Exploitation Dilemna
@@ -155,12 +166,12 @@ class Q_AGENT():
     def MUTATION(self, DENSITY_IO, MUT = None):
         # low variation of child density
         DI,DO = DENSITY_IO[0].copy(), DENSITY_IO[1].copy()
-        DI[tuple(map(tuple, (self.X+[2,2]).T))] += np.pi/DI.size
-        DO[tuple(map(tuple, (self.Y+[1,1]).T))] += np.pi/DO.size
+        DI[tuple(map(tuple, (self.X+[2,2]).T))] += 200
+        DO[tuple(map(tuple, (self.Y+[1,1]).T))] += 500
         DENSITY = (DI/DI.sum(), DO/DO.sum())
         # mutate graph
         GRAPH = self.NET.NEXT_GEN(MUT)
-        XY_TUPLE = self.FIRST_IO_COOR_GEN(DENSITY)
+        XY_TUPLE = self.MUTATION_IO(DENSITY)
         return Q_AGENT(*self.ARG, NET = GRAPH, COOR = XY_TUPLE)
     
     ## control group
@@ -184,3 +195,12 @@ class Q_AGENT():
 if __name__ == '__main__' :
     ARG = ((9,3),25, 16, 16, 12)
     q = Q_AGENT(*ARG)
+    #print(q.NEURON_LIST)
+    #Mutate
+    DXY = (np.ones((5,5))/25,np.ones((3,3))/9)
+    for i in range(10) :
+        print(i)
+        p = q.MUTATION(DXY)
+        #print(p.NEURON_LIST)
+    plt.imshow(DXY[0])
+    
