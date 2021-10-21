@@ -7,7 +7,7 @@ Created on Sun Mar 21 18:22:45 2021
 
 import numpy as np
 
-import time, datetime
+import datetime
 #import skvideo.io as io
 
 from Q_AGENT import Q_AGENT
@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 ################################ EXPERIMENTAL PARAMETER (inverted name : need 2 change)
 IO = (9,3) # don't change here (not optimized yet)
-NB_GEN = 3
+NB_GEN = 500
 batch_size = 10 #25
 MAP_SIZE = 9
 N_TIME = 10 #25
@@ -67,7 +67,7 @@ class LYFE():
             # complete cycle
             self.INFO_LOG.FINISH_CYCLE(self.ENV, self.SCORE_LIST, ORDER[::-1])
             # density (after cycle)
-            self.INFO_LOG.DENSITY(self.PLAYERS, ORDER, self.NB_P_GEN, IMSHOW=True)
+            self.INFO_LOG.DENSITY(self.PLAYERS, ORDER_, (self.NB_CONTROL,self.NB_P_GEN), IMSHOW=True)
             # update gen
             self.GEN += 1
             #### CONTROL
@@ -95,7 +95,7 @@ class LYFE():
             ## Recurcivity OR ending
             self.SCORE_LIST = []
         TIME = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-        #self.INFO_LOG.SAVE_CSV(TIME)
+        self.INFO_LOG.SAVE_CSV(TIME)
         print('TRAINNING FINISH')
         
     def SURVIVOR(self, BEST):
@@ -122,8 +122,8 @@ class LYFE():
         return new_PLAYERS
     
     def ENV_UPDATE(self):
-        self.ENV = self.ENV[:self.NB_CONTROL]
-        for p in self.PLAYERS[self.NB_CONTROL:] :
+        self.ENV = []
+        for p in self.PLAYERS :
             AGENT_VIEW, AGENT_MOVE = p.X, p.Y
             self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE))]
             p.INIT_ENV(self.ENV[-1])

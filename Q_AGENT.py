@@ -41,7 +41,7 @@ class Q_AGENT():
         self.criterion = nn.MSELoss(reduction='sum')
         self.loss = None
         ## IO Coordinate
-        self.CC = np.mgrid[-2:3,-2:3].reshape(-1,2), np.mgrid[-1:2,-1:2].reshape(-1,2) #complete coordinate
+        self.CC = np.mgrid[-2:3,-2:3].reshape((2,-1)).T, np.mgrid[-1:2,-1:2].reshape((2,-1)).T #complete coordinate
         if COOR == None :
             if DENSITY_IO == None :
                 self.X,self.Y = self.FIRST_IO_COOR_GEN()
@@ -202,5 +202,8 @@ if __name__ == '__main__' :
         print(i)
         p = q.MUTATION(DXY)
         #print(p.NEURON_LIST)
-    plt.imshow(DXY[0])
+    # add input
+    IN = np.zeros((5,5))
+    IN[tuple(map(tuple, (p.X+[2,2]).T))] = 1
+    plt.imshow(IN)
     

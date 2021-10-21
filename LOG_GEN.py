@@ -12,7 +12,7 @@ import pandas as pd, os
 class LOG_INFO():
     def __init__(self, PL_LIST, ENV_LIST, GEN):
         # exp info
-        self.DF_1 = pd.DataFrame(columns=['ID','GEN','TREE','MAP_SIZE','DENSITY_IN','DENSITY_OUT','IN_COOR','OUT_COOR','NEURON_LIST'])
+        self.DF_1 = pd.DataFrame(columns=['ID','GEN','TYPE','TREE','MAP_SIZE','DENSITY_IN','DENSITY_OUT','IN_COOR','OUT_COOR','NEURON_LIST'])
         self.DF_2 = pd.DataFrame(columns=['ID','AGENT_POS','PNJ_POS','TAG_STATE','SCORE', 'RANK'])
         self.DF = self.DF_1 + self.DF_2
         # density
@@ -32,6 +32,7 @@ class LOG_INFO():
         # Listing
         ID_ = []
         GEN_ = []
+        TYPE = []
         TREE = []
         MAP_SIZE = []
         DENSITY_IN = []
@@ -48,14 +49,20 @@ class LOG_INFO():
             GEN_ += [GEN]
             if SLC_LIST == None :
                 TREE += [[i]]
+                if i == 0 :
+                    TYPE += [-1]
+                else : 
+                    TYPE += [0]
             else :
                 L = SLC_LIST[i]
                 L_ = 0
                 # Survival
                 if L[0] == 's' :
                     TREE += [[L[1]]+[s]]
+                    TYPE += [1]
                 # Legacy
                 elif L[0] == 'l' :
+                    TYPE += [2]
                     if L[1] == L_ :
                         TREE += [[L[1]]+[l]]
                         l += 1
@@ -65,9 +72,11 @@ class LOG_INFO():
                         TREE += [[L[1]]+[l]]
                 # Challenger
                 elif L[0] == 'f' :
+                    TYPE += [3]
                     TREE += [[f]]
                     f += 1
                 elif L[0] == 'c' :
+                    TYPE += [-1]
                     TREE += [[c]]
             MAP_SIZE += [ENV_LIST[i].MAP_SIZE]
             D_I, D_O = self.DENSITY_IO
@@ -81,13 +90,14 @@ class LOG_INFO():
         for i in range(len(PLAYS_LIST)):
             ARRAY[i,0] = ID_[i]
             ARRAY[i,1] = GEN_[i]
-            ARRAY[i,2] = TREE[i]
-            ARRAY[i,3] = MAP_SIZE[i]
-            ARRAY[i,4] = DENSITY_IN[i]
-            ARRAY[i,5] = DENSITY_OUT[i]
-            ARRAY[i,6] = IN_COOR[i]
-            ARRAY[i,7] = OUT_COOR[i]
-            ARRAY[i,8] = NEURON_LIST[i]
+            ARRAY[i,2] = TYPE[i]
+            ARRAY[i,3] = TREE[i]
+            ARRAY[i,4] = MAP_SIZE[i]
+            ARRAY[i,5] = DENSITY_IN[i]
+            ARRAY[i,6] = DENSITY_OUT[i]
+            ARRAY[i,7] = IN_COOR[i]
+            ARRAY[i,8] = OUT_COOR[i]
+            ARRAY[i,9] = NEURON_LIST[i]
         # UPDATE DF1
         DF_1_NEW = pd.DataFrame(ARRAY, columns=list(self.DF_1))
         self.DF_1 = self.DF_1.append(DF_1_NEW, ignore_index=True)
@@ -118,12 +128,12 @@ class LOG_INFO():
         # MERGE DF1 + DF2 (pointer)
         self.DF = pd.merge(self.DF_1, self.DF_2, on="ID")
     
-    def DENSITY(self, PLAYS, ORDER, NB_GEN, IMSHOW=False):
+    def DENSITY(self, PLAYS, ORDER, NB, IMSHOW=False):
         IN_DENSITY = np.zeros((5,5))
         OUT_DENSITY = np.zeros((3,3))
         # loop
-        RANK = np.arange(NB_GEN)[::-1]
-        for n in range(NB_GEN) :
+        RANK = np.arange(NB[1]-NB[0])[::-1]
+        for n in range(NB[0], NB[1]) :
             X_ = PLAYS[ORDER[n]].X
             Y_ = PLAYS[ORDER[n]].Y
             X_CENTER, Y_CENTER = [2,2], [1,1]

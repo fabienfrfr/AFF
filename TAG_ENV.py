@@ -75,28 +75,31 @@ class TAG_ENV():
         new_state = self.MAP[tuple(map(tuple, BOX.T))][np.newaxis]
         ## Games rules (politics)
         GAP =  np.linalg.norm(self.PNJ_POS - self.AG_POS)
-        reward = 0
-        # Cheating diagonal
-        for i in range(4,6) :
+        reward_c = 0
+        reward_g = 0
+        # Cheating diagonal 3 time
+        for i in range(3,6) :
             if self.MVT.size > i :
                 if np.unique(self.MVT[-i:]).size == 1 :
-                    reward = -i
+                    reward_c = -i
         # PNJ is "IT"
-        if self.IT and reward == 0 :
-            if GAP <= np.sqrt(2) :
-                reward = -10
-            elif GAP <= np.sqrt(5) :
-                reward = -2
+        if self.IT :
+            if GAP <= np.sqrt(1) :
+                reward_g = -10
+            elif GAP <= np.sqrt(2) :
+                reward_g = -2
             else :
-                reward = 1
+                reward_g = 2
         # AGENT is "IT"
-        elif reward == 0 :
-            if GAP <= np.sqrt(2) :
-                reward = +10
-            elif GAP <= np.sqrt(5) :
-                reward = +2
+        else :
+            if GAP <= np.sqrt(1) :
+                reward_g = +10
+            elif GAP <= np.sqrt(2) :
+                reward_g = +2
             else :
-                reward = -1
+                reward_g = -2
+        # reward = reward_cheat + reward_gamerule
+        reward = reward_c + reward_g
         # Change state :
         if GAP <= np.sqrt(2) :
             self.IT = np.invert(self.IT)

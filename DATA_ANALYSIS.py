@@ -14,7 +14,7 @@ import EXTRA_FUNCTION as EF
 
 ################################ PARAMETER
 # files
-CSV_FILE = 'OUT/LYFE_EXP_20211018_202109_.csv' # 'OUT/LYFE_EXP_20210509_163710_.csv'
+CSV_FILE = 'OUT/LYFE_EXP_20211021_171719_.csv' # 'OUT/LYFE_EXP_20210509_163710_.csv'
 # animation
 N_FRAME = None
 
@@ -26,7 +26,7 @@ class DATA_MEANING():
             COL_NAME = f.readline().split('\n')[0].split(';')
             print(COL_NAME)
         col_type = {col : ast.literal_eval for col in COL_NAME}
-        self.DF = pd.read_csv(CSV_FILE, sep=';', converters=col_type)
+        self.DF = pd.read_csv(CSV_PATH, sep=';', converters=col_type)
         # parameter extract
         self.ROWS, self.COLUMNS = self.DF.shape
         self.NB_GEN = self.DF['GEN'].max()+1
@@ -35,7 +35,7 @@ class DATA_MEANING():
         ### groupby GEN
         self.GB_GEN = self.DF.groupby('GEN')
     
-    def animate(self, NB_FRAME):
+    def animate(self, NB_FRAME=True):
         # Generate data map per gen
         AGENT_POS, PNJ_POS, IN_VIEW = [], [], []
         for i, GG in self.GB_GEN :
@@ -63,7 +63,11 @@ class DATA_MEANING():
         ANIM_MAP.animate(NB_FRAME)
     
     def SCORE(self):
-        self.GB_GEN.SCORE.describe()[['mean','max']].plot()
+        self.GB_GEN.SCORE.describe()[['mean']].plot()
+        # only control
+        X = self.DF[self.DF.TYPE == -1].GEN
+        Y_CONTROL = self.DF[self.DF.TYPE == -1].SCORE
+        plt.plot(X,Y_CONTROL); plt.show();plt.close()
 
 
 if __name__ == '__main__' :
@@ -71,6 +75,9 @@ if __name__ == '__main__' :
     DATA = DATA_MEANING(CSV_FILE)
     # score
     DATA.SCORE()
+    # animate
+    DATA.animate()
+    
 
 
 
