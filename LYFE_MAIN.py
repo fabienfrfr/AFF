@@ -63,7 +63,7 @@ class LYFE():
                 self.SCORE_LIST += [self.ENV[i].SCORE]
             ## Pre-analysis
             ORDER = np.argsort(self.SCORE_LIST)[::-1]
-            ORDER_ = np.argsort(self.SCORE_LIST[1:])[::-1]
+            ORDER_ = np.argsort(self.SCORE_LIST[self.NB_CONTROL:])[::-1]
             # complete cycle
             self.INFO_LOG.FINISH_CYCLE(self.ENV, self.SCORE_LIST, ORDER[::-1])
             # density (after cycle)

@@ -97,13 +97,9 @@ class Q_AGENT():
         TEST_X = ((self.X == self.CC[0][x]).all(axis=1)).any()
         TEST_Y = ((self.Y == self.CC[1][y]).all(axis=1)).any()
         if np.invert(TEST_X) :
-            print('OK'); print(self.X)
             self.X[np.random.randint(len(self.X))] = self.CC[0][x]
-            print(self.X)
         if np.invert(TEST_Y):
-            print('yeah'); print(self.Y)
             self.Y[np.random.randint(len(self.Y))] = self.CC[1][y]
-            print(self.Y)
         return self.X, self.Y
 
     ## Action Exploration/Exploitation Dilemna

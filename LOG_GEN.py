@@ -133,7 +133,7 @@ class LOG_INFO():
         OUT_DENSITY = np.zeros((3,3))
         # loop
         RANK = np.arange(NB[1]-NB[0])[::-1]
-        for n in range(NB[0], NB[1]) :
+        for n in range(NB[1]-NB[0]) :
             X_ = PLAYS[ORDER[n]].X
             Y_ = PLAYS[ORDER[n]].Y
             X_CENTER, Y_CENTER = [2,2], [1,1]
