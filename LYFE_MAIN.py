@@ -67,7 +67,7 @@ class LYFE():
             # complete cycle
             self.INFO_LOG.FINISH_CYCLE(self.ENV, self.SCORE_LIST, ORDER[::-1])
             # density (after cycle)
-            self.INFO_LOG.DENSITY(self.PLAYERS, ORDER_, (self.NB_CONTROL,self.NB_P_GEN), IMSHOW=True)
+            self.INFO_LOG.DENSITY(self.PLAYERS[self.NB_CONTROL:], ORDER_, (self.NB_CONTROL,self.NB_P_GEN), IMSHOW=True)
             # update gen
             self.GEN += 1
             #### CONTROL
