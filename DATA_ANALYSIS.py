@@ -6,6 +6,8 @@ Created on Sat May  8 09:47:40 2021
 """
 
 import numpy as np, pylab as plt
+import matplotlib.gridspec as gridspec
+
 import pandas as pd, scipy as sp
 import ast
 import networkx as nx
@@ -14,7 +16,7 @@ import EXTRA_FUNCTION as EF
 
 ################################ PARAMETER
 # files
-CSV_FILE = 'OUT/LYFE_EXP_20211021_171719_.csv' # 'OUT/LYFE_EXP_20210509_163710_.csv'
+CSV_FILE = 'OUT/LYFE_EXP_20211022_184030_.csv' # 'OUT/LYFE_EXP_20210509_163710_.csv'
 # animation
 N_FRAME = None
 
@@ -68,13 +70,40 @@ class DATA_MEANING():
         X = self.DF[self.DF.TYPE == -1].GEN
         Y_CONTROL = self.DF[self.DF.TYPE == -1].SCORE
         plt.plot(X,Y_CONTROL); plt.show();plt.close()
-
+    
+    def DENSITY_T(self):
+        D_IN, D_OUT = [], []
+        for i, GG in self.GB_GEN :
+            # extrat in data
+            DENSITY_IN = GG['DENSITY_IN']
+            DENSITY_OUT = GG['DENSITY_OUT']
+            # increment
+            D_IN += [DENSITY_IN.values[0]]
+            D_OUT += [DENSITY_OUT.values[0]]
+        # List 2 Numpy array
+        D_IN, D_OUT = np.array(D_IN), np.array(D_OUT)
+        ### plot
+        fig = plt.figure(constrained_layout=True)
+        # grid
+        gs = gridspec.GridSpec(2, 2, figure=fig)
+        ax00 = fig.add_subplot(gs[0, 0])
+        ax01 = fig.add_subplot(gs[0, 1])
+        ax10 = fig.add_subplot(gs[1, 0])
+        ax11 = fig.add_subplot(gs[1, 1])
+        # show
+        ax00.imshow(D_IN.T,cmap='Greys', origin='lower', aspect="auto")
+        ax01.imshow(D_IN[-1].reshape(5,5),cmap='Greys', origin='lower', aspect="auto")
+        ax10.imshow(D_OUT.T,cmap='Greys', origin='lower', aspect="auto")
+        ax11.imshow(D_OUT[-1].reshape(3,3),cmap='Greys', origin='lower', aspect="auto")
+        plt.show();plt.close()
 
 if __name__ == '__main__' :
     # initialize
     DATA = DATA_MEANING(CSV_FILE)
     # score
     DATA.SCORE()
+    # strategy i/o
+    DATA.DENSITY_T()
     # animate
     DATA.animate()
     
@@ -92,33 +121,6 @@ MAP_SIZE = int(DF['MAP_SIZE'].mean())
 
 NB_BEST = int(np.sqrt(NB_P_GEN)-1)
 GB_GEN = DF.groupby('GEN')
-
-### Animate EXP MAP
-# Generate data map per gen
-AGENT_POS, PNJ_POS, IN_VIEW = [], [], []
-for i, GG in GB_GEN :
-    # AGENT POS (time, loc, xy)
-    POS = np.array(list((map(list,GG['AGENT_POS']))))
-    AGENT_POS += [np.moveaxis(POS, 0, 1)]
-    # AGENT POS (time, loc, xy)
-    POS = np.array(list((map(list,GG['PNJ_POS']))))
-    PNJ_POS += [np.moveaxis(POS, 0, 1)]
-    # NB ITER 
-    PERIOD = POS.shape[1]
-    # AGENT VIEW (time, loc, xy, id)
-    POS = np.array([list((map(list,GG['IN_COOR'].values)))]*PERIOD)
-    IN_VIEW += [np.moveaxis(POS, -2, -1)]
-# Concatenate data
-AGENT_POS, PNJ_POS, IN_VIEW = np.concatenate(AGENT_POS), np.concatenate(PNJ_POS), np.concatenate(IN_VIEW)
-# View per Grid
-IN_VIEW += AGENT_POS[:,:,:,None]
-IN_VIEW = IN_VIEW % MAP_SIZE
-# initialize anim
-ANIM_MAP = EF.MAP_ANIM(NB_P_GEN, MAP_SIZE)
-# add data
-ANIM_MAP.add_data([AGENT_POS, PNJ_POS, IN_VIEW])
-# animate
-ANIM_MAP.animate()
 
 ### DENSITY CARACTERISATION
 # List of density

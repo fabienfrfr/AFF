@@ -120,7 +120,7 @@ class TAG_ENV():
 if __name__ == '__main__' :
     X = np.array([[0,0],[1,1],[0,3],[2,3],[2,4],[3,0],[3,2],[4,1],[4,4]])-[2,2]
     Y = np.array([[1,0],[0,1],[2,2]])-[1,1]
-    t = TAG_ENV(16,[X,Y])
+    t = TAG_ENV(10,[X,Y])
     for i in range(25):
         v = t.STEP(np.random.randint(3))
         print(v)

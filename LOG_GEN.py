@@ -75,6 +75,7 @@ class LOG_INFO():
                     TYPE += [3]
                     TREE += [[f]]
                     f += 1
+                # control
                 elif L[0] == 'c' :
                     TYPE += [-1]
                     TREE += [[c]]

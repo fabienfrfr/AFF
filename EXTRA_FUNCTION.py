@@ -11,6 +11,8 @@ import matplotlib.animation as animation
 import os
 import networkx as nx
 
+from tqdm import tqdm
+
 ################################ EXTRA FUNCTION 
 def PrimeFactors(n):
     LIST = []
@@ -72,6 +74,7 @@ class MAP_ANIM():
         # Data
         self.DATA = None
         self.TIME_DURATION = None
+        self.pbar = tqdm(total=100)
         self.ORIGIN = None
         # Major ticks
         self.ax.set_xticks(np.arange(0., self.X, MAP_SIZE))
@@ -118,8 +121,11 @@ class MAP_ANIM():
         # update point
         self.point_pnj.set_offsets(P[i])
         self.point_agt.set_offsets(A[i])
-        if i%10 == 0 :
-            print(str(i)+'/'+str(self.TIME_DURATION))
+        if i%int(self.TIME_DURATION/100) == 0 :
+            self.pbar.update(1)
+        elif i == self.TIME_DURATION :
+            self.pbar.update(1)
+            self.pbar.close()
         return self.im, self.point_pnj, self.point_agt, self.lines_pnj, self.lines_agt
 
     def animate(self, FRAME = True):
