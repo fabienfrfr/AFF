@@ -136,13 +136,13 @@ class MAP_ANIM():
         plt.savefig(os.getcwd() + os.path.sep + 'OUT' + os.path.sep + 'MAP_LYFE.png', dpi = 360)
         plt.show()
 
-def NEURON_2_GRAPH(NEURON_INFO, LINK_LAYERS = True):
+def NEURON_2_GRAPH(NEURON_INFO, IO, LINK_LAYERS = True):
     # Create new graph
     G = nx.DiGraph()
     # 4-PLET : (IDX, INDEX_LAYERS, INDEX_NODE = Y, X)
     NEURON_IN, NEURON_OUT = [], []
     # Input part :
-    for n in range(9):
+    for n in range(IO[0]):
         NEURON_OUT += [[0,n,0]]
     # Layering
     for n in NEURON_INFO :

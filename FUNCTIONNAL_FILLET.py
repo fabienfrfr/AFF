@@ -5,20 +5,25 @@ Created on Mon Aug  1 21:09:28 2021
 @author: fabien
 """
 
+# ML module
 import numpy as np, pylab as plt
-
 import torch, torch.nn as nn
 
+# networks construction
 from GRAPH_EAT import GRAPH_EAT
 from pRNN_GEN import pRNN
 
-## to do : namedtuple for calculation easyly
+# calculation (multi-cpu) and data (namedtuple) optimisation
+#import multiprocessing, collections
+
+# ff module
 class model():
-    def __init__(self, IO, BATCH_SIZE, NB_GEN, NB_SEEDER):
+    def __init__(self, IO, BATCH_SIZE, NB_GEN, NB_SEEDER, FITNESS = 0.1):
         # Parameter
         self.BATCH_SIZE = BATCH_SIZE
         self.NB_GEN = NB_GEN
         self.NB_SEEDER = NB_SEEDER
+        self.FITNESS = FITNESS
         # generate first ENN step
         self.GRAPH_LIST = [GRAPH_EAT([NB_SEEDER, IO[0], IO[1], 1], None) for n in range(NB_SEEDER)]
         self.SEEDER_LIST = []
@@ -28,6 +33,8 @@ class model():
         # generate loss-optimizer
         self.LOSS = [nn.MSELoss(reduction='sum') for n in range(NB_SEEDER)]
         self.OPTIM = [torch.optim.SGD(s.parameters(), lr=1e-6) for s in self.SEEDER_LIST]
+        # scoring
+        self.SCORE = []
         
     def fit(self, DATA, LABEL):
         # Store data/label
@@ -36,8 +43,14 @@ class model():
         # Training Loop :
         for i in range(self.NB_GEN):
             for j in range(self.NB_SEEDER):
-                # update seeder list
+                # compile and collect score
+                self.SCORE += [self.compile()]
+                # update Progress bar
                 print(i,j)
+            # update seeder list
+            self.evolution()
+        # ending
+        print('PROCESS FINISH')
     
     def compile_(self, epochs, train_dl, criterion, optimizer) :
         # iterate through all the epoch
@@ -56,11 +69,45 @@ class model():
                     optimizer.step()
         # evaluate accuracy_score
         """
+        correct += (predicted == labels).sum().item()
+        accuracy = 100 * float(correct_count) / total_pred[classname]
         """
-        score = 1
+        score = 1 #accuracy/100
         # return score
         return score
     
+    def evolution(self):
+        # new data
+        GRAPH_LIST_NEW = []
+        SEEDER_LIST_NEW = []
+        LOSS_NEW = []
+        OPTIM_NEW = []
+        # choose best
+        BEST = np.argsort([10,20,1])[::-1]
+        NB_SELCTD = int(BEST.size*self.FITNESS)
+        NB_MUT = 10
+        NB_CHALLENGER = 10
+        # env selection
+        for i in range(NB_SELCTD):
+            idx = BEST[i]
+            # survivor
+            GRAPH_LIST_NEW += [self.GRAPH_LIST[idx].NEXT_GEN(-1)]
+            # mutation
+            for j in range(NB_MUT):
+                GRAPH_LIST_NEW += [self.GRAPH_LIST[idx].NEXT_GEN()]
+        # challenger
+        GRAPH_LIST_NEW += [GRAPH_EAT([NB_SEEDER, IO[0], IO[1], 1], None) for n in range(NB_CHALLENGER)]
+        # re-construct nn
+        for g in GRAPH_LIST_NEW :
+            NEURON_LIST = g.NEURON_LIST
+            SEEDER_LIST_NEW += [pRNN(NEURON_LIST, BATCH_SIZE, IO[0])]
+        # generate loss-optimizer
+        self.LOSS = [nn.MSELoss(reduction='sum') for n in range(NB_SEEDER)]
+        self.OPTIM = [torch.optim.SGD(s.parameters(), lr=1e-6) for s in self.SEEDER_LIST]
+        # init scoring
+        self.SCORE = []
+            
+        
     def predict(self, DATA_NEW):
         # Put data in best model
         self.LABEL_NEW = self.SEEDER_LIST[-1](DATA_NEW)
@@ -68,6 +115,7 @@ class model():
         # return result
         return self.LABEL_NEW
 
+### TESTING PART
 if __name__ == '__main__' :
     # module for test
     from tensorflow.keras.datasets import mnist

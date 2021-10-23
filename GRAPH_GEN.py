@@ -146,5 +146,10 @@ class GRAPH():
         return np.array(NEW_NEURON_LIST)
     
 if __name__ == '__main__' :
-    g = GRAPH(16,9,3,1)
+    IO = (784,10)
+    g = GRAPH(16,IO[0],IO[1],1)
     print(g.NEURON_LIST)
+    import EXTRA_FUNCTION as EF
+    import networkx as nx
+    pos, G = EF.NEURON_2_GRAPH(g.NEURON_LIST, IO)
+    #nx.draw(G,pos,node_size=1,alpha=2./3)

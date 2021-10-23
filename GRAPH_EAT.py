@@ -27,7 +27,7 @@ class GRAPH_EAT(GRAPH):
         IO, NEURON_LIST, LIST_C = self.IO, copy.deepcopy(self.NEURON_LIST), copy.deepcopy(self.LIST_C)
         # adding mutation (variation)
         if MUT == None :
-            MUT = np.random.choice(6)
+            MUT = np.random.choice(7)
         #print('Mutation type : '+str(MUT))
         if MUT == 0 :
             # add connection
@@ -45,6 +45,9 @@ class GRAPH_EAT(GRAPH):
             # cut neuron
             NEURON_LIST, LIST_C = self.CUT_NEURON(NEURON_LIST, LIST_C)
         elif MUT == 5 :
+            # transpose 1 connection
+            NEURON_LIST = self.C_TRANSPOSITION(NEURON_LIST)
+        elif MUT == 6 :
             # permute 2 connection
             NEURON_LIST = self.C_PERMUTATION(NEURON_LIST)
         # return neuronList with mutation or not
@@ -91,6 +94,27 @@ class GRAPH_EAT(GRAPH):
         # permute
         NEURON_LIST[i,-1][p] = d
         NEURON_LIST[j,-1][q] = c
+        return NEURON_LIST
+    
+    def C_TRANSPOSITION(self, NEURON_LIST):
+        ## only 2 neuron permut
+        choosable = np.where(NEURON_LIST[:,2]>1)[0]
+        if len(choosable) <= 1 :
+            return NEURON_LIST
+        # select 1 layers and new loc
+        i = np.random.choice(choosable, 1)[0]
+        possible_trnp = np.setdiff1d(np.arange(NEURON_LIST.shape[0]), i)        
+        j = np.random.choice(possible_trnp, 1)[0]
+        # select index (first not included)
+        p = np.random.randint(NEURON_LIST[i,2]-1)+1
+        # save values
+        c = NEURON_LIST[i,-1][p]
+        # transpose and delete
+        NEURON_LIST[j,-1] += [c]
+        del(NEURON_LIST[i,-1][p])
+        # update nb param
+        NEURON_LIST[i,2] -= 1
+        NEURON_LIST[j,2] += 1
         return NEURON_LIST
     
     def ADD_LAYERS(self, NEURON_LIST, LIST_C):
@@ -208,9 +232,10 @@ class GRAPH_EAT(GRAPH):
 if __name__ == '__main__' :
     g = GRAPH_EAT([9, 9, 3, 1], None)
     nl = g.NEURON_LIST
+    print(nl)
     print('init : ' + str([len(nl), sum(nl[:,1]), sum(nl[:,2])]))
-    mut = ['addco', 'addn', 'addl', 'delco', 'deln','permc']
-    for i in range(6):
+    mut = ['addco', 'addn', 'addl', 'delco', 'deln','transpc','permc']
+    for i in range(7):
         h = g.NEXT_GEN(i)
         nl = h.NEURON_LIST
         print(mut[i] + ' : ' + str([len(nl), sum(nl[:,1]), sum(nl[:,2])]))
