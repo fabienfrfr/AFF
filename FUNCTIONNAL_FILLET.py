@@ -3,6 +3,10 @@
 """
 Created on Mon Aug  1 21:09:28 2021
 @author: fabien
+https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
+https://pytorch.org/tutorials/recipes/recipes/defining_a_neural_network.html
+https://pytorch.org/tutorials/beginner/pytorch_with_examples.html
+https://pytorch.org/tutorials/beginner/nn_tutorial.html
 """
 
 # ML module
@@ -22,7 +26,7 @@ class model():
         # Parameter
         self.BATCH_SIZE = BATCH_SIZE
         self.NB_GEN = NB_GEN
-        self.NB_SEEDER = NB_SEEDER
+        self.NB_SEEDER = NB_SEEDER**2
         self.FITNESS = FITNESS
         # generate first ENN step
         self.GRAPH_LIST = [GRAPH_EAT([NB_SEEDER, IO[0], IO[1], 1], None) for n in range(NB_SEEDER)]
@@ -44,7 +48,7 @@ class model():
         for i in range(self.NB_GEN):
             for j in range(self.NB_SEEDER):
                 # compile and collect score
-                self.SCORE += [self.compile()]
+                self.SCORE += [self.compile_(10,)]
                 # update Progress bar
                 print(i,j)
             # update seeder list
@@ -127,6 +131,9 @@ if __name__ == '__main__' :
     f = np.unique(Y_train_data).size
     # init
     model = model([x*y,f],10,10,10)
+    # test
+    XTEST = torch.tensor(X_train_data[0].reshape(-1)[None], dtype=torch.float)
+    out = model.SEEDER_LIST[0](XTEST); print(out)
     # training
     model.fit(X_train_data,Y_train_data)
     # predict

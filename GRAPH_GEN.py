@@ -7,8 +7,6 @@ Created on Tue Jan  5 09:50:26 2021
 
 import numpy as np
 
-TEST_CLASS = False
-
 ################################ GRAPH of Network
 class GRAPH():
     def __init__(self, NB_P_GEN, I, O, P_MIN, MAX_HIDDEN_LVL = 32):
@@ -17,33 +15,35 @@ class GRAPH():
         self.IO = I, O
         # nombre de perceptron dans les couches "hidden"
         P_MAX = I+O #np.rint(np.sqrt(NB_P_GEN)+2).astype(int)
-        NB_PERCEPTRON_HIDDEN = np.random.randint(P_MIN,P_MAX+1)
+        self.NB_PERCEPTRON_HIDDEN = np.random.randint(P_MIN,P_MAX+1)
         
         # nombre de connection minimal (invariant)
-        C_MIN = NB_PERCEPTRON_HIDDEN + I
+        C_MIN = self.NB_PERCEPTRON_HIDDEN + I
         # nombre de connection maximal (:x)
         C_MAX = 2*C_MIN # approx
         
         # nombre de layer dans la couche hidden
-        if NB_PERCEPTRON_HIDDEN == 0 :
-            NB_LAYERS = 0
-        elif NB_PERCEPTRON_HIDDEN == 1 :
-            NB_LAYERS = 1
+        if self.NB_PERCEPTRON_HIDDEN == 0 :
+            self.NB_LAYERS = 0
+        elif self.NB_PERCEPTRON_HIDDEN == 1 :
+            self.NB_LAYERS = 1
+        elif self.NB_PERCEPTRON_HIDDEN > MAX_HIDDEN_LVL :
+            self.NB_LAYERS = np.random.randint(1, MAX_HIDDEN_LVL)
         else :
-            NB_LAYERS = np.random.randint(1, NB_PERCEPTRON_HIDDEN + 1)
-        
+            self.NB_LAYERS = np.random.randint(1, self.NB_PERCEPTRON_HIDDEN + 1)
+
         # nombre de connection per generation
         NB_CONNEC_TOT = np.random.randint(C_MIN,C_MAX)
         #print("Nombre de connection, perceptron et couche : \n", NB_CONNEC_TOT, NB_PERCEPTRON_HIDDEN, NB_LAYERS)
         
         ## nb neuron and connection by hidden layer
-        self.NEURON_LIST = self.LISTING_NEURON(NB_CONNEC_TOT, NB_LAYERS, NB_PERCEPTRON_HIDDEN)
+        self.NEURON_LIST = self.LISTING_NEURON(NB_CONNEC_TOT, self.NB_LAYERS, self.NB_PERCEPTRON_HIDDEN)
         
         # update neuron list (add x position)
-        self.ADDING_POS_X(NB_LAYERS, MAX_HIDDEN_LVL)
+        self.ADDING_POS_X(self.NB_LAYERS, MAX_HIDDEN_LVL)
         
         # listing of possible connection (<= NB_CONNEC_TOT)
-        self.LIST_C = self.LISTING_CONNECTION(NB_LAYERS, self.NEURON_LIST)
+        self.LIST_C = self.LISTING_CONNECTION(self.NB_LAYERS, self.NEURON_LIST)
         
         # expand NEURON_LIST of is own connection
         self.NEURON_LIST = self.CONNECTION_GEN(MAX_HIDDEN_LVL)
@@ -146,10 +146,12 @@ class GRAPH():
         return np.array(NEW_NEURON_LIST)
     
 if __name__ == '__main__' :
-    IO = (784,10)
-    g = GRAPH(16,IO[0],IO[1],1)
+    from tqdm import tqdm
+    IO = (128,10)
+    for _i in tqdm(range(10)):
+        g = GRAPH(16,IO[0],IO[1],1)
     print(g.NEURON_LIST)
     import EXTRA_FUNCTION as EF
-    import networkx as nx
     pos, G = EF.NEURON_2_GRAPH(g.NEURON_LIST, IO)
-    #nx.draw(G,pos,node_size=1,alpha=2./3)
+    import networkx as nx
+    nx.draw(G,pos,node_size=1,alpha=2./3)

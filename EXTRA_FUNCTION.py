@@ -51,7 +51,7 @@ def GRID_GEN(NB_GEN) :
 class MAP_ANIM():
     def __init__(self, NB_P_GEN, MAP_SIZE, STEP_LINE = 3):
         # init figure
-        self.fig = plt.figure(figsize=(5,5), dpi=60) 
+        self.fig = plt.figure(figsize=(1,1), dpi=60) 
         self.ax = self.fig.add_subplot(111)
 
         self.fig.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
