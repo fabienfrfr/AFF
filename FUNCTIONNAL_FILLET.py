@@ -12,6 +12,7 @@ https://pytorch.org/tutorials/beginner/nn_tutorial.html
 # ML module
 import numpy as np, pylab as plt
 import torch, torch.nn as nn
+import torch.nn.functional as F
 
 # networks construction
 from GRAPH_EAT import GRAPH_EAT
@@ -20,25 +21,50 @@ from pRNN_GEN import pRNN
 # calculation (multi-cpu) and data (namedtuple) optimisation
 #import multiprocessing, collections
 
+# control net
+class CTRL_NET(nn.Module):
+    def __init__(self, I,O):
+        super(CTRL_NET, self).__init__()
+        H = int(np.sqrt(I))
+        self.IN = nn.Conv1d(I, I, 1, groups=I, bias=True)
+        self.H1 = nn.Linear(I, H)
+        self.H2 = nn.Linear(H, H)
+        self.OUT = nn.Linear(H, O)
+
+    def forward(self, x):
+        s = x.shape
+        x = F.relu(self.IN(x.view(s[0],s[1],1)).view(s))
+        x = F.relu(self.H1(x))
+        x = F.relu(self.H2(x))
+        x = F.relu(self.OUT(x))
+        return F.log_softmax(x, dim=1)
+
 # ff module
 class model():
-    def __init__(self, IO, BATCH_SIZE, NB_GEN, NB_SEEDER, FITNESS = 0.1):
+    def __init__(self, IO, BATCH_SIZE, NB_GEN, NB_SEEDER, FITNESS = 0.1, LEARNING_RATE = 1e-6, MOMENTUM = 0.5):
         # Parameter
         self.BATCH_SIZE = BATCH_SIZE
         self.NB_GEN = NB_GEN
         self.NB_SEEDER = NB_SEEDER**2
         self.FITNESS = FITNESS
+        self.LR = LEARNING_RATE
+        self.MM = MOMENTUM
         # generate first ENN step
-        self.GRAPH_LIST = [GRAPH_EAT([NB_SEEDER, IO[0], IO[1], 1], None) for n in range(NB_SEEDER)]
-        self.SEEDER_LIST = []
+        self.GRAPH_LIST = [GRAPH_EAT([IO[0], IO[1], 1], None) for n in range(NB_SEEDER-1)]
+        self.SEEDER_LIST = [CTRL_NET()]
         for g in self.GRAPH_LIST :
             NEURON_LIST = g.NEURON_LIST
             self.SEEDER_LIST += [pRNN(NEURON_LIST, BATCH_SIZE, IO[0])]
         # generate loss-optimizer
         self.LOSS = [nn.MSELoss(reduction='sum') for n in range(NB_SEEDER)]
-        self.OPTIM = [torch.optim.SGD(s.parameters(), lr=1e-6) for s in self.SEEDER_LIST]
+        self.OPTIM = [torch.optim.SGD(s.parameters(), lr=LEARNING_RATE,momentum=MOMENTUM) for s in self.SEEDER_LIST]
         # scoring
         self.SCORE = []
+        # for next gen (n-plicat) and control group
+        self.NB_CONTROL = 1 # always (preference)
+        self.NB_CHALLENGE = int(np.sqrt(self.NB_SEEDER)-self.NB_CONTROL)
+        self.NB_SURVIVOR = self.NB_CHALLENGE # square completion
+        self.NB_CHILD = int(np.sqrt(self.NB_SEEDER)-1)
         
     def fit(self, DATA, LABEL):
         # Store data/label
@@ -117,7 +143,7 @@ class model():
         self.LABEL_NEW = self.SEEDER_LIST[-1](DATA_NEW)
         print(self.SEEDER_LIST[-1])
         # return result
-        return self.LABEL_NEW
+        return self.LABEL_NEW       
 
 ### TESTING PART
 if __name__ == '__main__' :

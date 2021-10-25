@@ -6,6 +6,7 @@ Created on Tue Jan 26 11:38:14 2021
 """
 import torch, torch.nn as nn
 import numpy as np, pylab as plt
+import torch.nn.functional as F
 
 from GRAPH_EAT import GRAPH_EAT
 from pRNN_GEN import pRNN
@@ -29,7 +30,7 @@ class Q_AGENT():
             COOR = (X,Y)
             self.NET = GRAPH_EAT(None, self.CONTROL_NETWORK())
         elif NET == None :
-            self.NET = GRAPH_EAT([self.NB_P_GEN, self.IO[0], self.IO[1], self.P_MIN], None)
+            self.NET = GRAPH_EAT([self.IO[0], self.IO[1], self.P_MIN], None)
         else :
             self.NET = NET
         self.NEURON_LIST = self.NET.NEURON_LIST
@@ -38,7 +39,8 @@ class Q_AGENT():
         self.GAMMA = 0.9
         #self.optimizer = torch.optim.Adam(self.MODEL.parameters())
         self.optimizer = torch.optim.SGD(self.MODEL.parameters(), lr=1e-6, momentum=0.9)
-        self.criterion = nn.MSELoss(reduction='sum')
+        self.criterion = nn.MSELoss(reduction='sum') #negative log likelihood loss (because logsoftmax)
+        #self.criterion = nn.NLLLoss(reduction='sum') #negative log likelihood loss (because logsoftmax)
         self.loss = None
         ## IO Coordinate
         self.CC = np.mgrid[-2:3,-2:3].reshape((2,-1)).T, np.mgrid[-1:2,-1:2].reshape((2,-1)).T #complete coordinate
@@ -105,8 +107,8 @@ class Q_AGENT():
     ## Action Exploration/Exploitation Dilemna
     def ACTION(self, Input) :
         img_in = torch.tensor(Input, dtype=torch.float)
-        # actor-critic
-        action_probs, critic_value = self.MODEL(img_in)
+        # actor-critic (old version)
+        action_probs = self.MODEL(img_in)
         # exploration-exploitation dilemna
         DILEMNA = np.squeeze(action_probs.detach().numpy())
         if DILEMNA.sum() == 0 or str(DILEMNA.sum()) == 'nan' :
@@ -135,10 +137,10 @@ class Q_AGENT():
         # extract info
         old_state, action, new_state, reward, DONE = self.MEMORY
         # actor-critic
-        actor, critic = self.MODEL(old_state)
+        actor = self.MODEL(old_state)
         # Compute predicted Q-values for each action
         pred_q_values_batch = torch.sum(actor.gather(1, action),dim=1).detach()
-        pred_q_values_next, critic  = self.MODEL(new_state)
+        pred_q_values_next  = self.MODEL(new_state)
         # Compute targeted Q-value for action performed
         target_q_values_batch = reward+(1-DONE)*self.GAMMA*torch.max(pred_q_values_next, 1)[0]
         # zero the parameter gradients

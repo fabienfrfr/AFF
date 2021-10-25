@@ -7,6 +7,7 @@ Created on Tue Mar 16 17:01:37 2021
 
 import torch, torch.nn as nn
 import numpy as np
+import torch.nn.functional as F
 
 ################################ Custom neural network
 class pRNN(nn.Module):
@@ -49,4 +50,4 @@ class pRNN(nn.Module):
         for t in range(len(self.trace)):
             self.h[t][BATCH_] = self.trace[t][BATCH_].detach()
         # output Actor, Critic
-        return self.trace[i], self.trace[-2]
+        return F.log_softmax(self.trace[i], dim=1) #, self.trace[-2]
