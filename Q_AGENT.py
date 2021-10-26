@@ -6,8 +6,6 @@ Created on Tue Jan 26 11:38:14 2021
 """
 import torch, torch.nn as nn
 import numpy as np, pylab as plt
-import torch.nn.functional as F
-
 from GRAPH_EAT import GRAPH_EAT
 from pRNN_GEN import pRNN
 
@@ -39,8 +37,8 @@ class Q_AGENT():
         self.GAMMA = 0.9
         #self.optimizer = torch.optim.Adam(self.MODEL.parameters())
         self.optimizer = torch.optim.SGD(self.MODEL.parameters(), lr=1e-6, momentum=0.9)
-        self.criterion = nn.MSELoss(reduction='sum') #negative log likelihood loss (because logsoftmax)
-        #self.criterion = nn.NLLLoss(reduction='sum') #negative log likelihood loss (because logsoftmax)
+        self.criterion = nn.MSELoss() # because not classification (same comparaison [batch] -> [batch])
+        #self.criterion = nn.NLLLoss(reduction='sum') #negative log likelihood loss ([batch,Nout]->[batch])
         self.loss = None
         ## IO Coordinate
         self.CC = np.mgrid[-2:3,-2:3].reshape((2,-1)).T, np.mgrid[-1:2,-1:2].reshape((2,-1)).T #complete coordinate
@@ -109,6 +107,7 @@ class Q_AGENT():
         img_in = torch.tensor(Input, dtype=torch.float)
         # actor-critic (old version)
         action_probs = self.MODEL(img_in)
+        print(action_probs)
         # exploration-exploitation dilemna
         DILEMNA = np.squeeze(action_probs.detach().numpy())
         if DILEMNA.sum() == 0 or str(DILEMNA.sum()) == 'nan' :

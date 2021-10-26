@@ -43,6 +43,7 @@ class CTRL_NET(nn.Module):
 class model():
     def __init__(self, IO, BATCH_SIZE, NB_GEN, NB_SEEDER, FITNESS = 0.1, LEARNING_RATE = 1e-6, MOMENTUM = 0.5):
         # Parameter
+        self.IO = IO
         self.BATCH_SIZE = BATCH_SIZE
         self.NB_GEN = NB_GEN
         self.NB_SEEDER = NB_SEEDER**2
@@ -126,13 +127,13 @@ class model():
             for j in range(NB_MUT):
                 GRAPH_LIST_NEW += [self.GRAPH_LIST[idx].NEXT_GEN()]
         # challenger
-        GRAPH_LIST_NEW += [GRAPH_EAT([NB_SEEDER, IO[0], IO[1], 1], None) for n in range(NB_CHALLENGER)]
+        GRAPH_LIST_NEW += [GRAPH_EAT([self.NB_SEEDER, self.IO[0], self.IO[1], 1], None) for n in range(NB_CHALLENGER)]
         # re-construct nn
         for g in GRAPH_LIST_NEW :
             NEURON_LIST = g.NEURON_LIST
-            SEEDER_LIST_NEW += [pRNN(NEURON_LIST, BATCH_SIZE, IO[0])]
+            SEEDER_LIST_NEW += [pRNN(NEURON_LIST, self.BATCH_SIZE, self.IO[0])]
         # generate loss-optimizer
-        self.LOSS = [nn.MSELoss(reduction='sum') for n in range(NB_SEEDER)]
+        self.LOSS = [nn.MSELoss(reduction='sum') for n in range(self.NB_SEEDER)]
         self.OPTIM = [torch.optim.SGD(s.parameters(), lr=1e-6) for s in self.SEEDER_LIST]
         # init scoring
         self.SCORE = []
