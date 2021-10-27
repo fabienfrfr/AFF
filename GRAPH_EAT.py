@@ -16,9 +16,9 @@ class GRAPH_EAT(GRAPH):
     def __init__(self, GEN_PARAM, NET):
         if GEN_PARAM != None :
             # first generation
-            I, O, P_MIN = GEN_PARAM
+            IO, P_MIN = GEN_PARAM
             #Inheritance of Graph_gen
-            super().__init__(I, O, P_MIN)
+            super().__init__(IO, P_MIN)
         else : 
             self.IO, self.NEURON_LIST, self.LIST_C = NET
         

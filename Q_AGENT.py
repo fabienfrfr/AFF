@@ -28,7 +28,7 @@ class Q_AGENT():
             COOR = (X,Y)
             self.NET = GRAPH_EAT(None, self.CONTROL_NETWORK())
         elif NET == None :
-            self.NET = GRAPH_EAT([self.IO[0], self.IO[1], self.P_MIN], None)
+            self.NET = GRAPH_EAT([self.IO, self.P_MIN], None)
         else :
             self.NET = NET
         self.NEURON_LIST = self.NET.NEURON_LIST
@@ -107,12 +107,12 @@ class Q_AGENT():
         img_in = torch.tensor(Input, dtype=torch.float)
         # actor-critic (old version)
         action_probs = self.MODEL(img_in)
-        print(action_probs)
         # exploration-exploitation dilemna
         DILEMNA = np.squeeze(action_probs.detach().numpy())
         if DILEMNA.sum() == 0 or str(DILEMNA.sum()) == 'nan' :
             next_action = np.random.randint(self.IO[1])
-        else : 
+        else :
+            if DILEMNA.min() < 0 : DILEMNA = DILEMNA-DILEMNA.min() # n-1 choice restriction
             p_norm = DILEMNA/DILEMNA.sum()
             next_action = np.random.choice(self.IO[1], p=p_norm)
         return next_action
@@ -135,7 +135,7 @@ class Q_AGENT():
     def OPTIM(self) :
         # extract info
         old_state, action, new_state, reward, DONE = self.MEMORY
-        # actor-critic
+        # actor proba
         actor = self.MODEL(old_state)
         # Compute predicted Q-values for each action
         pred_q_values_batch = torch.sum(actor.gather(1, action),dim=1).detach()

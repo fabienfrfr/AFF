@@ -9,16 +9,16 @@ import numpy as np
 
 ################################ GRAPH of Network
 class GRAPH():
-    def __init__(self, I, O, P_MIN, MAX_HIDDEN_LVL = 32):
+    def __init__(self, IO, P_MIN, MAX_HIDDEN_LVL = 32):
         
         # assign parameter
-        self.IO = I, O
+        self.IO = IO
         # nombre de perceptron dans les couches "hidden"
-        P_MAX = I+O #np.rint(np.sqrt(NB_P_GEN)+2).astype(int)
+        P_MAX = np.sum(IO) #np.rint(np.sqrt(NB_P_GEN)+2).astype(int)
         self.NB_PERCEPTRON_HIDDEN = np.random.randint(P_MIN,P_MAX+1)
         
         # nombre de connection minimal (invariant)
-        C_MIN = self.NB_PERCEPTRON_HIDDEN + I
+        C_MIN = self.NB_PERCEPTRON_HIDDEN + IO[0]
         # nombre de connection maximal (:x)
         C_MAX = 2*C_MIN # approx
         
