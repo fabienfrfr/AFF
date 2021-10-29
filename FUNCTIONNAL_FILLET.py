@@ -40,7 +40,7 @@ class CTRL_NET(nn.Module):
 
 # ff module
 class model():
-    def __init__(self, IO, SAMPLE_SIZE, BATCH_SIZE, EPOCH, NB_GEN, NB_SEEDER, DATA_XPLT = 0.01, LEARNING_RATE = 1e-6, MOMENTUM = 0.5):
+    def __init__(self, IO, SAMPLE_SIZE, BATCH_SIZE, EPOCH, NB_GEN, NB_SEEDER, DATA_XPLT = 1, LEARNING_RATE = 1e-6, MOMENTUM = 0.5):
         # Parameter
         self.IO = IO
         self.N = SAMPLE_SIZE
@@ -63,7 +63,7 @@ class model():
         # calculate nb batch per generation
         self.NB_BATCH_P_GEN = int((DATA_XPLT*self.N*self.EPOCH)/(self.NB_GEN*self.BATCH))
         # selection and accuracy
-        self.SCORE = []
+        self.SCORE_LOSS = []
         self.ACCUR = [] # in %
         # for next gen (n-plicat) and control group
         self.NB_CONTROL = 1 # always (preference)
@@ -73,8 +73,9 @@ class model():
     
     def fit(self, DATA, LABEL):
         # gen loop
-        for _o in tqdm(range(self.NB_GEN)):
+        for o in tqdm(range(self.NB_GEN)):
             DATA,LABEL = shuffle(DATA,LABEL)
+            P = (self.NB_GEN - o)/(2*self.NB_GEN) # proba
             # compilation
             for n in range(self.NB_BATCH_P_GEN):
                 data = torch.tensor(DATA[n*self.BATCH:(n+1)*self.BATCH].reshape(-1,self.IO[0]), dtype=torch.float)
@@ -87,19 +88,28 @@ class model():
                     self.LOSS[s].backward()
                     self.OPTIM[s].step()
                 # score loss
-                self.SCORE += [torch.tensor(self.LOSS).numpy()[None]]
+                self.SCORE_LOSS += [torch.tensor(self.LOSS).numpy()[None]]
             # score accuracy
-            dt_train = torch.tensor(DATA[np.random.randint(5)])
-            # self.predict(dt_train) 
-            self.ACCUR += []
+            train_idx = np.random.randint(self.N, size=self.BATCH)
+            dt_train = torch.tensor(DATA[train_idx].reshape((-1,self.IO[0])), dtype=torch.float)
+            tg_train = torch.tensor(LABEL[train_idx])
+            max_idx = self.predict(dt_train, False) 
+            self.ACCUR += [(max_idx == tg_train).sum(1)/self.BATCH]
             # evolution
-            SCORE_LIST = self.SCORE[-1].squeeze()
+            SCORE_LIST = (1-self.ACCUR[-1].numpy())*(self.SCORE_LOSS[-1].squeeze()) # square effect
             ## fitness (in accuracy test)
             ORDER = np.argsort(SCORE_LIST[self.NB_CONTROL:]).astype(int)
-            # control and survivor
+            # control
             CTRL = self.SEEDER_LIST[:self.NB_CONTROL]
-            BEST = [self.SEEDER_LIST[self.NB_CONTROL:][n] for n in ORDER[:self.NB_SURVIVOR]]
-            B_G_ = [self.GRAPH_LIST[n] for n in ORDER[:self.NB_SURVIVOR]]
+            # survivor (reset weight or not)
+            BEST = []
+            B_G_ = []
+            for i in ORDER[:self.NB_SURVIVOR] :
+                B_G_ += [self.GRAPH_LIST[i]]
+                if np.random.choice((True,False), 1, [P,1-P]):
+                    BEST += [self.SEEDER_LIST[self.NB_CONTROL:][i]]
+                else :
+                    BEST += [pRNN(B_G_[-1].NEURON_LIST, self.BATCH, self.IO[0])]
             # challenger
             NEWS = []
             N_G_ = []
@@ -120,15 +130,14 @@ class model():
             self.OPTIM = [torch.optim.SGD(s.parameters(), lr=self.LR,momentum=self.MM) for s in self.SEEDER_LIST]
             self.CRITERION = [nn.CrossEntropyLoss() for n in range(self.NB_SEEDER)]
         # compact data
-        self.SCORE = np.concatenate(self.SCORE).T
+        self.SCORE_LOSS = np.concatenate(self.SCORE_LOSS).T
         
     def predict(self, DATA, WITH_VAL = True):
-        N = DATA.shape[0]
         with torch.no_grad():
             log_prob = []
             for s in self.SEEDER_LIST :
-                log_prob += [s(DATA)]
-        proba = torch.exp(torch.cat(log_prob).reshape(N,-1,10))
+                log_prob += [s(DATA)[None]]
+        proba = torch.exp(torch.cat(log_prob))
         max_values, max_index = torch.max(proba,2)
         if WITH_VAL :
             return max_values, max_index
@@ -152,15 +161,15 @@ if __name__ == '__main__' :
     O = np.unique(Y_train_data).size
     # parameter
     BATCH, EPOCH = 20, 2
-    NB_GEN, NB_SEED = 20, 5
+    NB_GEN, NB_SEED = 100, 6
     # init
     MODEL = model((I,O), N, BATCH, EPOCH, NB_GEN,NB_SEED)
     # training
     MODEL.fit(X_train_data,Y_train_data)
-    plt.matshow(MODEL.SCORE, aspect="auto"); plt.show(); plt.close()
+    plt.matshow(MODEL.SCORE_LOSS, aspect="auto"); plt.show(); plt.close()
     # predict
     plt.imshow(X_test_data[0]); plt.show(); plt.close()
-    X_torch = torch.tensor(X_test_data[:3].reshape((-1,x*y)), dtype=torch.float)
-    X_torch = torch.tensor(X_test_data[0].reshape((-1,x*y)), dtype=torch.float)
+    X_torch = torch.tensor(X_test_data[:10].reshape((-1,x*y)), dtype=torch.float)
     max_v, max_i = MODEL.predict(X_torch)
-    print("Predicted Digit =", max_i)
+    Y_torch = torch.tensor(Y_test_data[:10])
+    print("Predicted Score =", (max_i == Y_torch).sum(1))
