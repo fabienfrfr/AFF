@@ -11,6 +11,8 @@ import torch, torch.nn as nn
 import torch.nn.functional as F
 from sklearn.utils import shuffle
 
+import pickle, datetime, os
+
 from tqdm import tqdm
 
 # networks construction
@@ -40,7 +42,7 @@ class CTRL_NET(nn.Module):
 
 # ff module
 class model():
-    def __init__(self, IO, SAMPLE_SIZE, BATCH_SIZE, EPOCH, NB_GEN, NB_SEEDER, DATA_XPLT = 1, LEARNING_RATE = 1e-6, MOMENTUM = 0.5):
+    def __init__(self, IO, SAMPLE_SIZE, BATCH_SIZE, EPOCH, NB_GEN, NB_SEEDER, DATA_XPLT = 0.25, LEARNING_RATE = 1e-6, MOMENTUM = 0.5):
         # Parameter
         self.IO = IO
         self.N = SAMPLE_SIZE
@@ -94,9 +96,9 @@ class model():
             dt_train = torch.tensor(DATA[train_idx].reshape((-1,self.IO[0])), dtype=torch.float)
             tg_train = torch.tensor(LABEL[train_idx])
             max_idx = self.predict(dt_train, False) 
-            self.ACCUR += [(max_idx == tg_train).sum(1)/self.BATCH]
+            self.ACCUR += [((max_idx == tg_train).sum(1)/self.BATCH).numpy()[None]]
             # evolution
-            SCORE_LIST = (1-self.ACCUR[-1].numpy())*(self.SCORE_LOSS[-1].squeeze()) # square effect
+            SCORE_LIST = ((1-self.ACCUR[-1]).squeeze())*(self.SCORE_LOSS[-1].squeeze()) # square effect
             ## fitness (in accuracy test)
             ORDER = np.argsort(SCORE_LIST[self.NB_CONTROL:]).astype(int)
             # control
@@ -131,6 +133,11 @@ class model():
             self.CRITERION = [nn.CrossEntropyLoss() for n in range(self.NB_SEEDER)]
         # compact data
         self.SCORE_LOSS = np.concatenate(self.SCORE_LOSS).T
+        self.ACCUR = np.concatenate(self.ACCUR).T
+        # save object
+        TIME = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        filehandler = open("OUT"+os.path.sep+"MODEL_"+TIME+".obj", 'wb')
+        pickle.dump(self, filehandler); filehandler.close()
         
     def predict(self, DATA, WITH_VAL = True):
         with torch.no_grad():
@@ -145,7 +152,35 @@ class model():
             return max_index
 
 ### TESTING PART
+def plot_fast(curve_list,std_list,label_list,Title,Ylabel,Xlabel):
+    W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
+    # fig ratio
+    MM2INCH = 1# 2.54
+    W, H, L, S = np.array((W, H, L, S))/MM2INCH # ratio fig : 2.7/2.1
+    STD = np.pi
+    # Figure
+    fig = plt.figure(figsize=(W, H))
+    
+    plt.rc('font', size=S)
+    plt.rc('axes', titlesize=S)
+    
+    ax = fig.add_subplot()
+    ax.set_title(Title, fontsize=L)
+    ax.set_ylabel(Ylabel, fontsize=L)
+    ax.set_xlabel(Xlabel, fontsize=L)
+    # ax loop
+    for c,s,l in zip(curve_list,std_list, label_list) :
+        ax.plot(c, label=l)
+        ax.fill_between(np.arange(len(c)), c - s/STD, c + s/STD, alpha=0.3)
+    # Legend
+    ax.legend()
+    plt.xlim([0,len(c)])
+    # Save data
+    plt.savefig('OUT' + os.path.sep + Title + ".svg")
+    plt.show(); plt.close()
+    
 if __name__ == '__main__' :
+    LOAD = True
     # module for test
     from tensorflow.keras.datasets import mnist
     # import mnist
@@ -160,13 +195,31 @@ if __name__ == '__main__' :
     N, x, y = X_train_data.shape ; I = x*y
     O = np.unique(Y_train_data).size
     # parameter
-    BATCH, EPOCH = 20, 2
-    NB_GEN, NB_SEED = 100, 6
-    # init
-    MODEL = model((I,O), N, BATCH, EPOCH, NB_GEN,NB_SEED)
-    # training
-    MODEL.fit(X_train_data,Y_train_data)
-    plt.matshow(MODEL.SCORE_LOSS, aspect="auto"); plt.show(); plt.close()
+    BATCH, EPOCH = 25, 2
+    NB_GEN, NB_SEED = 100, 5
+    # init&train or load
+    if LOAD :
+        with open('OUT'+os.path.sep+'MODEL_20211102_154440.obj', 'rb') as f:
+            MODEL = pickle.load(f)
+    else :
+        MODEL = model((I,O), N, BATCH, EPOCH, NB_GEN,NB_SEED)
+        # training
+        MODEL.fit(X_train_data,Y_train_data)
+    # result
+    fig = plt.figure(figsize=(3.7, 2.9))
+    ax = fig.add_subplot()
+    cax = ax.matshow(MODEL.SCORE_LOSS, aspect="auto")
+    fig.colorbar(cax)
+    plt.savefig('OUT' + os.path.sep + "MNIST_DIST.svg")
+    plt.show(); plt.close()
+    from scipy.ndimage import filters
+    curve_list = [  filters.gaussian_filter1d(MODEL.SCORE_LOSS[0],1), 
+                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[1:-NB_SEED].mean(0),1), 
+                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[-NB_SEED:].mean(0),1)]
+    std_list = [    np.zeros(len(MODEL.SCORE_LOSS[0])),
+                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[1:-NB_SEED].std(0),1), 
+                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[-NB_SEED:].std(0),1)]
+    plot_fast(curve_list,std_list,['CTRL','EVOLUTION','RANDOM'], 'MNIST', 'Loss','Batch')
     # predict
     plt.imshow(X_test_data[0]); plt.show(); plt.close()
     X_torch = torch.tensor(X_test_data[:10].reshape((-1,x*y)), dtype=torch.float)
