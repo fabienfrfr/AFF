@@ -135,6 +135,7 @@ class model():
         self.SCORE_LOSS = np.concatenate(self.SCORE_LOSS).T
         self.ACCUR = np.concatenate(self.ACCUR).T
         # save object
+        if(not os.path.isdir('OUT')): os.makedirs('OUT')
         TIME = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
         filehandler = open("OUT"+os.path.sep+"MODEL_"+TIME+".obj", 'wb')
         pickle.dump(self, filehandler); filehandler.close()
