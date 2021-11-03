@@ -246,6 +246,7 @@ if __name__ == '__main__' :
                     np.zeros(MODEL.BEST_SCORE_LOSS.size)]
     plot_fast(curve_list,std_list,['CTRL','EVOLUTION','RANDOM','BEST'], 'MNIST', 'Loss','Batch')
     # predict
+    X_test_data,Y_test_data = shuffle(X_test_data,Y_test_data)
     plt.imshow(X_test_data[0]); plt.show(); plt.close()
     X_torch = torch.tensor(X_test_data[:10].reshape((-1,x*y)), dtype=torch.float)
     max_v, max_i = MODEL.predict(X_torch)
