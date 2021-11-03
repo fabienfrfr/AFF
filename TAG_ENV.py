@@ -8,15 +8,19 @@ import numpy as np
 
 ################################ TAG GAME ENVIRONMENT : BASIC's 
 class TAG_ENV():
-    def __init__(self, MAP_SIZE, AGENT_PROP):
+    def __init__(self, MAP_SIZE, AGENT_PROP, TAG_GAME=0):
+        self.TAG_GAME = TAG_GAME # 0 : classic rule; 1 : only prey; 2 : only predator
         ## subMAP INIT
         self.BACKGROUND = np.zeros((MAP_SIZE,MAP_SIZE))
         self.MAP_SIZE = MAP_SIZE
         ## PNJ and AGENT PLAYER POSITION
-        self.PNJ_POS, self.AG_POS = self.POS_PLAYERS_FIRST()
+        self.PNJ_POS, self.AG_POS = self.POS_PLAYERS_SET()
         self.PNJ_LIST, self.AG_LIST = [list(self.PNJ_POS)], [list(self.AG_POS)]
         ## IT OR OT (for PNJ)
-        self.IT = True
+        if self.TAG_GAME == 2 :
+            self.IT = False
+        else :
+            self.IT = True
         self.IT_LIST = [self.IT]
         ## MAP UPDATE
         self.MAP = None
@@ -29,12 +33,12 @@ class TAG_ENV():
         self.SCORE = 0
         self.END = np.inf
         
-    def POS_PLAYERS_FIRST(self):
+    def POS_PLAYERS_SET(self):
         return np.random.randint(0,self.MAP_SIZE,2), np.random.randint(0,self.MAP_SIZE,2)
     
     def UPDATE_MAP(self):
         self.MAP = self.BACKGROUND.copy()
-        if self.IT : A,B = 10., 20.
+        if self.IT : A,B = 20., 30.
         else : A,B = 20., 10.
         self.MAP[tuple(self.AG_POS)] = A
         self.MAP[tuple(self.PNJ_POS)] = B
@@ -47,6 +51,7 @@ class TAG_ENV():
         return prev_state
         
     def STEP(self, action) :
+        D, C = 2,1 #distance critic, distance contact
         self.MVT = np.append(self.MVT,[action+1])
         ## UPDATE POS 
         # FOR "PNJ" :
@@ -56,7 +61,7 @@ class TAG_ENV():
             if VECT[COOR] != 0 :
                 self.PNJ_POS[COOR] -= np.sign(VECT[COOR])
         else :
-            if np.random.choice([True, False], p=[0.65,0.35]) :
+            if np.random.choice([True, False], p=[0.35,0.65]) :
                 COOR = np.where(abs(VECT)==abs(VECT).min())[0][0]
                 SIGN = np.sign(VECT[COOR])
             else :
@@ -84,29 +89,37 @@ class TAG_ENV():
                     reward_c = -i
         # PNJ is "IT"
         if self.IT :
-            if GAP <= np.sqrt(1) :
+            if GAP <= np.sqrt(C) :
                 reward_g = -10
-            elif GAP <= np.sqrt(2) :
+            elif GAP <= np.sqrt(D) :
                 reward_g = -2
             else :
                 reward_g = 2
         # AGENT is "IT"
         else :
-            if GAP <= np.sqrt(1) :
+            if GAP <= np.sqrt(C) :
                 reward_g = +10
-            elif GAP <= np.sqrt(2) :
+            elif GAP <= np.sqrt(D) :
                 reward_g = +2
             else :
-                reward_g = -2
+                if self.TAG_GAME == 0 :
+                    reward_g = -2
+                else :
+                    reward_g = 0
         # reward = reward_cheat + reward_gamerule
         reward = reward_c + reward_g
-        # Change state :
-        if GAP <= np.sqrt(2) :
-            self.IT = np.invert(self.IT)
+        # Rule type :
+        if GAP <= np.sqrt(C) :
+            if self.TAG_GAME == 0 :
+                # Change state :
+                self.IT = np.invert(self.IT)
+            else :
+                # reset position
+                self.PNJ_POS, self.AG_POS = self.POS_PLAYERS_SET()
         # save state
         self.IT_LIST += [self.IT]
         ## change position of PNJ if GAP == 0
-        if GAP == 0 :
+        if GAP == 0 and self.TAG_GAME == 0 :
             RANDOM_WALK = np.random.randint(-3,4,2)
             self.PNJ_POS = np.mod(self.PNJ_POS + RANDOM_WALK, self.MAP_SIZE)
         ## ending condition
@@ -120,7 +133,7 @@ class TAG_ENV():
 if __name__ == '__main__' :
     X = np.array([[0,0],[1,1],[0,3],[2,3],[2,4],[3,0],[3,2],[4,1],[4,4]])-[2,2]
     Y = np.array([[1,0],[0,1],[2,2]])-[1,1]
-    t = TAG_ENV(10,[X,Y])
+    t = TAG_ENV(10,[X,Y],2)
     for i in range(25):
         v = t.STEP(np.random.randint(3))
         print(v)

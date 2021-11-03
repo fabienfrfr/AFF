@@ -19,20 +19,22 @@ from tqdm import tqdm
 ################################ EXPERIMENTAL PARAMETER (inverted name : need 2 change)
 IO = (13,3) # don't change here (not optimized yet)
 NB_GEN = 100 # convergence I/O vers 20
-batch_size = 12 #25
+batch_size = 25 #25
 MAP_SIZE = 9
-N_TIME = 12 #25
-NB_P_GEN = 2**2 ## always squarable !
+N_TIME = 25 #25
+NB_P_GEN = 5**2 ## always squarable !
 
 ARG_TUPLE = (IO,NB_GEN, batch_size, MAP_SIZE, N_TIME, NB_P_GEN)
+RULE = 0 # 0 : classic
 
 ################################ LYFE EXPERIMENT's 
 class LYFE():
-    def __init__(self, arg):
+    def __init__(self, arg, rule=0):
         # Parameter
         self.NB_P_GEN = arg[-1]
         self.MAP_SIZE = arg[3]
         self.ARG = arg
+        self.GRULE = rule
         # Loop generate player and env (change if common of separated)
         self.PLAYERS, self.ENV = [], []
         for n in range(self.NB_P_GEN) :
@@ -41,7 +43,7 @@ class LYFE():
             else :
                 self.PLAYERS += [Q_AGENT(*self.ARG[:-1])]
             AGENT_VIEW, AGENT_MOVE = self.PLAYERS[-1].X, self.PLAYERS[-1].Y
-            self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE))]
+            self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE), self.GRULE)]
             self.PLAYERS[-1].INIT_ENV(self.ENV[-1])
         # Classement & party info
         self.SCORE_LIST = []
@@ -127,10 +129,10 @@ class LYFE():
         self.ENV = []
         for p in self.PLAYERS :
             AGENT_VIEW, AGENT_MOVE = p.X, p.Y
-            self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE))]
+            self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE), self.GRULE)]
             p.INIT_ENV(self.ENV[-1])
         
 if __name__ == '__main__' :
     # experiment
-    EXP = LYFE(ARG_TUPLE)
+    EXP = LYFE(ARG_TUPLE, RULE)
     EXP.LAUNCH()

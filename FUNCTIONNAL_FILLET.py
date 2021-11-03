@@ -42,7 +42,7 @@ class CTRL_NET(nn.Module):
 
 # ff module
 class model():
-    def __init__(self, IO, SAMPLE_SIZE, BATCH_SIZE, EPOCH, NB_GEN, NB_SEEDER, DATA_XPLT = 0.25, LEARNING_RATE = 1e-6, MOMENTUM = 0.5):
+    def __init__(self, IO, SAMPLE_SIZE, BATCH_SIZE, EPOCH, NB_GEN, NB_SEEDER, DATA_XPLT = 0.5, LEARNING_RATE = 1e-6, MOMENTUM = 0.5):
         # Parameter
         self.IO = IO
         self.N = SAMPLE_SIZE
@@ -58,6 +58,11 @@ class model():
         for g in self.GRAPH_LIST :
             NEURON_LIST = g.NEURON_LIST
             self.SEEDER_LIST += [pRNN(NEURON_LIST, self.BATCH, self.IO[0])]
+        # best seeder model
+        self.BEST_MODEL = 0
+        self.OPTIM_BEST = 0
+        self.BEST_CRIT = nn.CrossEntropyLoss()
+        self.LOSS_BEST = 0
         # generate loss-optimizer
         self.OPTIM = [torch.optim.SGD(s.parameters(), lr=LEARNING_RATE,momentum=MOMENTUM) for s in self.SEEDER_LIST]
         self.CRITERION = [nn.CrossEntropyLoss() for n in range(self.NB_SEEDER)]
@@ -67,6 +72,7 @@ class model():
         # selection and accuracy
         self.SCORE_LOSS = []
         self.ACCUR = [] # in %
+        self.BEST_SCORE_LOSS = []
         # for next gen (n-plicat) and control group
         self.NB_CONTROL = 1 # always (preference)
         self.NB_CHALLENGE = int(np.sqrt(self.NB_SEEDER)-self.NB_CONTROL)
@@ -131,9 +137,25 @@ class model():
             # generate loss-optimizer
             self.OPTIM = [torch.optim.SGD(s.parameters(), lr=self.LR,momentum=self.MM) for s in self.SEEDER_LIST]
             self.CRITERION = [nn.CrossEntropyLoss() for n in range(self.NB_SEEDER)]
-        # compact data
+        # compact evolution data
         self.SCORE_LOSS = np.concatenate(self.SCORE_LOSS).T
         self.ACCUR = np.concatenate(self.ACCUR).T
+        # best loop weight optimization
+        self.BEST_MODEL = pRNN(self.GRAPH_LIST[ORDER[0]].NEURON_LIST, self.BATCH, self.IO[0])
+        self.OPTIM_BEST = torch.optim.SGD(self.BEST_MODEL.parameters(), lr=self.LR,momentum=self.MM)
+        for i in tqdm(range(self.NB_GEN)):
+            DATA,LABEL = shuffle(DATA,LABEL)
+            for n in range(self.NB_BATCH_P_GEN):
+                data = torch.tensor(DATA[n*self.BATCH:(n+1)*self.BATCH].reshape(-1,self.IO[0]), dtype=torch.float)
+                target = torch.tensor(LABEL[n*self.BATCH:(n+1)*self.BATCH]).type(torch.LongTensor)
+                self.OPTIM_BEST.zero_grad()
+                output = self.BEST_MODEL(data)
+                self.LOSS_BEST = self.BEST_CRIT(output,target)
+                self.LOSS_BEST.backward()
+                self.OPTIM_BEST.step()
+                # score loss
+                self.BEST_SCORE_LOSS += [self.LOSS_BEST.detach().numpy()[None]]
+        self.BEST_SCORE_LOSS = np.concatenate(self.BEST_SCORE_LOSS)
         # save object
         if(not os.path.isdir('OUT')): os.makedirs('OUT')
         TIME = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -181,7 +203,7 @@ def plot_fast(curve_list,std_list,label_list,Title,Ylabel,Xlabel):
     plt.show(); plt.close()
     
 if __name__ == '__main__' :
-    LOAD = True
+    LOAD = False
     # module for test
     from tensorflow.keras.datasets import mnist
     # import mnist
@@ -216,11 +238,13 @@ if __name__ == '__main__' :
     from scipy.ndimage import filters
     curve_list = [  filters.gaussian_filter1d(MODEL.SCORE_LOSS[0],1), 
                     filters.gaussian_filter1d(MODEL.SCORE_LOSS[1:-NB_SEED].mean(0),1), 
-                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[-NB_SEED:].mean(0),1)]
+                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[-NB_SEED:].mean(0),1),
+                    filters.gaussian_filter1d(MODEL.BEST_SCORE_LOSS,1)]
     std_list = [    np.zeros(len(MODEL.SCORE_LOSS[0])),
                     filters.gaussian_filter1d(MODEL.SCORE_LOSS[1:-NB_SEED].std(0),1), 
-                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[-NB_SEED:].std(0),1)]
-    plot_fast(curve_list,std_list,['CTRL','EVOLUTION','RANDOM'], 'MNIST', 'Loss','Batch')
+                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[-NB_SEED:].std(0),1),
+                    np.zeros(MODEL.BEST_SCORE_LOSS.size)]
+    plot_fast(curve_list,std_list,['CTRL','EVOLUTION','RANDOM','BEST'], 'MNIST', 'Loss','Batch')
     # predict
     plt.imshow(X_test_data[0]); plt.show(); plt.close()
     X_torch = torch.tensor(X_test_data[:10].reshape((-1,x*y)), dtype=torch.float)
