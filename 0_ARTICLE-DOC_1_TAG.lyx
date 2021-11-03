@@ -828,8 +828,12 @@ Objectif : poids = Fonction d'erreur, cas linéaire, cas variation d'echelle
 \end_layout
 
 \begin_layout Enumerate
-Formule du gradient : dérivée composée via graphe de calculs, exemple reseau
- de neurone
+Formule du gradient : dérivée composée (automatique) via graphe de calculs,
+ exemple reseau de neurone 
+\begin_inset Formula $\frac{\partial F}{\partial a}=\left\{ \frac{\partial b}{\partial a}\right\} \cdot\frac{\partial F}{\partial b}=\left(\frac{\partial h}{\partial a}\right)\left[\frac{\partial b}{\partial h}\right]\cdot\frac{\partial F}{\partial b}=\left(b\cdot f_{*}\cdot g_{*}^{(1)}\right)\cdot\left[\frac{1}{g_{*}}\right]\cdot\frac{\partial F}{\partial b}$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Enumerate
@@ -5449,7 +5453,8 @@ literal "false"
 
 \end_inset
 
-], les attachements entre parent-enfant [
+ Henderson 2018 (mieux que Marshall)], les attachements entre parent-enfant
+ [
 \begin_inset CommandInset citation
 LatexCommand citet
 key "holmes_john_2014"
