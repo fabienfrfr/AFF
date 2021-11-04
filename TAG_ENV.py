@@ -57,9 +57,14 @@ class TAG_ENV():
         # FOR "PNJ" :
         VECT = self.PNJ_POS - self.AG_POS
         if self.IT :
-            COOR = np.where(abs(VECT)==abs(VECT).max())[0][0]
-            if VECT[COOR] != 0 :
-                self.PNJ_POS[COOR] -= np.sign(VECT[COOR])
+            if np.random.choice([False, True], p=[0.35,0.65]) :
+                COOR = np.where(abs(VECT)==abs(VECT).max())[0][0]
+                if VECT[COOR] != 0 :
+                    self.PNJ_POS[COOR] -= np.sign(VECT[COOR])
+            else :
+                COOR = np.random.randint(2)
+                SIGN = np.random.randint(-1,2)
+                self.PNJ_POS[COOR] = np.mod(self.PNJ_POS[COOR] + SIGN, self.MAP_SIZE)
         else :
             if np.random.choice([True, False], p=[0.35,0.65]) :
                 COOR = np.where(abs(VECT)==abs(VECT).min())[0][0]
@@ -94,7 +99,10 @@ class TAG_ENV():
             elif GAP <= np.sqrt(D) :
                 reward_g = -2
             else :
-                reward_g = 2
+                if self.TAG_GAME == 0 :
+                    reward_g = 2
+                else :
+                    reward_g = 1
         # AGENT is "IT"
         else :
             if GAP <= np.sqrt(C) :
@@ -133,7 +141,7 @@ class TAG_ENV():
 if __name__ == '__main__' :
     X = np.array([[0,0],[1,1],[0,3],[2,3],[2,4],[3,0],[3,2],[4,1],[4,4]])-[2,2]
     Y = np.array([[1,0],[0,1],[2,2]])-[1,1]
-    t = TAG_ENV(10,[X,Y],2)
+    t = TAG_ENV(10,[X,Y],1)
     for i in range(25):
         v = t.STEP(np.random.randint(3))
         print(v)
