@@ -25,6 +25,7 @@ class TAG_ENV():
         ## MAP UPDATE
         self.MAP = None
         self.MAP_LIST = []
+        self.BOX_RADAR = np.mgrid[-1:2,-1:2].reshape(-1,2)
         self.UPDATE_MAP()
         ## AGENT INFO
         self.AGENT_VIEW, self.AGENT_MOVE = AGENT_PROP
@@ -41,6 +42,8 @@ class TAG_ENV():
         if self.IT : A,B = 20., 30.
         else : A,B = 20., 10.
         self.MAP[tuple(self.AG_POS)] = A
+        BOX = np.mod(self.PNJ_POS + self.BOX_RADAR, self.MAP_SIZE)
+        self.MAP[tuple(map(tuple, BOX.T))] = 1
         self.MAP[tuple(self.PNJ_POS)] = B
         self.MAP_LIST += [self.MAP.copy()]
     

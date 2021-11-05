@@ -197,3 +197,30 @@ def LINEAGE_2_GRAPH(NB_GEN,NB_P_GEN,TREE_LIST):
     # Extract pos dict
     pos = nx.get_node_attributes(G,'pos')
     return pos, G
+
+def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel):
+    W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
+    # fig ratio
+    MM2INCH = 1# 2.54
+    W, H, L, S = np.array((W, H, L, S))/MM2INCH # ratio fig : 2.7/2.1
+    STD = np.pi
+    # Figure
+    fig = plt.figure(figsize=(W, H))
+    
+    plt.rc('font', size=S)
+    plt.rc('axes', titlesize=S)
+    
+    ax = fig.add_subplot()
+    ax.set_title(Title, fontsize=L)
+    ax.set_ylabel(Ylabel, fontsize=L)
+    ax.set_xlabel(Xlabel, fontsize=L)
+    # ax loop
+    for c,s,l in zip(curve_list,std_list, label_list) :
+        ax.plot(c, label=l)
+        ax.fill_between(np.arange(len(c)), c - s/STD, c + s/STD, alpha=0.3)
+    # Legend
+    ax.legend()
+    plt.xlim([0,len(c)])
+    # Save data
+    plt.savefig('OUT' + os.path.sep + Title + ".svg")
+    plt.show(); plt.close()

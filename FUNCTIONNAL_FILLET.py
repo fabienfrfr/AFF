@@ -19,6 +19,9 @@ from tqdm import tqdm
 from GRAPH_EAT import GRAPH_EAT
 from pRNN_GEN import pRNN
 
+# extra function
+import EXTRA_FUNCTION as EF
+
 # calculation (multi-cpu) and data (namedtuple) optimisation
 #import multiprocessing, collections
 
@@ -63,6 +66,7 @@ class model():
         self.OPTIM_BEST = 0
         self.BEST_CRIT = nn.CrossEntropyLoss()
         self.LOSS_BEST = 0
+        self.BEST_WEIGHT = []
         # generate loss-optimizer
         self.OPTIM = [torch.optim.SGD(s.parameters(), lr=LEARNING_RATE,momentum=MOMENTUM) for s in self.SEEDER_LIST]
         self.CRITERION = [nn.CrossEntropyLoss() for n in range(self.NB_SEEDER)]
@@ -156,6 +160,8 @@ class model():
                 # score loss
                 self.BEST_SCORE_LOSS += [self.LOSS_BEST.detach().numpy()[None]]
         self.BEST_SCORE_LOSS = np.concatenate(self.BEST_SCORE_LOSS)
+        # Extract learned weight
+        self.BEST_WEIGHT = list(self.BEST_MODEL.parameters())
         # save object
         if(not os.path.isdir('OUT')): os.makedirs('OUT')
         TIME = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -175,32 +181,6 @@ class model():
             return max_index
 
 ### TESTING PART
-def plot_fast(curve_list,std_list,label_list,Title,Ylabel,Xlabel):
-    W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
-    # fig ratio
-    MM2INCH = 1# 2.54
-    W, H, L, S = np.array((W, H, L, S))/MM2INCH # ratio fig : 2.7/2.1
-    STD = np.pi
-    # Figure
-    fig = plt.figure(figsize=(W, H))
-    
-    plt.rc('font', size=S)
-    plt.rc('axes', titlesize=S)
-    
-    ax = fig.add_subplot()
-    ax.set_title(Title, fontsize=L)
-    ax.set_ylabel(Ylabel, fontsize=L)
-    ax.set_xlabel(Xlabel, fontsize=L)
-    # ax loop
-    for c,s,l in zip(curve_list,std_list, label_list) :
-        ax.plot(c, label=l)
-        ax.fill_between(np.arange(len(c)), c - s/STD, c + s/STD, alpha=0.3)
-    # Legend
-    ax.legend()
-    plt.xlim([0,len(c)])
-    # Save data
-    plt.savefig('OUT' + os.path.sep + Title + ".svg")
-    plt.show(); plt.close()
     
 if __name__ == '__main__' :
     LOAD = False
@@ -244,7 +224,7 @@ if __name__ == '__main__' :
                     filters.gaussian_filter1d(MODEL.SCORE_LOSS[1:-NB_SEED].std(0),1), 
                     filters.gaussian_filter1d(MODEL.SCORE_LOSS[-NB_SEED:].std(0),1),
                     np.zeros(MODEL.BEST_SCORE_LOSS.size)]
-    plot_fast(curve_list,std_list,['CTRL','EVOLUTION','RANDOM','BEST'], 'MNIST', 'Loss','Batch')
+    EF.FAST_PLOT(curve_list,std_list,['CTRL','EVOLUTION','RANDOM','BEST'], 'MNIST', 'Loss','Batch')
     # predict
     X_test_data,Y_test_data = shuffle(X_test_data,Y_test_data)
     plt.imshow(X_test_data[0]); plt.show(); plt.close()

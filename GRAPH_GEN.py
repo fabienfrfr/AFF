@@ -27,10 +27,10 @@ class GRAPH():
             self.NB_LAYERS = 0
         elif self.NB_PERCEPTRON_HIDDEN == 1 :
             self.NB_LAYERS = 1
-        elif self.NB_PERCEPTRON_HIDDEN > MAX_HIDDEN_LVL :
-            self.NB_LAYERS = np.random.randint(1, MAX_HIDDEN_LVL)
+        elif self.NB_PERCEPTRON_HIDDEN >= MAX_HIDDEN_LVL :
+            self.NB_LAYERS = np.random.randint(1, MAX_HIDDEN_LVL-1)
         else :
-            self.NB_LAYERS = np.random.randint(1, self.NB_PERCEPTRON_HIDDEN + 1)
+            self.NB_LAYERS = np.random.randint(1, self.NB_PERCEPTRON_HIDDEN)
 
         # nombre de connection per generation
         NB_CONNEC_TOT = np.random.randint(C_MIN,C_MAX)

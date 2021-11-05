@@ -11,7 +11,7 @@ from pRNN_GEN import pRNN
 
 ################################ AGENT
 class Q_AGENT():
-    def __init__(self, *arg, CTRL=False, NET = None, DENSITY_IO = None, COOR = None):
+    def __init__(self, *arg, MODEL = None, CTRL=False, NET = None, DENSITY_IO = None, COOR = None):
         self.P_MIN = 1
         # Parameter
         self.ARG = arg
@@ -32,7 +32,10 @@ class Q_AGENT():
         else :
             self.NET = NET
         self.NEURON_LIST = self.NET.NEURON_LIST
-        self.MODEL = pRNN(self.NEURON_LIST, self.batch_size, self.IO[0])
+        if MODEL == None :
+            self.MODEL = pRNN(self.NEURON_LIST, self.batch_size, self.IO[0])
+        else :
+            self.MODEL = MODEL
         # nn optimiser
         self.GAMMA = 0.9
         #self.optimizer = torch.optim.Adam(self.MODEL.parameters())
@@ -154,10 +157,13 @@ class Q_AGENT():
         self.MEMORY = [[],[],[],[],[]]
     
     ## reset object
-    def RESET(self):
+    def RESET(self, PROBA):
         GRAPH = self.NET.NEXT_GEN(-1)
         XY_TUPLE = (self.X,self.Y)
-        return Q_AGENT(*self.ARG, NET = GRAPH, COOR = XY_TUPLE)
+        if np.random.choice((True,False), 1, [PROBA,1-PROBA]):
+            return Q_AGENT(*self.ARG, NET = GRAPH, COOR = XY_TUPLE)
+        else :
+            return Q_AGENT(*self.ARG, MODEL = self.MODEL, NET = GRAPH, COOR = XY_TUPLE)
     
     ## mutation
     def MUTATION(self, DENSITY_IO, MUT = None):
@@ -179,7 +185,7 @@ class Q_AGENT():
         # init number of connection per layer
         """NB_H_LAYER = 2"""
         """NB_C_P_LAYER = int(np.sqrt(self.IO[0]) + np.sqrt(self.IO[1]))"""
-        # network equivalence
+        # network equivalence --> passer à 17 ?
         NET = np.array([[-1, 3, 4, 32, [[2,0],[2,1],[2,2],[2,3]]],
                         [ 1, 4, 13, 10, [[0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11],[0,12]]],
                         [ 2, 4, 4, 20, [[1,0],[1,1],[1,2],[1,3]]]])
