@@ -8,9 +8,16 @@ Created on Sat Apr 24 23:05:53 2021
 import numpy as np, pylab as plt
 import pandas as pd, os
 
+import EXTRA_FUNCTION as EF
+from scipy.ndimage import filters
+
 ################################ SAVE EXP INFO & pre-treatment
 class LOG_INFO():
-    def __init__(self, PL_LIST, ENV_LIST, GEN):
+    def __init__(self, PL_LIST, ENV_LIST, GEN, CYCL):
+        # parameter & score
+        self.NB_CYCLE = CYCL
+        self.NB_SEED = int(np.sqrt(len(PL_LIST)))
+        self.SCORE = []
         # exp info
         self.DF_1 = pd.DataFrame(columns=['ID','GEN','TYPE','TREE','MAP_SIZE','DENSITY_IN','DENSITY_OUT','IN_COOR','OUT_COOR','NEURON_LIST'])
         self.DF_2 = pd.DataFrame(columns=['ID','AGENT_POS','PNJ_POS','TAG_STATE','SCORE', 'RANK'])
@@ -103,7 +110,11 @@ class LOG_INFO():
         DF_1_NEW = pd.DataFrame(ARRAY, columns=list(self.DF_1))
         self.DF_1 = self.DF_1.append(DF_1_NEW, ignore_index=True)
     
-    def FINISH_CYCLE(self, ENV_LIST, SCORE, RANK):
+    def FINISH_CYCLE(self, ENV_LIST, SCORE, RANK, SHOWSCORE=True):
+        self.SCORE += [np.array(SCORE)[None]]
+        # fast score plot
+        if SHOWSCORE and len(self.SCORE) > 1 :
+            self.SCORE_PLOT()
         # Listing
         ID = np.arange(self.DF_2.shape[0], self.DF_2.shape[0] + len(ENV_LIST))
         AGENT_POS = []
@@ -156,9 +167,17 @@ class LOG_INFO():
         # update density
         self.DENSITY_IO = IN_DENSITY, OUT_DENSITY
         if IMSHOW :
-            # PLOT (provisoire)
-            plt.imshow(IN_DENSITY); plt.colorbar(); plt.show(); plt.close()
-            plt.imshow(OUT_DENSITY); plt.colorbar(); plt.show(); plt.close()
+            EF.FAST_IMSHOW(self.DENSITY_IO)
+    
+    def SCORE_PLOT(self, SIGMA=2):
+        CURVE = np.concatenate(self.SCORE).T
+        curve_list = [  filters.gaussian_filter1d(CURVE[0],SIGMA), 
+                        filters.gaussian_filter1d(CURVE[1:-self.NB_SEED].mean(0),SIGMA), 
+                        filters.gaussian_filter1d(CURVE[-self.NB_SEED:].mean(0),SIGMA)]
+        std_list = [    np.zeros(len(CURVE[0])),
+                        filters.gaussian_filter1d(CURVE[1:-self.NB_SEED].std(0),SIGMA), 
+                        filters.gaussian_filter1d(CURVE[-self.NB_SEED:].std(0),SIGMA)]
+        EF.FAST_PLOT(curve_list,std_list,['CTRL','EVOLUTION','RANDOM'], 'LYFE', 'Score','Gen', XMAX = self.NB_CYCLE)
      
     # DEPRECIED
     def ROTATION_3(self, X_CENTER, NEW_CENTER) :

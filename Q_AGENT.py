@@ -23,10 +23,12 @@ class Q_AGENT():
         ## Init
         if CTRL :
             # I/O minimalisme
-            X = np.array([[0,0],[0,2],[0,4],[1,1],[1,3],[2,0],[2,2],[2,4],[3,1],[3,3],[4,0],[4,2],[4,4]])-[2,2]
+            X_A = np.mgrid[-1:2,-1:2].reshape(-1,2)
+            X_B = np.array([[0,0],[0,2],[0,4],[2,0],[2,4],[4,0],[4,2],[4,4]])-[2,2]
+            X = np.concatenate((X_A,X_B))
             Y = np.array([[0,1],[1,2],[2,0]])-[1,1]
             COOR = (X,Y)
-            self.NET = GRAPH_EAT(None, self.CONTROL_NETWORK())
+            self.NET = GRAPH_EAT(None, self.CONTROL_NETWORK(self.IO))
         elif NET == None :
             self.NET = GRAPH_EAT([self.IO, self.P_MIN], None)
         else :
@@ -178,7 +180,7 @@ class Q_AGENT():
         return Q_AGENT(*self.ARG, NET = GRAPH, COOR = XY_TUPLE)
     
     ## control group
-    def CONTROL_NETWORK(self):
+    def CONTROL_NETWORK(self, IO) :
         """
         For Lyfe problem : not generalized
         """
@@ -187,15 +189,19 @@ class Q_AGENT():
         """NB_C_P_LAYER = int(np.sqrt(self.IO[0]) + np.sqrt(self.IO[1]))"""
         # network equivalence --> passer à 17 ?
         NET = np.array([[-1, 3, 4, 32, [[2,0],[2,1],[2,2],[2,3]]],
-                        [ 1, 4, 13, 10, [[0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11],[0,12]]],
+                        [ 1, 4, IO[0], 10, [[0,i] for i in range(IO[0])]],
                         [ 2, 4, 4, 20, [[1,0],[1,1],[1,2],[1,3]]]])
         # Listing
-        LIST_C = np.array([[0,0,0],[0,0,1],[0,0,2],[0,0,3],[0,0,4],[0,0,5],[0,0,6],[0,0,7],[0,0,8],[0,0,9],[0,0,10],[0,0,11],[0,0,12],
-                          [10,1,0],[10,1,1],[10,1,2],[10,1,3],
+        LIST_C = np.array([[0,0,i] for i in range(IO[0])]+
+                          [[10,1,0],[10,1,1],[10,1,2],[10,1,3],
                           [20,2,0],[20,2,1],[20,2,2],[20,2,3]])
-        return [(9,3), NET.copy(), LIST_C.copy()]
+        return [IO, NET.copy(), LIST_C.copy()]
 
 if __name__ == '__main__' :
+    # test combinaison strategy
+    from scipy.special import comb
+    print(comb(25, 17, exact=False))
+    # init
     ARG = ((9,3),25, 16, 16, 12)
     q = Q_AGENT(*ARG)
     #print(q.NEURON_LIST)

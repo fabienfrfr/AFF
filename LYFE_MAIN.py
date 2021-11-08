@@ -17,15 +17,15 @@ from LOG_GEN import LOG_INFO
 from tqdm import tqdm
 
 ################################ EXPERIMENTAL PARAMETER (inverted name : need 2 change)
-IO = (13,3) # don't change here (not optimized yet)
-NB_GEN = 150 # 100 convergence I/O when ?
-batch_size = 10 #25
+IO = (17,3) # don't change here (not optimized yet)
+NB_GEN = 50 # 100 convergence I/O when ?
+batch_size = 25 #25
 MAP_SIZE = 9
-N_TIME = 10 #25
-NB_P_GEN = 4**2 ## always squarable !
+N_TIME = 25 #25
+NB_P_GEN = 3**2 ## always squarable !
 
 ARG_TUPLE = (IO,NB_GEN, batch_size, MAP_SIZE, N_TIME, NB_P_GEN)
-RULE = 0 # 0 : classic
+RULE = 2 # 0 : classic
 
 ################################ LYFE EXPERIMENT's 
 class LYFE():
@@ -47,10 +47,9 @@ class LYFE():
             self.PLAYERS[-1].INIT_ENV(self.ENV[-1])
         # Classement & party info
         self.SCORE_LIST = []
-        self.SCORE_PLOT = []
         self.GEN = 0
         # Save-info
-        self.INFO_LOG = LOG_INFO(self.PLAYERS, self.ENV, self.GEN)
+        self.INFO_LOG = LOG_INFO(self.PLAYERS, self.ENV, self.GEN, arg[1])
         self.SLC, self.SLC_1, self.SLC_2 = None, None, None
         # for next gen (n-plicat) and control group
         self.NB_CONTROL = 1 # always (preference)
@@ -65,8 +64,6 @@ class LYFE():
             for i in range(self.NB_P_GEN): #tqdm(range(self.NB_P_GEN), position=1, leave=None):
                 self.PLAYERS[i].PARTY(self.ENV[i])
                 self.SCORE_LIST += [self.ENV[i].SCORE]
-            # for fast preview-analysis
-            self.SCORE_PLOT += [np.array(self.SCORE_LIST)[None]]
             ## Pre-analysis
             ORDER = np.argsort(self.SCORE_LIST)[::-1]
             ORDER_ = np.argsort(self.SCORE_LIST[self.NB_CONTROL:])[::-1]
@@ -101,12 +98,10 @@ class LYFE():
             self.INFO_LOG.START_CYCLE(self.PLAYERS, self.ENV, self.GEN, self.SLC)
             ## Recurcivity OR ending
             self.SCORE_LIST = []
-        # compile score plot
-        self.SCORE_PLOT = np.concatenate(self.SCORE_PLOT).T
-        # save info
-        TIME = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-        self.INFO_LOG.SAVE_CSV(TIME)
+        #ennding
+        self.COMPILE_SAVE()
         print('TRAINNING FINISH')
+
         
     def SURVIVOR(self, BEST, COMPLET_RESET):
         old_PLAYERS = []
@@ -141,21 +136,14 @@ class LYFE():
             AGENT_VIEW, AGENT_MOVE = p.X, p.Y
             self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE), self.GRULE)]
             p.INIT_ENV(self.ENV[-1])
+    
+    def COMPILE_SAVE(self):
+        # save info
+        TIME = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.INFO_LOG.SAVE_CSV(TIME)
         
 if __name__ == '__main__' :
     # experiment
     EXP = LYFE(ARG_TUPLE, RULE)
     EXP.LAUNCH()
-    # fast score plot
-    import EXTRA_FUNCTION as EF
-    from scipy.ndimage import filters
-    SIGMA = 2
-    NB_SEED = int(np.sqrt(NB_P_GEN))
-    curve_list = [  filters.gaussian_filter1d(EXP.SCORE_PLOT[0],SIGMA), 
-                    filters.gaussian_filter1d(EXP.SCORE_PLOT[1:-NB_SEED].mean(0),SIGMA), 
-                    filters.gaussian_filter1d(EXP.SCORE_PLOT[-NB_SEED:].mean(0),SIGMA)]
-    std_list = [    np.zeros(len(EXP.SCORE_PLOT[0])),
-                    filters.gaussian_filter1d(EXP.SCORE_PLOT[1:-NB_SEED].std(0),SIGMA), 
-                    filters.gaussian_filter1d(EXP.SCORE_PLOT[-NB_SEED:].std(0),SIGMA)]
-    EF.FAST_PLOT(curve_list,std_list,['CTRL','EVOLUTION','RANDOM'], 'LYFE', 'Score','Gen')
 
