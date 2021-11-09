@@ -22,8 +22,8 @@ class Q_AGENT():
         self.DENSITY_IO = DENSITY_IO
         ## Init
         if CTRL :
-            # I/O minimalisme
-            X_A = np.mgrid[-1:2,-1:2].reshape(-1,2)
+            # I/O minimalisme (not optimized)
+            X_A = np.mgrid[-1:2,-1:2].reshape((2,-1)).T
             X_B = np.array([[0,0],[0,2],[0,4],[2,0],[2,4],[4,0],[4,2],[4,4]])-[2,2]
             X = np.concatenate((X_A,X_B))
             Y = np.array([[0,1],[1,2],[2,0]])-[1,1]
@@ -61,10 +61,13 @@ class Q_AGENT():
         self.prev_state = None
     
     def INIT_ENV(self, ENV_INPUT) :
-        self.prev_state = ENV_INPUT.RESET()
+        self.prev_state = ENV_INPUT.FIRST_STEP_SET()
         
     def PARTY(self, ENV_INPUT):
         for t in range(self.N_TIME):
+            # reset game environement (for each batch -> important)
+            self.prev_state = ENV_INPUT.FIRST_STEP_SET()
+            # loop game
             for i in range(self.batch_size):
                 action = self.ACTION(self.prev_state)
                 new_state, reward, DONE = ENV_INPUT.STEP(action)
@@ -203,7 +206,7 @@ if __name__ == '__main__' :
     print(comb(25, 17, exact=False))
     # init
     ARG = ((9,3),25, 16, 16, 12)
-    q = Q_AGENT(*ARG)
+    q = Q_AGENT(*ARG, CTRL=True)
     #print(q.NEURON_LIST)
     #Mutate
     DXY = (np.ones((5,5))/25,np.ones((3,3))/9)

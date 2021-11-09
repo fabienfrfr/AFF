@@ -25,7 +25,7 @@ class TAG_ENV():
         ## MAP UPDATE
         self.MAP = None
         self.MAP_LIST = []
-        self.BOX_RADAR = np.mgrid[-1:2,-1:2].reshape(-1,2)
+        self.BOX_RADAR = np.mgrid[-1:2,-1:2].reshape((2,-1)).T
         self.UPDATE_MAP()
         ## AGENT INFO
         self.AGENT_VIEW, self.AGENT_MOVE = AGENT_PROP
@@ -47,7 +47,12 @@ class TAG_ENV():
         self.MAP[tuple(self.PNJ_POS)] = B
         self.MAP_LIST += [self.MAP.copy()]
     
-    def RESET(self) :
+    def FIRST_STEP_SET(self) :
+        # reset for each batch (important)
+        if self.TAG_GAME == 2 :
+            self.IT = False
+        else :
+            self.IT = True
         ## Box observation
         BOX = np.mod(self.AGENT_VIEW + self.AG_POS, self.MAP_SIZE)
         prev_state = self.MAP[tuple(map(tuple, BOX.T))][np.newaxis]
