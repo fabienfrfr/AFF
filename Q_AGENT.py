@@ -41,8 +41,8 @@ class Q_AGENT():
         # nn optimiser
         self.GAMMA = 0.9
         #self.optimizer = torch.optim.Adam(self.MODEL.parameters())
-        self.optimizer = torch.optim.SGD(self.MODEL.parameters(), lr=1e-6, momentum=0.9)
-        self.criterion = nn.MSELoss() # because not classification (same comparaison [batch] -> [batch])
+        self.optimizer = torch.optim.Adam(self.MODEL.parameters()) #torch.optim.SGD(self.MODEL.parameters(), lr=1e-6, momentum=0.9)
+        self.criterion = nn.SmoothL1Loss() # nn.MSELoss() # because not classification (same comparaison [batch] -> [batch])
         #self.criterion = nn.NLLLoss(reduction='sum') #negative log likelihood loss ([batch,Nout]->[batch])
         self.loss = None
         ## IO Coordinate
@@ -146,10 +146,10 @@ class Q_AGENT():
         # actor proba
         actor = self.MODEL(old_state)
         # Compute predicted Q-values for each action
-        pred_q_values_batch = torch.sum(actor.gather(1, action),dim=1).detach()
+        pred_q_values_batch = actor.gather(1, action)
         pred_q_values_next  = self.MODEL(new_state)
         # Compute targeted Q-value for action performed
-        target_q_values_batch = reward+(1-DONE)*self.GAMMA*torch.max(pred_q_values_next, 1)[0]
+        target_q_values_batch = (reward+(1-DONE)*self.GAMMA*torch.max(pred_q_values_next, 1)[0]).detach().unsqueeze(1)
         # zero the parameter gradients
         self.MODEL.zero_grad()
         # Compute the loss

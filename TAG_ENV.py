@@ -8,23 +8,24 @@ import numpy as np
 
 ################################ TAG GAME ENVIRONMENT : BASIC's 
 class TAG_ENV():
-    def __init__(self, MAP_SIZE, AGENT_PROP, TAG_GAME=0):
+    def __init__(self, MAP_SIZE, AGENT_PROP, TAG_GAME=0, STOCK=False):
+        self.DATA_STOCK = STOCK
         self.TAG_GAME = TAG_GAME # 0 : classic rule; 1 : only prey; 2 : only predator
         ## subMAP INIT
         self.BACKGROUND = np.zeros((MAP_SIZE,MAP_SIZE))
         self.MAP_SIZE = MAP_SIZE
         ## PNJ and AGENT PLAYER POSITION
         self.PNJ_POS, self.AG_POS = self.POS_PLAYERS_SET()
-        self.PNJ_LIST, self.AG_LIST = [list(self.PNJ_POS)], [list(self.AG_POS)]
+        if STOCK : self.PNJ_LIST, self.AG_LIST = [list(self.PNJ_POS)], [list(self.AG_POS)]
         ## IT OR OT (for PNJ)
         if self.TAG_GAME == 2 :
             self.IT = False
         else :
             self.IT = True
-        self.IT_LIST = [self.IT]
+        if STOCK : self.IT_LIST = [self.IT]
         ## MAP UPDATE
         self.MAP = None
-        self.MAP_LIST = []
+        if STOCK : self.MAP_LIST = []
         self.BOX_RADAR = np.mgrid[-1:2,-1:2].reshape((2,-1)).T
         self.UPDATE_MAP()
         ## AGENT INFO
@@ -41,13 +42,18 @@ class TAG_ENV():
         self.MAP = self.BACKGROUND.copy()
         if self.IT : A,B = 20., 30.
         else : A,B = 20., 10.
-        self.MAP[tuple(self.AG_POS)] = A
         BOX = np.mod(self.PNJ_POS + self.BOX_RADAR, self.MAP_SIZE)
         self.MAP[tuple(map(tuple, BOX.T))] = 1
+        self.MAP[tuple(self.AG_POS)] = A
         self.MAP[tuple(self.PNJ_POS)] = B
-        self.MAP_LIST += [self.MAP.copy()]
+        if self.DATA_STOCK : self.MAP_LIST += [self.MAP.copy()]
     
     def FIRST_STEP_SET(self) :
+        self.PNJ_POS, self.AG_POS = self.POS_PLAYERS_SET()
+        self.MVT = np.array([], dtype=int)
+        if self.DATA_STOCK : 
+            self.PNJ_LIST += [list(self.PNJ_POS)]
+            self.AG_LIST  += [list(self.AG_POS)]
         # reset for each batch (important)
         if self.TAG_GAME == 2 :
             self.IT = False
@@ -81,11 +87,11 @@ class TAG_ENV():
                 COOR = np.random.randint(2)
                 SIGN = np.random.randint(-1,2)
             self.PNJ_POS[COOR] = np.mod(self.PNJ_POS[COOR] + SIGN, self.MAP_SIZE)
-        self.PNJ_LIST += [list(self.PNJ_POS)]
+        if self.DATA_STOCK : self.PNJ_LIST += [list(self.PNJ_POS)]
         # FOR "AGENT" :
         MVT = self.AGENT_MOVE[action]
         self.AG_POS = np.mod(self.AG_POS + MVT, self.MAP_SIZE)
-        self.AG_LIST += [list(self.AG_POS)]
+        if self.DATA_STOCK : self.AG_LIST += [list(self.AG_POS)]
         ## Update map
         self.UPDATE_MAP()
         ## Box observation
@@ -119,7 +125,7 @@ class TAG_ENV():
                 reward_g = +2
             else :
                 if self.TAG_GAME == 0 :
-                    reward_g = -2
+                    reward_g = -1
                 else :
                     reward_g = 0
         # reward = reward_cheat + reward_gamerule
@@ -133,7 +139,7 @@ class TAG_ENV():
                 # reset position
                 self.PNJ_POS, self.AG_POS = self.POS_PLAYERS_SET()
         # save state
-        self.IT_LIST += [self.IT]
+        if self.DATA_STOCK : self.IT_LIST += [self.IT]
         ## change position of PNJ if GAP == 0
         if GAP == 0 and self.TAG_GAME == 0 :
             RANDOM_WALK = np.random.randint(-3,4,2)
@@ -147,9 +153,9 @@ class TAG_ENV():
         return new_state, reward, DONE
 
 if __name__ == '__main__' :
-    X = np.array([[0,0],[1,1],[0,3],[2,3],[2,4],[3,0],[3,2],[4,1],[4,4]])-[2,2]
+    X = np.array([[0,0],[1,1],[0,3],[2,0],[2,2],[2,4],[3,1],[3,3],[4,1],[4,4]])-[2,2]
     Y = np.array([[1,0],[0,1],[2,2]])-[1,1]
-    t = TAG_ENV(10,[X,Y],1)
+    t = TAG_ENV(10,[X,Y],1, STOCK=True)
     for i in range(25):
         v = t.STEP(np.random.randint(3))
         print(v)
