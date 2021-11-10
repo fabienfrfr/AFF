@@ -25,7 +25,7 @@ N_TIME = 25 #25
 NB_P_GEN = 3**2 ## always squarable !
 
 ARG_TUPLE = (IO,NB_GEN, batch_size, MAP_SIZE, N_TIME, NB_P_GEN)
-RULE = 2 # 0 : classic
+RULE = 0 # 0 : classic
 
 ################################ LYFE EXPERIMENT's 
 class LYFE():
@@ -43,7 +43,7 @@ class LYFE():
             else :
                 self.PLAYERS += [Q_AGENT(*self.ARG[:-1])]
             AGENT_VIEW, AGENT_MOVE = self.PLAYERS[-1].X, self.PLAYERS[-1].Y
-            self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE), self.GRULE)]
+            self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE), self.GRULE, STOCK=True)]
             self.PLAYERS[-1].INIT_ENV(self.ENV[-1])
         # Classement & party info
         self.SCORE_LIST = []
@@ -134,7 +134,7 @@ class LYFE():
         self.ENV = []
         for p in self.PLAYERS :
             AGENT_VIEW, AGENT_MOVE = p.X, p.Y
-            self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE), self.GRULE)]
+            self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE), self.GRULE, STOCK=True)]
             p.INIT_ENV(self.ENV[-1])
     
     def COMPILE_SAVE(self):
