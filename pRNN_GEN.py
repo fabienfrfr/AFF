@@ -40,10 +40,10 @@ class pRNN(nn.Module):
                     else : tensor += [self.trace[j][BATCH_,None,k]]
             tensor_in = torch.cat(tensor, dim=1)
             self.trace[i] = self.Layers[i](tensor_in)
-            if return_trace :
-                return i, self.trace
-            else :
-                return i
+        if return_trace :
+            return i, self.trace
+        else :
+            return i
     
     def forward(self,x):
         s = x.shape
@@ -53,14 +53,19 @@ class pRNN(nn.Module):
         self.trace[-1] = self.Layers[-1](x.view(s[0],s[1],1)).view(s)
         if self.STACK :
             trace = []
+            """
+            to debug
+            """
             # full adapted but really slow (python & no tensor calc avantage)
             for b in BATCH_ :
                 idx_end, trace_ = self.graph2net(b, return_trace = True)
                 trace += [trace_]
-                # save t+1 
-                if b < self.BS :
-                    for t in range(len(trace_)):
+                # save t+1 (and periodic bound)
+                for t in range(len(trace_)):
+                    if b < self.BS :
                         self.h[t][b+1] = trace_[t][b].detach()
+                    else :
+                        self.h[t][0] = trace_[t][b].detach()
             # recontruct complete trace
             for t in range(len(trace_)):
                 self.trace[t] = torch.cat([trace[i][t] for i in range(len(trace))])
@@ -72,3 +77,17 @@ class pRNN(nn.Module):
                 self.h[t][BATCH_] = self.trace[t][BATCH_].detach()
         # output probs
         return self.trace[idx_end]
+
+if __name__ == '__main__' :
+    IO = (17,3)
+    BATCH = 16
+    # graph part
+    from GRAPH_EAT import GRAPH_EAT
+    NET = GRAPH_EAT([IO, 1], None)
+    # networks
+    model = pRNN(NET.NEURON_LIST, BATCH, IO[0], STACK=False)
+    # data test
+    tensor_in = torch.randn(BATCH,IO[0])
+    tensor_out = model(tensor_in)
+    # print
+    print(tensor_out)
