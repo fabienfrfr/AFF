@@ -25,7 +25,7 @@ N_TIME = 25 #25
 NB_P_GEN = 3**2 ## always squarable !
 
 ARG_TUPLE = (IO,NB_GEN, batch_size, MAP_SIZE, N_TIME, NB_P_GEN)
-RULE = 0 # 0 : classic
+RULE = 1 # 0 : classic
 
 ################################ LYFE EXPERIMENT's 
 class LYFE():

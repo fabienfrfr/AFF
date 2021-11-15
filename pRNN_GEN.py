@@ -21,11 +21,11 @@ class pRNN(nn.Module):
                                      [nn.Sequential(nn.Linear(n[2], n[1]), nn.ReLU()) for n in self.NET[1:]] +
                                      [nn.Sequential(nn.Conv1d(I, I, 1, groups=I, bias=True), nn.ReLU())])
         # trace data
-        self.trace = (NET.shape[0]+1)*[None]
+        self.trace = [torch.zeros(B,n[1]) for n in self.NET] + [torch.zeros(B,I)] # with autogradient
         # pseudo RNN (virtual input)
         self.h = [torch.zeros(B,n[1]) for n in self.NET] + [torch.zeros(B,I)]
     
-    def graph2net(self, BATCH_, return_trace = False):
+    def graph2net(self, BATCH_, requires_stack = False):
         # hidden to output (X ordered)
         for i in np.argsort(self.NET[:, 3]) :
             tensor = []
@@ -38,37 +38,27 @@ class pRNN(nn.Module):
                     if (self.NET[i, 3] >= self.NET[i, 3]) : tensor += [self.h[j][BATCH_,None,k]]
                     # Non Linear input
                     else : tensor += [self.trace[j][BATCH_,None,k]]
+                if requires_stack : tensor[-1] = tensor[-1][None]
             tensor_in = torch.cat(tensor, dim=1)
-            self.trace[i] = self.Layers[i](tensor_in)
-        if return_trace :
-            return i, self.trace
-        else :
-            return i
+            self.trace[i][BATCH_] = self.Layers[i](tensor_in)
+        return i
     
     def forward(self,x):
         s = x.shape
         # Generalization of Exploitation or Training batch
         BATCH_ = np.arange(len(x))
         # input functionalization (with spread sparsing)
-        self.trace[-1] = self.Layers[-1](x.view(s[0],s[1],1)).view(s)
+        self.trace[-1][:] = self.Layers[-1](x.view(s[0],s[1],1)).view(s)
         if self.STACK :
-            trace = []
-            """
-            to debug
-            """
             # full adapted but really slow (python & no tensor calc avantage)
             for b in BATCH_ :
-                idx_end, trace_ = self.graph2net(b, return_trace = True)
-                trace += [trace_]
+                idx_end = self.graph2net(b, requires_stack = True)
                 # save t+1 (and periodic bound)
-                for t in range(len(trace_)):
-                    if b < self.BS :
-                        self.h[t][b+1] = trace_[t][b].detach()
+                for t in range(len(self.trace)):
+                    if b < self.BS-1 :
+                        self.h[t][b+1] = self.trace[t][b].detach()
                     else :
-                        self.h[t][0] = trace_[t][b].detach()
-            # recontruct complete trace
-            for t in range(len(trace_)):
-                self.trace[t] = torch.cat([trace[i][t] for i in range(len(trace))])
+                        self.h[t][0] = self.trace[t][b].detach()
         else :
             # Only adapted for SGD, if mini-batch, pseudo-rnn perturbation
             idx_end = self.graph2net(BATCH_)
@@ -90,4 +80,8 @@ if __name__ == '__main__' :
     tensor_in = torch.randn(BATCH,IO[0])
     tensor_out = model(tensor_in)
     # print
-    print(tensor_out)
+    print(NET.NEURON_LIST,'\n' ,tensor_out,'\n',model.h[0])
+    # change network type
+    model = pRNN(NET.NEURON_LIST, BATCH, IO[0], STACK=True)
+    tensor_out = model(tensor_in)
+    print(tensor_out,model.h[0])
