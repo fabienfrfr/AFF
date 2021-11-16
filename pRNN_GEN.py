@@ -21,11 +21,12 @@ class pRNN(nn.Module):
                                      [nn.Sequential(nn.Linear(n[2], n[1]), nn.ReLU()) for n in self.NET[1:]] +
                                      [nn.Sequential(nn.Conv1d(I, I, 1, groups=I, bias=True), nn.ReLU())])
         # trace data
-        self.trace = [torch.zeros(B,n[1]) for n in self.NET] + [torch.zeros(B,I)] # with autogradient
+        self.trace = (self.NET.shape[0]+1)*[None]
         # pseudo RNN (virtual input)
         self.h = [torch.zeros(B,n[1]) for n in self.NET] + [torch.zeros(B,I)]
     
     def graph2net(self, BATCH_, requires_stack = False):
+        trace = (self.NET.shape[0])*[None]
         # hidden to output (X ordered)
         for i in np.argsort(self.NET[:, 3]) :
             tensor = []
@@ -40,28 +41,33 @@ class pRNN(nn.Module):
                     else : tensor += [self.trace[j][BATCH_,None,k]]
                 if requires_stack : tensor[-1] = tensor[-1][None]
             tensor_in = torch.cat(tensor, dim=1)
-            self.trace[i][BATCH_] = self.Layers[i](tensor_in)
-        return i
+            trace[i] = self.Layers[i](tensor_in)
+        return i, trace
     
     def forward(self,x):
         s = x.shape
         # Generalization of Exploitation or Training batch
-        BATCH_ = np.arange(len(x))
+        BATCH_ = np.arange(s[0])
         # input functionalization (with spread sparsing)
-        self.trace[-1][:] = self.Layers[-1](x.view(s[0],s[1],1)).view(s)
+        self.trace[-1] = self.Layers[-1](x.view(s[0],s[1],1)).view(s)
         if self.STACK :
-            # full adapted but really slow (python & no tensor calc avantage)
+            trace = []
+            # adapted for mini-batch but slow (python & no tensor calc avantage)
             for b in BATCH_ :
-                idx_end = self.graph2net(b, requires_stack = True)
-                # save t+1 (and periodic bound)
-                for t in range(len(self.trace)):
-                    if b < self.BS-1 :
-                        self.h[t][b+1] = self.trace[t][b].detach()
+                idx_end, trace_ = self.graph2net(b, requires_stack = True)
+                trace += [trace_]
+                # save t+1 (and periodic bound if )
+                for t in range(len(trace_)):
+                    if b < s[0]-1 :
+                        self.h[t][b+1] = trace_[t].detach()
                     else :
-                        self.h[t][0] = self.trace[t][b].detach()
+                        self.h[t][0] = trace_[t].detach()
+            # reconstruct tracing
+            for t in range(len(trace_)) :
+                self.trace[t] = torch.cat([tt[t] for tt in trace])
         else :
             # Only adapted for SGD, if mini-batch, pseudo-rnn perturbation
-            idx_end = self.graph2net(BATCH_)
+            idx_end, self.trace[:-1] = self.graph2net(BATCH_)
             # save for t+1
             for t in range(len(self.trace)):
                 self.h[t][BATCH_] = self.trace[t][BATCH_].detach()
@@ -74,14 +80,25 @@ if __name__ == '__main__' :
     # graph part
     from GRAPH_EAT import GRAPH_EAT
     NET = GRAPH_EAT([IO, 1], None)
-    # networks
-    model = pRNN(NET.NEURON_LIST, BATCH, IO[0], STACK=False)
-    # data test
-    tensor_in = torch.randn(BATCH,IO[0])
-    tensor_out = model(tensor_in)
-    # print
-    print(NET.NEURON_LIST,'\n' ,tensor_out,'\n',model.h[0])
-    # change network type
-    model = pRNN(NET.NEURON_LIST, BATCH, IO[0], STACK=True)
-    tensor_out = model(tensor_in)
-    print(tensor_out,model.h[0])
+    print(NET.NEURON_LIST)
+    for BOOL in [False,True] :
+        # networks
+        model = pRNN(NET.NEURON_LIST, BATCH, IO[0], STACK=BOOL)
+        # data test
+        tensor_in = torch.randn(BATCH,IO[0])
+        tensor_out = model(tensor_in[:5])
+        # print
+        print('\n' ,tensor_out.shape,model.h[0].shape)
+        # init train
+        OPTIM = torch.optim.Adam(model.parameters()) 
+        CRITERION = nn.CrossEntropyLoss()
+        # step of train
+        for i in range(5):
+            print(i)
+            OPTIM.zero_grad()
+            in_tensor = torch.randn(BATCH,IO[0])[:5]
+            output = model(in_tensor)
+            target = torch.tensor(np.random.randint(0,3,5)).type(torch.LongTensor)
+            LOSS = CRITERION(output,target)
+            LOSS.backward()
+            OPTIM.step()

@@ -35,7 +35,7 @@ class Q_AGENT():
             self.NET = NET
         self.NEURON_LIST = self.NET.NEURON_LIST
         if MODEL == None :
-            self.MODEL = pRNN(self.NEURON_LIST, self.batch_size, self.IO[0])
+            self.MODEL = pRNN(self.NEURON_LIST, self.batch_size, self.IO[0], STACK=True)
         else :
             self.MODEL = MODEL
         # nn optimiser

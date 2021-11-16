@@ -45,7 +45,7 @@ class CTRL_NET(nn.Module):
 
 # ff module
 class model():
-    def __init__(self, IO, SAMPLE_SIZE, BATCH_SIZE, EPOCH, NB_GEN, NB_SEEDER, DATA_XPLT = 0.5, LEARNING_RATE = 1e-6, MOMENTUM = 0.5):
+    def __init__(self, IO, SAMPLE_SIZE, BATCH_SIZE, EPOCH, NB_GEN, NB_SEEDER, RNN = False, DATA_XPLT = 0.5, LEARNING_RATE = 1e-6, MOMENTUM = 0.5):
         # Parameter
         self.IO = IO
         self.N = SAMPLE_SIZE
@@ -60,7 +60,7 @@ class model():
         self.SEEDER_LIST = [CTRL_NET(self.IO)]
         for g in self.GRAPH_LIST :
             NEURON_LIST = g.NEURON_LIST
-            self.SEEDER_LIST += [pRNN(NEURON_LIST, self.BATCH, self.IO[0])]
+            self.SEEDER_LIST += [pRNN(NEURON_LIST, self.BATCH, self.IO[0], STACK=RNN)]
         # best seeder model
         self.BEST_MODEL = 0
         self.OPTIM_BEST = 0
