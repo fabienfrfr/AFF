@@ -5,7 +5,7 @@ Created on Sat Apr 24 23:05:53 2021
 @author: fabien
 """
 
-import numpy as np, pylab as plt
+import numpy as np
 import pandas as pd, os
 
 import EXTRA_FUNCTION as EF
@@ -13,14 +13,18 @@ from scipy.ndimage import filters
 
 ################################ SAVE EXP INFO & pre-treatment
 class LOG_INFO():
-    def __init__(self, PL_LIST, ENV_LIST, GEN, CYCL):
+    def __init__(self, PL_LIST, ENV_LIST, GEN, CYCL, RULE, BATCH, NTIME):
         # parameter & score
+        self.RULE = RULE
+        self.BATCH = BATCH
+        self.N_TIME = NTIME
         self.NB_CYCLE = CYCL
         self.NB_SEED = int(np.sqrt(len(PL_LIST)))
         self.SCORE = []
+        self.LOSS = []
         # exp info
         self.DF_1 = pd.DataFrame(columns=['ID','GEN','TYPE','TREE','MAP_SIZE','DENSITY_IN','DENSITY_OUT','IN_COOR','OUT_COOR','NEURON_LIST'])
-        self.DF_2 = pd.DataFrame(columns=['ID','AGENT_POS','PNJ_POS','TAG_STATE','SCORE', 'RANK'])
+        self.DF_2 = pd.DataFrame(columns=['ID','AGENT_POS','PNJ_POS','TAG_STATE','SCORE', 'LOSS', 'RANK'])
         self.DF = self.DF_1 + self.DF_2
         # density
         D_I, D_O = np.ones((5,5)), np.ones((3,3))
@@ -33,7 +37,7 @@ class LOG_INFO():
         if(not os.path.isdir(FOLDER)): os.makedirs(FOLDER)
         if type(TIME) != type('') :
             TIME = '_'
-        self.DF.to_csv(FOLDER + os.path.sep + 'LYFE_EXP_' + TIME + '_.csv', sep=';', index=False)
+        self.DF.to_csv(FOLDER + os.path.sep + 'LYFE_RULE_' + str(self.RULE) +"_EXP_"+ TIME + '_.csv', sep=';', index=False)
     
     def START_CYCLE(self, PLAYS_LIST, ENV_LIST, GEN, SLC_LIST = None):
         # Listing
@@ -110,11 +114,13 @@ class LOG_INFO():
         DF_1_NEW = pd.DataFrame(ARRAY, columns=list(self.DF_1))
         self.DF_1 = self.DF_1.append(DF_1_NEW, ignore_index=True)
     
-    def FINISH_CYCLE(self, ENV_LIST, SCORE, RANK, SHOWSCORE=True):
+    def FINISH_CYCLE(self, ENV_LIST, SCORE, RANK, AG_LOSS, SHOWSCORE=True):
         self.SCORE += [np.array(SCORE)[None]]
+        self.LOSS += [np.concatenate([np.array(a.LOSS)[None] for a in AG_LOSS])]
         # fast score plot
         if SHOWSCORE and len(self.SCORE) > 1 :
             self.SCORE_PLOT()
+            self.LOSS_PLOT()
         # Listing
         ID = np.arange(self.DF_2.shape[0], self.DF_2.shape[0] + len(ENV_LIST))
         AGENT_POS = []
@@ -133,7 +139,8 @@ class LOG_INFO():
             ARRAY[i,2] = PNJ_POS[i]
             ARRAY[i,3] = TAG_STATE[i]
             ARRAY[i,4] = SCORE[i]
-            ARRAY[i,5] = RANK[i]
+            ARRAY[i,5] = AG_LOSS[i].LOSS
+            ARRAY[i,6] = RANK[i]
         # UPDATE DF2
         DF_2_NEW = pd.DataFrame(ARRAY, columns=list(self.DF_2))
         self.DF_2 = pd.concat([self.DF_2, DF_2_NEW])
@@ -169,15 +176,23 @@ class LOG_INFO():
         if IMSHOW :
             EF.FAST_IMSHOW(self.DENSITY_IO)
     
-    def SCORE_PLOT(self, SIGMA=2):
+    def LOSS_PLOT(self):
+        CURVE = np.concatenate(self.LOSS, axis=1)
+        self.PLOT(CURVE, self.NB_CYCLE*self.N_TIME, "LOSS","BATCH", SIGMA=3)
+        
+    def SCORE_PLOT(self):
         CURVE = np.concatenate(self.SCORE).T
+        self.PLOT(CURVE, self.NB_CYCLE, "SCORE","GEN")
+        
+    def PLOT(self, CURVE, XMAX, Y, X, SIGMA=1):
         curve_list = [  filters.gaussian_filter1d(CURVE[0],SIGMA), 
                         filters.gaussian_filter1d(CURVE[1:-self.NB_SEED].mean(0),SIGMA), 
                         filters.gaussian_filter1d(CURVE[-self.NB_SEED:].mean(0),SIGMA)]
         std_list = [    np.zeros(len(CURVE[0])),
                         filters.gaussian_filter1d(CURVE[1:-self.NB_SEED].std(0),SIGMA), 
                         filters.gaussian_filter1d(CURVE[-self.NB_SEED:].std(0),SIGMA)]
-        EF.FAST_PLOT(curve_list,std_list,['CTRL','EVOLUTION','RANDOM'], 'LYFE', 'Score','Gen', XMAX = self.NB_CYCLE)
+        EF.FAST_PLOT(curve_list,std_list,['CTRL','EVOLUTION','RANDOM'], 
+                     'LYFE', Y,X, self.RULE, self.BATCH, self.N_TIME, self.NB_SEED, XMAX)
      
     # DEPRECIED
     def ROTATION_3(self, X_CENTER, NEW_CENTER) :

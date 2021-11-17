@@ -45,6 +45,7 @@ class Q_AGENT():
         self.criterion = nn.SmoothL1Loss() # nn.MSELoss() # because not classification (same comparaison [batch] -> [batch])
         #self.criterion = nn.NLLLoss(reduction='sum') #negative log likelihood loss ([batch,Nout]->[batch])
         self.loss = None
+        self.LOSS = []
         ## IO Coordinate
         self.CC = np.mgrid[-2:3,-2:3].reshape((2,-1)).T, np.mgrid[-1:2,-1:2].reshape((2,-1)).T #complete coordinate
         if COOR == None :
@@ -157,6 +158,8 @@ class Q_AGENT():
         # Do backward pass
         self.loss.backward()
         self.optimizer.step()
+        # save loss
+        self.LOSS += [self.loss.item()]
         # reset memory
         self.MEMORY_ = self.MEMORY
         self.MEMORY = [[],[],[],[],[]]
@@ -218,4 +221,13 @@ if __name__ == '__main__' :
     IN = np.zeros((5,5))
     IN[tuple(map(tuple, (p.X+[2,2]).T))] = 1
     plt.imshow(IN)
-    
+    # memory
+    MEMORY = [[], [], [], [], []]
+    MEMORY[0] = torch.tensor(np.random.random((16,9)), dtype=torch.float) # old_state
+    MEMORY[1] = torch.tensor(np.random.randint(0,3, (16,1)),  dtype=torch.long) #.unsqueeze(1) # action
+    MEMORY[2] = torch.tensor(np.random.random((16,9)), dtype=torch.float) # new_state
+    MEMORY[3] = torch.tensor(np.random.randint(-10,10, (16,1))) # reward
+    MEMORY[4] = torch.tensor(np.random.randint(0,2, (16,1)), dtype=torch.int) # DONE
+    q.MEMORY = MEMORY
+    # optim test
+    q.OPTIM()

@@ -19,10 +19,10 @@ from tqdm import tqdm
 ################################ EXPERIMENTAL PARAMETER (inverted name : need 2 change)
 IO = (17,3) # don't change here (not optimized yet)
 NB_GEN = 50 # 100 convergence I/O when ?
-batch_size = 25 #25
+batch_size = 64 #25 64
 MAP_SIZE = 9
-N_TIME = 25 #25
-NB_P_GEN = 3**2 ## always squarable !
+N_TIME = 16 #25
+NB_P_GEN = 4**2 ## always squarable !
 
 ARG_TUPLE = (IO,NB_GEN, batch_size, MAP_SIZE, N_TIME, NB_P_GEN)
 RULE = 1 # 0 : classic
@@ -46,10 +46,11 @@ class LYFE():
             self.ENV += [TAG_ENV(self.MAP_SIZE, (AGENT_VIEW, AGENT_MOVE), self.GRULE, STOCK=True)]
             self.PLAYERS[-1].INIT_ENV(self.ENV[-1])
         # Classement & party info
+        self.LOSS_LIST = []
         self.SCORE_LIST = []
         self.GEN = 0
         # Save-info
-        self.INFO_LOG = LOG_INFO(self.PLAYERS, self.ENV, self.GEN, arg[1])
+        self.INFO_LOG = LOG_INFO(self.PLAYERS, self.ENV, self.GEN, arg[1], rule, arg[2], arg[4])
         self.SLC, self.SLC_1, self.SLC_2 = None, None, None
         # for next gen (n-plicat) and control group
         self.NB_CONTROL = 1 # always (preference)
@@ -63,12 +64,16 @@ class LYFE():
             ## party game
             for i in range(self.NB_P_GEN): #tqdm(range(self.NB_P_GEN), position=1, leave=None):
                 self.PLAYERS[i].PARTY(self.ENV[i])
+                self.LOSS_LIST += [np.mean(self.PLAYERS[i].LOSS[-5:])]
                 self.SCORE_LIST += [self.ENV[i].SCORE]
-            ## Pre-analysis
-            ORDER = np.argsort(self.SCORE_LIST)[::-1]
-            ORDER_ = np.argsort(self.SCORE_LIST[self.NB_CONTROL:])[::-1]
+            # fitness (loss and game score) stabilisation
+            L, S = np.array(self.LOSS_LIST), np.array(self.SCORE_LIST)
+            FITNESS =  (S-S.min())*(1-(L-L.min())/(L.max()-L.min()))
+            # sort
+            ORDER = np.argsort(FITNESS)[::-1]
+            ORDER_ = np.argsort(FITNESS[self.NB_CONTROL:])[::-1]
             # complete cycle
-            self.INFO_LOG.FINISH_CYCLE(self.ENV, self.SCORE_LIST, ORDER[::-1])
+            self.INFO_LOG.FINISH_CYCLE(self.ENV, self.SCORE_LIST, ORDER[::-1], self.PLAYERS)
             # density (after cycle) : forcing classing density in middle
             if np.random.choice((True,False), 1, [P,1-P]):
                 self.INFO_LOG.DENSITY(self.PLAYERS, ORDER, (0,self.NB_P_GEN), IMSHOW=True)
@@ -88,6 +93,7 @@ class LYFE():
             NEW_PLAYER = self.FOLLOWER()#; print(len(NEW_PLAYER))
             # UPDATE
             self.PLAYERS = CTRL_PLAYER + OLD_PLAYER + MUT_PLAYER + NEW_PLAYER
+            for p in self.PLAYERS : p.LOSS = []
             self.ENV_UPDATE()
             ## Re-init cycle
             SLC_1 = [self.NB_CONTROL*['c']+len(OLD_PLAYER)*['s']+len(MUT_PLAYER)*['l']+len(NEW_PLAYER)*['f']]#; print(SLC_1)
@@ -98,6 +104,7 @@ class LYFE():
             self.INFO_LOG.START_CYCLE(self.PLAYERS, self.ENV, self.GEN, self.SLC)
             ## Recurcivity OR ending
             self.SCORE_LIST = []
+            self.LOSS_LIST = []
         #ennding
         self.COMPILE_SAVE()
         print('TRAINNING FINISH')

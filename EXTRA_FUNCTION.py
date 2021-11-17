@@ -198,7 +198,7 @@ def LINEAGE_2_GRAPH(NB_GEN,NB_P_GEN,TREE_LIST):
     pos = nx.get_node_attributes(G,'pos')
     return pos, G
 
-def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, XMAX=None):
+def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=0, CYCLE=0, NB=0, XMAX=None):
     print(XMAX)
     W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
     # fig ratio
@@ -226,7 +226,8 @@ def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, XMAX=None):
     else :
         plt.xlim([0,XMAX])
     # Save data
-    plt.savefig('OUT' + os.path.sep + Title + ".svg")
+    plt.savefig('OUT' + os.path.sep + Title+Ylabel+Xlabel+"_r"+str(RULE)+"_b"
+                +str(BATCH)+"n"+str(CYCLE)+"_nb"+str(NB)+ ".svg")
     plt.show(); plt.close()
 
 def FAST_IMSHOW(img_list):
