@@ -48,7 +48,8 @@ class TAG_ENV():
         self.MAP[tuple(self.PNJ_POS)] = B
         if self.DATA_STOCK : self.MAP_LIST += [self.MAP.copy()]
     
-    def FIRST_STEP_SET(self) :
+    def FIRST_STEP_SET(self, N) :
+        if N == 0 : self.SCORE = 0
         self.PNJ_POS, self.AG_POS = self.POS_PLAYERS_SET()
         self.MVT = np.array([], dtype=int)
         if self.DATA_STOCK : 

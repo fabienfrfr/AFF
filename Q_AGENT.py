@@ -8,10 +8,29 @@ import torch, torch.nn as nn
 import numpy as np, pylab as plt
 from GRAPH_EAT import GRAPH_EAT
 from pRNN_GEN import pRNN
+import torch.nn.functional as F
+
+# control net
+class CTRL_NET(nn.Module):
+    def __init__(self, IO):
+        super(CTRL_NET, self).__init__()
+        I,O = IO
+        H = np.rint(np.sqrt(I+O)).astype(int)
+        self.IN = nn.Conv1d(I, I, 1, groups=I, bias=True)
+        self.H1 = nn.Linear(I, H)
+        self.H2 = nn.Linear(H, H)
+        self.OUT = nn.Linear(H, O)
+
+    def forward(self, x):
+        s = x.shape
+        x = F.relu(self.IN(x.view(s[0],s[1],1)).view(s))
+        x = F.relu(self.H1(x))
+        x = F.relu(self.H2(x))
+        return self.OUT(x)
 
 ################################ AGENT
 class Q_AGENT():
-    def __init__(self, *arg, MODEL = None, CTRL=False, NET = None, DENSITY_IO = None, COOR = None):
+    def __init__(self, *arg, MODEL = None, CTRL=False, NET = None, COOR = None):
         self.P_MIN = 1
         # Parameter
         self.ARG = arg
@@ -19,22 +38,17 @@ class Q_AGENT():
         self.NB_P_GEN = arg[1]
         self.batch_size = arg[2]
         self.N_TIME = arg[4]
-        self.DENSITY_IO = DENSITY_IO
+        self.N_CYCLE = arg[5]
         ## Init
         if CTRL :
-            # I/O minimalisme (not optimized)
-            X_A = np.mgrid[-1:2,-1:2].reshape((2,-1)).T
-            X_B = np.array([[0,0],[0,2],[0,4],[2,0],[2,4],[4,0],[4,2],[4,4]])-[2,2]
-            X = np.concatenate((X_A,X_B))
-            Y = np.array([[0,1],[1,2],[2,0]])-[1,1]
-            COOR = (X,Y)
             self.NET = GRAPH_EAT(None, self.CONTROL_NETWORK(self.IO))
+            MODEL = CTRL_NET(self.IO)
         elif NET == None :
             self.NET = GRAPH_EAT([self.IO, self.P_MIN], None)
         else :
             self.NET = NET
         self.NEURON_LIST = self.NET.NEURON_LIST
-        if MODEL == None :
+        if (MODEL == None) and not(CTRL) :
             self.MODEL = pRNN(self.NEURON_LIST, self.batch_size, self.IO[0], STACK=True)
         else :
             self.MODEL = MODEL
@@ -46,15 +60,11 @@ class Q_AGENT():
         #self.criterion = nn.NLLLoss(reduction='sum') #negative log likelihood loss ([batch,Nout]->[batch])
         self.loss = None
         self.LOSS = []
+
         ## IO Coordinate
-        self.CC = np.mgrid[-2:3,-2:3].reshape((2,-1)).T, np.mgrid[-1:2,-1:2].reshape((2,-1)).T #complete coordinate
-        if COOR == None :
-            if DENSITY_IO == None :
-                self.X,self.Y = self.FIRST_IO_COOR_GEN()
-            else :
-                self.X,self.Y = self.FIRST_IO_COOR_GEN(DENSITY_IO)
-        else :
-            self.X,self.Y = COOR
+        X_A = np.mgrid[-1:2,-1:2].reshape((2,-1)).T
+        X_B = np.array([[0,0],[0,2],[0,4],[2,0],[2,4],[4,0],[4,2],[4,4]])-[2,2]
+        self.X,self.Y = np.concatenate((X_A,X_B)), np.array([[0,1],[1,2],[2,0]])-[1,1]
         ## Data sample (memory : 'old_state', 'action', 'new_state', 'reward', 'terminal')
         self.MEMORY = [[],[],[],[],[]]
         self.MEMORY_ = None
@@ -62,54 +72,26 @@ class Q_AGENT():
         self.prev_state = None
     
     def INIT_ENV(self, ENV_INPUT) :
-        self.prev_state = ENV_INPUT.FIRST_STEP_SET()
-        
+        self.prev_state = ENV_INPUT.FIRST_STEP_SET(0)
+
     def PARTY(self, ENV_INPUT):
-        for t in range(self.N_TIME):
-            # reset game environement (for each batch -> important)
-            self.prev_state = ENV_INPUT.FIRST_STEP_SET()
-            # loop game
-            for i in range(self.batch_size):
-                action = self.ACTION(self.prev_state)
-                new_state, reward, DONE = ENV_INPUT.STEP(action)
-                # Memory update
-                if i == self.batch_size-1 : DONE = True
-                self.SEQUENCING(self.prev_state,action,new_state,reward,DONE)
-                # n+1
-                self.prev_state = new_state.copy()
-                # escape loop
-                if DONE == True : break                
-            # Reinforcement learning
-            self.OPTIM()
-    
-    ## Define coordinate of IN/OUT
-    def FIRST_IO_COOR_GEN(self, DENSITY = None) :
-        ## Density
-        if (DENSITY == None) :
-            p_X, p_Y = None, None
-        else :
-            p_X, p_Y = DENSITY
-            p_X, p_Y = p_X.reshape(-1), p_Y.reshape(-1)
-        ## Get coordinate (no repeat -> replace=False)
-        x = np.random.choice(range(len(self.CC[0])), self.IO[0], p = p_X, replace=False)
-        y = np.random.choice(range(len(self.CC[1])), self.IO[1], p = p_Y, replace=False)
-        # note for output min : cyclic 3,4 if 3 mvt, 2 if 4 mvt
-        return self.CC[0][x], self.CC[1][y]
-    
-    def MUTATION_IO(self, DENSITY):
-        p_X, p_Y = DENSITY
-        p_X, p_Y = p_X.reshape(-1), p_Y.reshape(-1)
-        ## Get coordinate (no repeat -> replace=False)
-        x = np.random.choice(range(len(self.CC[0])), 1, p = p_X, replace=False)
-        y = np.random.choice(range(len(self.CC[1])), 1, p = p_Y, replace=False)
-        # test if included
-        TEST_X = ((self.X == self.CC[0][x]).all(axis=1)).any()
-        TEST_Y = ((self.Y == self.CC[1][y]).all(axis=1)).any()
-        if np.invert(TEST_X) :
-            self.X[np.random.randint(len(self.X))] = self.CC[0][x]
-        if np.invert(TEST_Y):
-            self.Y[np.random.randint(len(self.Y))] = self.CC[1][y]
-        return self.X, self.Y
+        # reset game environement (for each batch ? important) 
+        for n in range(self.N_CYCLE):
+            self.prev_state = ENV_INPUT.FIRST_STEP_SET(n)
+            for t in range(self.N_TIME):
+                # loop game
+                for i in range(self.batch_size):
+                    action = self.ACTION(self.prev_state)
+                    new_state, reward, DONE = ENV_INPUT.STEP(action)
+                    # Memory update
+                    if i == self.batch_size-1 : DONE = True
+                    self.SEQUENCING(self.prev_state,action,new_state,reward,DONE)
+                    # n+1
+                    self.prev_state = new_state.copy()
+                    # escape loop
+                    if DONE == True : break                
+                # Reinforcement learning
+                self.OPTIM()
 
     ## Action Exploration/Exploitation Dilemna
     def ACTION(self, Input) :
@@ -168,22 +150,16 @@ class Q_AGENT():
     def RESET(self, PROBA):
         GRAPH = self.NET.NEXT_GEN(-1)
         XY_TUPLE = (self.X,self.Y)
-        if np.random.choice((True,False), 1, [PROBA,1-PROBA]):
+        if np.random.choice((False,True), 1, p=[PROBA,1-PROBA])[0]:
             return Q_AGENT(*self.ARG, NET = GRAPH, COOR = XY_TUPLE)
         else :
             return Q_AGENT(*self.ARG, MODEL = self.MODEL, NET = GRAPH, COOR = XY_TUPLE)
     
     ## mutation
-    def MUTATION(self, DENSITY_IO, MUT = None):
-        # low variation of child density
-        DI,DO = DENSITY_IO[0].copy(), DENSITY_IO[1].copy()
-        DI[tuple(map(tuple, (self.X+[2,2]).T))] += 200
-        DO[tuple(map(tuple, (self.Y+[1,1]).T))] += 500
-        DENSITY = (DI/DI.sum(), DO/DO.sum())
+    def MUTATION(self, MUT = None):
         # mutate graph
         GRAPH = self.NET.NEXT_GEN(MUT)
-        XY_TUPLE = self.MUTATION_IO(DENSITY)
-        return Q_AGENT(*self.ARG, NET = GRAPH, COOR = XY_TUPLE)
+        return Q_AGENT(*self.ARG, NET = GRAPH)
     
     ## control group
     def CONTROL_NETWORK(self, IO) :

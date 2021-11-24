@@ -19,16 +19,14 @@ class LOG_INFO():
         self.BATCH = BATCH
         self.N_TIME = NTIME
         self.NB_CYCLE = CYCL
-        self.NB_SEED = int(np.sqrt(len(PL_LIST)))
+        self.NB_SEED = int(np.sqrt(len(PL_LIST))-1)
+        self.NB_CONTROL = int(np.rint(np.power(len(PL_LIST), 1./4))) # see main ... not generalized
         self.SCORE = []
         self.LOSS = []
         # exp info
-        self.DF_1 = pd.DataFrame(columns=['ID','GEN','TYPE','TREE','MAP_SIZE','DENSITY_IN','DENSITY_OUT','IN_COOR','OUT_COOR','NEURON_LIST'])
+        self.DF_1 = pd.DataFrame(columns=['ID','GEN','TYPE','TREE','MAP_SIZE','NEURON_LIST'])
         self.DF_2 = pd.DataFrame(columns=['ID','AGENT_POS','PNJ_POS','TAG_STATE','SCORE', 'LOSS', 'RANK'])
         self.DF = self.DF_1 + self.DF_2
-        # density
-        D_I, D_O = np.ones((5,5)), np.ones((3,3))
-        self.DENSITY_IO = D_I/D_I.sum(), D_O/D_O.sum()
         # Init dataframe
         self.START_CYCLE(PL_LIST, ENV_LIST, GEN)
     
@@ -46,10 +44,6 @@ class LOG_INFO():
         TYPE = []
         TREE = []
         MAP_SIZE = []
-        DENSITY_IN = []
-        DENSITY_OUT = []
-        IN_COOR = []
-        OUT_COOR = []
         NEURON_LIST = []
         # survival, legacy, challenger
         if SLC_LIST != None :
@@ -91,11 +85,6 @@ class LOG_INFO():
                     TYPE += [-1]
                     TREE += [[c]]
             MAP_SIZE += [ENV_LIST[i].MAP_SIZE]
-            D_I, D_O = self.DENSITY_IO
-            DENSITY_IN += [list(D_I.reshape(-1))]
-            DENSITY_OUT += [list(D_O.reshape(-1))]
-            IN_COOR += [PLAYS_LIST[i].X.tolist()]
-            OUT_COOR += [PLAYS_LIST[i].Y.tolist()]
             NEURON_LIST += [PLAYS_LIST[i].NEURON_LIST.tolist()]
         # Array construction
         ARRAY = np.zeros((len(PLAYS_LIST),self.DF_1.columns.size), dtype=object)
@@ -105,11 +94,7 @@ class LOG_INFO():
             ARRAY[i,2] = TYPE[i]
             ARRAY[i,3] = TREE[i]
             ARRAY[i,4] = MAP_SIZE[i]
-            ARRAY[i,5] = DENSITY_IN[i]
-            ARRAY[i,6] = DENSITY_OUT[i]
-            ARRAY[i,7] = IN_COOR[i]
-            ARRAY[i,8] = OUT_COOR[i]
-            ARRAY[i,9] = NEURON_LIST[i]
+            ARRAY[i,5] = NEURON_LIST[i]
         # UPDATE DF1
         DF_1_NEW = pd.DataFrame(ARRAY, columns=list(self.DF_1))
         self.DF_1 = self.DF_1.append(DF_1_NEW, ignore_index=True)
@@ -147,62 +132,30 @@ class LOG_INFO():
         # MERGE DF1 + DF2 (pointer)
         self.DF = pd.merge(self.DF_1, self.DF_2, on="ID")
     
-    def DENSITY(self, PLAYS, ORDER, NB, IMSHOW=False):
-        IN_DENSITY = np.zeros((5,5))
-        OUT_DENSITY = np.zeros((3,3))
-        # loop
-        RANK = np.arange(NB[1]-NB[0])[::-1]
-        for n in range(NB[1]-NB[0]) :
-            X_ = PLAYS[ORDER[n]].X
-            Y_ = PLAYS[ORDER[n]].Y
-            X_CENTER, Y_CENTER = [2,2], [1,1]
-            ## Listing
-            X = X_ + X_CENTER
-            Y = Y_ + Y_CENTER
-            # update density
-            IN_DENSITY[tuple(map(tuple, X.T))] += RANK[n]
-            OUT_DENSITY[tuple(map(tuple, Y.T))] += RANK[n]
-        # 1er norm
-        IN_DENSITY = IN_DENSITY/IN_DENSITY.sum()
-        OUT_DENSITY = OUT_DENSITY/OUT_DENSITY.sum()        
-        # (t) (t+1) sum
-        IN_DENSITY = self.DENSITY_IO[0] + IN_DENSITY
-        OUT_DENSITY = self.DENSITY_IO[1] + OUT_DENSITY
-        # 2nd norm
-        IN_DENSITY  = IN_DENSITY/IN_DENSITY.sum()
-        OUT_DENSITY = OUT_DENSITY/OUT_DENSITY.sum()
-        # update density
-        self.DENSITY_IO = IN_DENSITY, OUT_DENSITY
-        if IMSHOW :
-            EF.FAST_IMSHOW(self.DENSITY_IO)
-    
     def LOSS_PLOT(self):
         CURVE = np.concatenate(self.LOSS, axis=1)
         self.PLOT(CURVE, self.NB_CYCLE*self.N_TIME, "LOSS","BATCH", SIGMA=3)
+        self.POPPLOT(CURVE, self.NB_CYCLE*self.N_TIME)
         
     def SCORE_PLOT(self):
         CURVE = np.concatenate(self.SCORE).T
         self.PLOT(CURVE, self.NB_CYCLE, "SCORE","GEN")
-        
+        self.POPPLOT(CURVE, self.NB_CYCLE)
+    
+    def POPPLOT(self, CURVE, XMAX) :
+        VALUE = np.zeros((CURVE.shape[0], XMAX))
+        VALUE[:] = np.mean(CURVE)
+        VALUE[:,:CURVE.shape[1]] = CURVE
+        EF.FAST_IMSHOW([VALUE,VALUE[:self.NB_CONTROL+self.NB_SEED]])
+    
     def PLOT(self, CURVE, XMAX, Y, X, SIGMA=1):
-        curve_list = [  filters.gaussian_filter1d(CURVE[0],SIGMA), 
-                        filters.gaussian_filter1d(CURVE[1:-self.NB_SEED].mean(0),SIGMA), 
+        curve_list = [  filters.gaussian_filter1d(CURVE[:self.NB_CONTROL].mean(0),SIGMA), 
+                        filters.gaussian_filter1d(CURVE[self.NB_CONTROL:self.NB_CONTROL+self.NB_SEED].mean(0),SIGMA), 
+                        filters.gaussian_filter1d(CURVE[self.NB_CONTROL:-self.NB_SEED].mean(0),SIGMA), 
                         filters.gaussian_filter1d(CURVE[-self.NB_SEED:].mean(0),SIGMA)]
-        std_list = [    np.zeros(len(CURVE[0])),
-                        filters.gaussian_filter1d(CURVE[1:-self.NB_SEED].std(0),SIGMA), 
+        std_list = [    filters.gaussian_filter1d(CURVE[:self.NB_CONTROL].std(0),SIGMA),
+                        filters.gaussian_filter1d(CURVE[self.NB_CONTROL:self.NB_CONTROL+self.NB_SEED].std(0),SIGMA), 
+                        filters.gaussian_filter1d(CURVE[:self.NB_CONTROL:-self.NB_SEED].std(0),SIGMA), 
                         filters.gaussian_filter1d(CURVE[-self.NB_SEED:].std(0),SIGMA)]
-        EF.FAST_PLOT(curve_list,std_list,['CTRL','EVOLUTION','RANDOM'], 
+        EF.FAST_PLOT(curve_list,std_list,['CTRL','BEST','EVOLUTION','RANDOM'], 
                      'LYFE', Y,X, self.RULE, self.BATCH, self.N_TIME, self.NB_SEED, XMAX)
-     
-    # DEPRECIED
-    def ROTATION_3(self, X_CENTER, NEW_CENTER) :
-        THETA = np.linspace(np.pi/2, (3./2)*np.pi, 3)
-        X_ROTATED = []
-        for t in THETA :
-            # rotation matrix
-            r = np.array(( (np.cos(t), -np.sin(t)),(np.sin(t),  np.cos(t)) ))
-            # rotation
-            X_ROT = r.dot(X_CENTER.T)
-            # increment
-            X_ROTATED += [np.rint(X_ROT.T).astype(int) + NEW_CENTER]
-        return X_ROTATED

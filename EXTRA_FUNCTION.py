@@ -199,7 +199,6 @@ def LINEAGE_2_GRAPH(NB_GEN,NB_P_GEN,TREE_LIST):
     return pos, G
 
 def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=0, CYCLE=0, NB=0, XMAX=None):
-    print(XMAX)
     W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
     # fig ratio
     MM2INCH = 1# 2.54
@@ -231,8 +230,10 @@ def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=
     plt.show(); plt.close()
 
 def FAST_IMSHOW(img_list):
-    fig, axarr = plt.subplots(1,len(img_list))
+    NB_PLOT = len(img_list)
+    fig, axarr = plt.subplots(1,NB_PLOT)
+    if NB_PLOT == 1 : axarr = [axarr]
     for i in range(len(img_list)):
-        cax = axarr[i].imshow(img_list[i])
+        cax = axarr[i].matshow(img_list[i], aspect='auto')
         fig.colorbar(cax, ax=axarr[i], shrink=0.6)
     plt.show(); plt.close()

@@ -18,13 +18,16 @@ from tqdm import tqdm
 
 ################################ EXPERIMENTAL PARAMETER (inverted name : need 2 change)
 IO = (17,3) # don't change here (not optimized yet)
-NB_GEN = 50 # 100 convergence I/O when ?
-batch_size = 64 #25 64
+NB_GEN = 100 # 100 convergence I/O when ?
+batch_size = 16 #25 64
 MAP_SIZE = 9
-N_TIME = 16 #25
-NB_P_GEN = 4**2 ## always squarable !
+N_CYCLE = 2
+N_TIME = 2*N_CYCLE #25
+NB_P_GEN = 7**2 ## always squarable !
 
-ARG_TUPLE = (IO,NB_GEN, batch_size, MAP_SIZE, N_TIME, NB_P_GEN)
+# batch_size*n_time = 64 min
+
+ARG_TUPLE = (IO,NB_GEN, batch_size, MAP_SIZE, N_TIME, N_CYCLE, NB_P_GEN)
 RULE = 1 # 0 : classic
 
 ################################ LYFE EXPERIMENT's 
@@ -50,17 +53,17 @@ class LYFE():
         self.SCORE_LIST = []
         self.GEN = 0
         # Save-info
-        self.INFO_LOG = LOG_INFO(self.PLAYERS, self.ENV, self.GEN, arg[1], rule, arg[2], arg[4])
+        self.INFO_LOG = LOG_INFO(self.PLAYERS, self.ENV, self.GEN, arg[1], rule, arg[2], arg[4]*arg[5])
         self.SLC, self.SLC_1, self.SLC_2 = None, None, None
         # for next gen (n-plicat) and control group
-        self.NB_CONTROL = 1 # always (preference)
+        self.NB_CONTROL = int(np.rint(np.power(self.NB_P_GEN, 1./4))) # minimum
         self.NB_CHALLENGE = int(np.sqrt(self.NB_P_GEN)-self.NB_CONTROL)
-        self.NB_SURVIVOR = self.NB_CHALLENGE # square completion
-        self.NB_CHILD = int(np.sqrt(self.NB_P_GEN)-1)
+        self.NB_SURVIVOR = int(np.sqrt(self.NB_P_GEN)-1) 
+        self.NB_CHILD = self.NB_SURVIVOR # square completion
         
     def LAUNCH(self, VIDEO = False):
         for o in tqdm(range(self.ARG[1]), position=0):
-            P = (self.ARG[1] - o)/(2*self.ARG[1]) # proba
+            P = 0.5 + (self.ARG[1] - o)/(2*self.ARG[1]) # proba
             ## party game
             for i in range(self.NB_P_GEN): #tqdm(range(self.NB_P_GEN), position=1, leave=None):
                 self.PLAYERS[i].PARTY(self.ENV[i])
@@ -74,11 +77,6 @@ class LYFE():
             ORDER_ = np.argsort(FITNESS[self.NB_CONTROL:])[::-1]
             # complete cycle
             self.INFO_LOG.FINISH_CYCLE(self.ENV, self.SCORE_LIST, ORDER[::-1], self.PLAYERS)
-            # density (after cycle) : forcing classing density in middle
-            if np.random.choice((True,False), 1, [P,1-P]):
-                self.INFO_LOG.DENSITY(self.PLAYERS, ORDER, (0,self.NB_P_GEN), IMSHOW=True)
-            else :
-                self.INFO_LOG.DENSITY(self.PLAYERS[self.NB_CONTROL:], ORDER_, (self.NB_CONTROL,self.NB_P_GEN), IMSHOW=True)
             # update gen
             self.GEN += 1
             #### CONTROL
@@ -118,23 +116,16 @@ class LYFE():
     
     def LEGACY(self, old_PLAYERS):
         mut_PLAYERS = []
-        # density i/o considered
-        DENSITY_IO = self.INFO_LOG.DENSITY_IO
         for p in old_PLAYERS :
             for i in range(self.NB_CHILD):
-                mut_PLAYERS += [p.MUTATION(DENSITY_IO)]
+                mut_PLAYERS += [p.MUTATION()]
         return mut_PLAYERS
     
     def FOLLOWER(self):
         new_PLAYERS = []
-        # density i/o considered
-        DENSITY_IO = self.INFO_LOG.DENSITY_IO
         for i in range(self.NB_CHALLENGE):
             # follower :
-            if np.random.choice((True,False), 1, [0.65,0.35]) :
-                new_PLAYERS += [Q_AGENT(*self.ARG[:-1], DENSITY_IO=DENSITY_IO)]
-            else :
-                new_PLAYERS += [Q_AGENT(*self.ARG[:-1])] # or not
+            new_PLAYERS += [Q_AGENT(*self.ARG[:-1])] # or not
         return new_PLAYERS
     
     def ENV_UPDATE(self):
