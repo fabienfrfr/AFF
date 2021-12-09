@@ -54,7 +54,7 @@ class LOG_INFO():
             GEN_ += [GEN]
             if SLC_LIST == None :
                 TREE += [[i]]
-                if i == 0 :
+                if i < self.NB_CONTROL :
                     TYPE += [-1]
                 else : 
                     TYPE += [0]

@@ -28,7 +28,7 @@ NB_P_GEN = 7**2 ## always squarable !
 # batch_size*n_time = 64 min
 
 ARG_TUPLE = (IO,NB_GEN, batch_size, MAP_SIZE, N_TIME, N_CYCLE, NB_P_GEN)
-RULE = 1 # 0 : classic
+RULE = 2 # 0 : classic
 
 ################################ LYFE EXPERIMENT's 
 class LYFE():
@@ -63,7 +63,7 @@ class LYFE():
         
     def LAUNCH(self, VIDEO = False):
         for o in tqdm(range(self.ARG[1]), position=0):
-            P = 0.5 + (self.ARG[1] - o)/(2*self.ARG[1]) # proba
+            P = 0.875 + (self.ARG[1] - o)/(8*self.ARG[1]) # proba
             ## party game
             for i in range(self.NB_P_GEN): #tqdm(range(self.NB_P_GEN), position=1, leave=None):
                 self.PLAYERS[i].PARTY(self.ENV[i])

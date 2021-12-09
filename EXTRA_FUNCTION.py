@@ -8,10 +8,14 @@ Created on Wed May 12 10:28:43 2021
 import numpy as np, pylab as plt
 import matplotlib.animation as animation
 
+from scipy.ndimage import filters
+
 import os
 import networkx as nx
 
 from tqdm import tqdm
+
+import skvideo.io as skio
 
 ################################ EXTRA FUNCTION 
 def PrimeFactors(n):
@@ -101,8 +105,20 @@ class MAP_ANIM():
         self.ORIGIN = self.MAP_SIZE*np.mgrid[:self.RESH[0], :self.RESH[1]].reshape(2,-1).T
         self.DATA[0] += self.ORIGIN[None,:,:]
         self.DATA[1] += self.ORIGIN[None,:,:]
-        self.DATA[2] += self.ORIGIN[None,:,:,None]
+        #self.DATA[2] += self.ORIGIN[None,:,:,None]
     
+    def video(self):
+        BIG_MAP_TIME = np.zeros((self.TIME_DURATION,self.X, self.Y))
+        for i in range(self.TIME_DURATION):
+            A = tuple(map(tuple,self.DATA[0][i].T))
+            P = tuple(map(tuple,self.DATA[1][i].T))
+            BIG_MAP_TIME[i][A] = 100
+            BIG_MAP_TIME[i][P] = 200
+        # export to video
+        self.VIDEO = BIG_MAP_TIME
+        FILENAME = os.getcwd() + os.path.sep + 'OUT' + os.path.sep + 'MAP_LYFE.mp4'
+        skio.vwrite(FILENAME,self.VIDEO)
+        
     def anim_update(self, i):
         # extract data
         A, P, I = self.DATA
@@ -181,25 +197,114 @@ def LINEAGE_2_GRAPH(NB_GEN,NB_P_GEN,TREE_LIST):
     # Create new graph
     G = nx.DiGraph()
     # Positionnal
-    Y, X = np.mgrid[0:NB_GEN, 0:NB_P_GEN]
-    Y, X = Y.reshape(-1), X.reshape(-1)
+    X, Y = np.mgrid[0:NB_GEN, 0:NB_P_GEN]
+    X, Y = X.reshape(-1), Y.reshape(-1)
     # generate Node
     for i in range(len(X)) :
-        G.add_node(i,pos=(X[i],-Y[i]))
+        G.add_node(i,pos=(X[i],Y[i]))
     # genrate Edge
-    for i in range(len(X)) :
-        GEN = abs(Y[i])
+    for i in range(len(Y)) :
+        GEN = abs(X[i])
         if GEN > 0 :
             y_loc = (Y == Y[i]-1)
             x_loc = (X == TREE_LIST[i][0])
             ID = np.where(y_loc*x_loc)[0]
             if len(ID) == 1 : G.add_edge(int(ID),i, weight = 0)
+            else : G.add_edge(i,i, weight = 0)
+        else :
+            G.add_edge(i,i, weight = 0)
     # Extract pos dict
     pos = nx.get_node_attributes(G,'pos')
     return pos, G
 
-def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=0, CYCLE=0, NB=0, XMAX=None):
-    W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
+def TREELINEAGE_2_IMLINEAGE(GROUBYGEN):
+    PARENT = []
+    for i,g in GROUBYGEN :
+        # get tree info
+        TREE = g.TREE
+        T_ = []
+        for t in TREE :
+            if len(t) == 1 :
+                T_ += t
+            else :
+                T_ += [t[0]]
+        # normalize type
+        T_ = np.array(T_)
+        if i > 0 :
+            NB_CONTROL = np.sum(g.TYPE.values == -1)
+            T_ += NB_CONTROL
+            T_[g.TYPE.values == -1] = np.arange(NB_CONTROL)
+        else :
+            T_[:] = -1
+        T_[g.TYPE.values == 3] = -1
+        PARENT += [T_[None]]
+    #compile
+    PARENT = np.concatenate(PARENT)
+    return PARENT
+
+
+def IMLINEAGE_2_GRAPH(node,PARENT):
+    # extract info
+    s = PARENT.shape
+    pos = np.mgrid[:s[0],:s[1]].reshape((2,-1)).T
+    NODE = node.reshape(s)
+    # graph construction
+    G = nx.DiGraph()
+    for x,y,i in np.column_stack((pos,node[:,None])):
+        G.add_node(i,pos=(x,y))
+    for t in range(s[0]) :
+        for i in range(s[1]):
+            IDX = int(PARENT[t,i])
+            if  IDX != -1 : 
+                j, k = (IDX, t-1)
+                G.add_edge(NODE[k,j] , NODE[t,i],  weight = 0)
+                #G.add_edge(NODE[t,i], NODE[k,j] ,  weight = 0)
+            else :
+                G.add_edge(NODE[t,i], NODE[t,i],  weight = 0)
+    # add number of child per node
+    posD = nx.get_node_attributes(G,'pos')
+    return posD, G
+
+def SHOW_TREE(G,pos):
+    H = G.to_undirected()
+    nx.draw_networkx_nodes(H, pos, node_size=0.1, alpha=0.5)
+    nx.draw_networkx_edges(H, pos, alpha=0.5)
+    plt.savefig("OUT/TREE.svg")
+    plt.show(); plt.close()
+
+def ADD_PATH(node,G):
+    SHORT_PATH = nx.shortest_path(G)
+    node_size = np.array([len(values) for key,values in SHORT_PATH.items()])
+    # Construct flow (for each edges beetween 2 nodes, add +1 if exist)
+    closeness = np.array(list(nx.closeness_centrality(G).values()))
+    closeness[closeness==closeness.min()] = closeness.max()
+    edges_size = 1./(closeness+closeness.max())
+    """
+    for source in node :
+        # listing of each link
+        for target, target_list in SHORT_PATH[source].items() :
+            # add +1 weight
+            if target != source :
+                s_,t_ = target_list[0:2]
+                G[s_][t_]['weight'] += 1
+    edges_size = np.array([G[u][v]['weight'] for u,v in G.edges])
+    """
+    return G, edges_size, node_size, SHORT_PATH
+
+def FAST_CURVE_CONSTRUCT(TRAINING_, BEST_TRAINING, NB_SEED):
+    curve_list = [  filters.gaussian_filter1d(TRAINING_[:1].mean(0),1), 
+                    filters.gaussian_filter1d(TRAINING_[1:-NB_SEED].mean(0),1), 
+                    filters.gaussian_filter1d(TRAINING_[-NB_SEED:].mean(0),1)]
+    if True : curve_list += [filters.gaussian_filter1d(BEST_TRAINING,1)]
+    std_list = [    filters.gaussian_filter1d(TRAINING_[:1].std(0),1),
+                    filters.gaussian_filter1d(TRAINING_[1:-NB_SEED].std(0),1), 
+                    filters.gaussian_filter1d(TRAINING_[-NB_SEED:].std(0),1)]
+    if True : std_list += [np.zeros(BEST_TRAINING.size)]
+    return curve_list,std_list
+
+def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=0, CYCLE=0, NB=0, yaxis = None, XMAX=None):
+    W, H, L, S = 3.7, 3.7, 18., 9. # width, height, label_size, scale_size
+    #W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
     # fig ratio
     MM2INCH = 1# 2.54
     W, H, L, S = np.array((W, H, L, S))/MM2INCH # ratio fig : 2.7/2.1
@@ -224,11 +329,33 @@ def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=
         plt.xlim([0,len(c)])
     else :
         plt.xlim([0,XMAX])
+    if yaxis != None :
+        plt.ylim(yaxis)
     # Save data
     plt.savefig('OUT' + os.path.sep + Title+Ylabel+Xlabel+"_r"+str(RULE)+"_b"
                 +str(BATCH)+"n"+str(CYCLE)+"_nb"+str(NB)+ ".svg")
     plt.show(); plt.close()
 
+def FAST_IMSHOW(img_list, name_list, stick=False):
+    NB_PLOT = len(img_list)
+    for i in range(NB_PLOT):
+        fig = plt.figure(figsize=(3.7, 2.9))
+        ax = fig.add_subplot()
+        IM = img_list[i]
+        im = plt.imshow(IM, interpolation='none', aspect="auto")
+        # colorbar
+        fig.colorbar(im, ax=ax, shrink=0.6)
+        # Minor ticks
+        if stick :
+            Ly,Lx = IM.shape ; print(Lx,Ly)
+            ax.set_xticks(np.arange(-0.5, Lx, 1), minor=True)
+            ax.set_yticks(np.arange(-0.5, Ly, 1), minor=True)
+            ax.grid(which='minor', linewidth=10./Lx)
+        # show
+        plt.savefig('OUT' + os.path.sep + name_list[i]+'.svg')
+        plt.show(); plt.close()
+
+"""
 def FAST_IMSHOW(img_list):
     NB_PLOT = len(img_list)
     fig, axarr = plt.subplots(1,NB_PLOT)
@@ -237,3 +364,27 @@ def FAST_IMSHOW(img_list):
         cax = axarr[i].matshow(img_list[i], aspect='auto')
         fig.colorbar(cax, ax=axarr[i], shrink=0.6)
     plt.show(); plt.close()
+"""
+
+"""
+node = np.arange(DATA.G.size())
+H = DATA.G.copy()
+SHORT_PATH = nx.shortest_path(H)
+node_size = np.array([len(values) for key,values in SHORT_PATH.items()]) # closeness
+# Construct flow (for each edges beetween 2 nodes, add +1 if exist)
+for source in node :
+    # listing of each link
+    for target, target_list in SHORT_PATH[source].items() :
+        # add +1 weight
+        if target != source :
+            s_,t_ = target_list[0:2]
+            H[s_][t_]['weight'] += 1
+                
+edges_size = np.array([H[u][v]['weight'] for u,v in H.edges])
+
+plt.imshow(np.log(edges_size.reshape((100,49)).T+1))
+
+
+plt.imshow(node_size.reshape((100,49)).T)
+source = 4789 # 22 daughter
+"""

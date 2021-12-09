@@ -61,6 +61,7 @@ class model():
         for g in self.GRAPH_LIST :
             NEURON_LIST = g.NEURON_LIST
             self.SEEDER_LIST += [pRNN(NEURON_LIST, self.BATCH, self.IO[0], STACK=RNN)]
+        self.PARENT = [(-1*np.ones(self.NB_SEEDER))[None]]
         # best seeder model
         self.BEST_MODEL = 0
         self.OPTIM_BEST = 0
@@ -113,37 +114,45 @@ class model():
             ORDER = np.argsort(SCORE_LIST[self.NB_CONTROL:]).astype(int)
             # control
             CTRL = self.SEEDER_LIST[:self.NB_CONTROL]
+            PARENT = [0]*self.NB_CONTROL
             # survivor (reset weight or not)
             BEST = []
             B_G_ = []
+            B_I = []
             for i in ORDER[:self.NB_SURVIVOR] :
                 B_G_ += [self.GRAPH_LIST[i]]
                 if np.random.choice((True,False), 1, [P,1-P]):
                     BEST += [self.SEEDER_LIST[self.NB_CONTROL:][i]]
                 else :
                     BEST += [pRNN(B_G_[-1].NEURON_LIST, self.BATCH, self.IO[0])]
+                PARENT += [i+1]
+                B_I += [i+1]
+            # mutation
+            MUTS = []
+            M_G_ = []
+            for g,j in zip(B_G_,B_I) :
+                for i in range(self.NB_CHILD):
+                    M_G_ += [g.NEXT_GEN()]
+                    MUTS += [pRNN(M_G_[-1].NEURON_LIST, self.BATCH, self.IO[0])]
+                    PARENT += [j]
             # challenger
             NEWS = []
             N_G_ = []
             for n in range(self.NB_CHALLENGE) :
                 N_G_ += [GRAPH_EAT([self.IO, 1], None)]
                 NEWS += [pRNN(N_G_[-1].NEURON_LIST, self.BATCH, self.IO[0])]
-            # mutation
-            MUTS = []
-            M_G_ = []
-            for g in B_G_ :
-                for i in range(self.NB_CHILD):
-                    M_G_ += [g.NEXT_GEN()]
-                    MUTS += [pRNN(M_G_[-1].NEURON_LIST, self.BATCH, self.IO[0])]
+                PARENT += [-1]
             # update
             self.SEEDER_LIST = CTRL + BEST + MUTS + NEWS
             self.GRAPH_LIST = B_G_ + M_G_ + N_G_
+            self.PARENT += [np.array(PARENT)[None]]
             # generate loss-optimizer
             self.OPTIM = [torch.optim.SGD(s.parameters(), lr=self.LR,momentum=self.MM) for s in self.SEEDER_LIST]
             self.CRITERION = [nn.CrossEntropyLoss() for n in range(self.NB_SEEDER)]
         # compact evolution data
         self.SCORE_LOSS = np.concatenate(self.SCORE_LOSS).T
         self.ACCUR = np.concatenate(self.ACCUR).T
+        self.PARENT = np.concatenate(self.PARENT).T
         # best loop weight optimization
         self.BEST_MODEL = pRNN(self.GRAPH_LIST[ORDER[0]].NEURON_LIST, self.BATCH, self.IO[0])
         self.OPTIM_BEST = torch.optim.SGD(self.BEST_MODEL.parameters(), lr=self.LR,momentum=self.MM)
@@ -183,7 +192,9 @@ class model():
 ### TESTING PART
     
 if __name__ == '__main__' :
-    LOAD = False
+    LOAD = True
+    Filename = 'MODEL_20211202_164612.obj' #49
+    Filename = 'MODEL_20211203_174344.obj' #25
     # module for test
     from tensorflow.keras.datasets import mnist
     # import mnist
@@ -198,37 +209,54 @@ if __name__ == '__main__' :
     N, x, y = X_train_data.shape ; I = x*y
     O = np.unique(Y_train_data).size
     # parameter
+    PRCT = 0.5 # data percet using
     BATCH, EPOCH = 25, 2
     NB_GEN, NB_SEED = 100, 5
     # init&train or load
     if LOAD :
-        with open('OUT'+os.path.sep+'MODEL_20211102_154440.obj', 'rb') as f:
+        with open('OUT'+os.path.sep+Filename, 'rb') as f:
             MODEL = pickle.load(f)
     else :
-        MODEL = model((I,O), N, BATCH, EPOCH, NB_GEN,NB_SEED)
+        MODEL = model((I,O), N, BATCH, EPOCH, NB_GEN,NB_SEED, DATA_XPLT = PRCT)
         # training
         MODEL.fit(X_train_data,Y_train_data)
     # result
-    fig = plt.figure(figsize=(3.7, 2.9))
-    ax = fig.add_subplot()
-    cax = ax.matshow(MODEL.SCORE_LOSS, aspect="auto")
-    fig.colorbar(cax)
-    plt.savefig('OUT' + os.path.sep + "MNIST_DIST.svg")
-    plt.show(); plt.close()
-    from scipy.ndimage import filters
-    curve_list = [  filters.gaussian_filter1d(MODEL.SCORE_LOSS[0],1), 
-                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[1:-NB_SEED].mean(0),1), 
-                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[-NB_SEED:].mean(0),1),
-                    filters.gaussian_filter1d(MODEL.BEST_SCORE_LOSS,1)]
-    std_list = [    np.zeros(len(MODEL.SCORE_LOSS[0])),
-                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[1:-NB_SEED].std(0),1), 
-                    filters.gaussian_filter1d(MODEL.SCORE_LOSS[-NB_SEED:].std(0),1),
-                    np.zeros(MODEL.BEST_SCORE_LOSS.size)]
-    EF.FAST_PLOT(curve_list,std_list,['CTRL','EVOLUTION','RANDOM','BEST'], 'MNIST', 'Loss','Batch')
+    EF.FAST_IMSHOW([MODEL.SCORE_LOSS], ['LOSS'])
+    curve_list, std_list = EF.FAST_CURVE_CONSTRUCT(MODEL.SCORE_LOSS, MODEL.BEST_SCORE_LOSS, NB_SEED)
+    EF.FAST_PLOT(curve_list,std_list,['CTRL','EVOLUTION','RANDOM','BEST'], 'MNIST', 'Loss','Batch', yaxis=[0.,30])
     # predict
     X_test_data,Y_test_data = shuffle(X_test_data,Y_test_data)
-    plt.imshow(X_test_data[0]); plt.show(); plt.close()
     X_torch = torch.tensor(X_test_data[:10].reshape((-1,x*y)), dtype=torch.float)
     max_v, max_i = MODEL.predict(X_torch)
     Y_torch = torch.tensor(Y_test_data[:10])
     print("Predicted Score =", (max_i == Y_torch).sum(1))
+    # evolution graph
+    PARENT = MODEL.PARENT.T
+    s = PARENT.shape
+    node = np.arange(np.prod(s))
+    # network
+    pos, G = EF.IMLINEAGE_2_GRAPH(node,PARENT)
+    G, edges_size, node_size, SHORT_PATH = EF.ADD_PATH(node,G)
+    ## show
+    E_ = np.log(edges_size.reshape(s).T+1)
+    E_ = (E_-E_.min())/(E_.max()-E_.min())
+    N_ = np.log(node_size.reshape(s).T)
+    N_ = node_size.reshape(s).T
+    N_ = (N_-N_.min())/(N_.max()-N_.min())
+    EF.FAST_IMSHOW([E_,N_], ['EDGES','NODE'])
+    #draw evolution
+    """
+    H = G.to_undirected()
+    nodes = nx.draw_networkx_nodes(H, posD, node_size=0.1, alpha=0.5)
+    edges = nx.draw_networkx_edges(H, posD, edge_color=edges_size, alpha=0.5)
+    plt.savefig("OUT/Tree.svg")
+    plt.show(); plt.close()
+    """
+    # dendrogram
+    """
+    from scipy.cluster import hierarchy
+    mx = nx.to_pandas_adjacency(G).values
+    Z = hierarchy.linkage(mx)
+    dn = hierarchy.dendrogram(Z)
+    plt.show()
+    """
