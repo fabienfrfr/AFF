@@ -291,18 +291,21 @@ def ADD_PATH(node,G):
     """
     return G, edges_size, node_size, SHORT_PATH
 
-def FAST_CURVE_CONSTRUCT(TRAINING_, BEST_TRAINING, NB_SEED):
-    curve_list = [  filters.gaussian_filter1d(TRAINING_[:1].mean(0),1), 
-                    filters.gaussian_filter1d(TRAINING_[1:-NB_SEED].mean(0),1), 
-                    filters.gaussian_filter1d(TRAINING_[-NB_SEED:].mean(0),1)]
-    if True : curve_list += [filters.gaussian_filter1d(BEST_TRAINING,1)]
-    std_list = [    filters.gaussian_filter1d(TRAINING_[:1].std(0),1),
-                    filters.gaussian_filter1d(TRAINING_[1:-NB_SEED].std(0),1), 
-                    filters.gaussian_filter1d(TRAINING_[-NB_SEED:].std(0),1)]
-    if True : std_list += [np.zeros(BEST_TRAINING.size)]
+def FAST_CURVE_CONSTRUCT(TRAINING_, BONUS_TRAINING, PARAM, SIGMA=1):
+    curve_list, std_list = [], []
+    START, LENGHT = PARAM
+    # training construct
+    for i,j in zip(START.tolist(), LENGHT.tolist()):
+        curve_list += [filters.gaussian_filter1d(TRAINING_[i:i+j].mean(0),SIGMA)]
+        std_list +=  [filters.gaussian_filter1d(TRAINING_[i:i+j].std(0),SIGMA)]
+    if True : 
+        curve_list += [filters.gaussian_filter1d(BONUS_TRAINING[0],SIGMA)]
+        if len(BONUS_TRAINING) == 2 : std_list += [filters.gaussian_filter1d(BONUS_TRAINING[1],SIGMA)]
+        else : std_list += [np.zeros(BONUS_TRAINING[0].size)]
+        
     return curve_list,std_list
 
-def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=0, CYCLE=0, NB=0, yaxis = None, XMAX=None):
+def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=0, CYCLE=0, NB=0, yaxis = None, XMAX=None, x_reduce=None):
     W, H, L, S = 3.7, 3.7, 18., 9. # width, height, label_size, scale_size
     #W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
     # fig ratio
@@ -321,8 +324,14 @@ def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=
     ax.set_xlabel(Xlabel, fontsize=L)
     # ax loop
     for c,s,l in zip(curve_list,std_list, label_list) :
-        ax.plot(c, label=l)
-        ax.fill_between(np.arange(len(c)), c - s/STD, c + s/STD, alpha=0.3)
+        if np.sum(x_reduce) == None :
+            ax.plot(c, label=l)
+            ax.fill_between(np.arange(len(c)), c - s/STD, c + s/STD, alpha=0.3)
+        else :
+            c_ = c[x_reduce]
+            s_ = s[x_reduce]
+            ax.plot(x_reduce, c_, label=l)
+            ax.fill_between(x_reduce, c_ - s_/STD, c_ + s_/STD, alpha=0.3)
     # Legend
     ax.legend()
     if XMAX == None : 

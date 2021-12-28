@@ -194,7 +194,8 @@ class model():
 if __name__ == '__main__' :
     LOAD = True
     Filename = 'MODEL_20211202_164612.obj' #49
-    Filename = 'MODEL_20211203_174344.obj' #25
+    #Filename = 'MODEL_20211203_174344.obj' #25
+    #Filename = 'MODEL_20211214_212341.obj' #49 + 10g + 10 epoch ## REDUCE TIME BATCH !!! (1000 max)
     # module for test
     from tensorflow.keras.datasets import mnist
     # import mnist
@@ -209,9 +210,9 @@ if __name__ == '__main__' :
     N, x, y = X_train_data.shape ; I = x*y
     O = np.unique(Y_train_data).size
     # parameter
-    PRCT = 0.5 # data percet using
-    BATCH, EPOCH = 25, 2
-    NB_GEN, NB_SEED = 100, 5
+    PRCT = 1. # data percet using
+    BATCH, EPOCH = 25, 10
+    NB_GEN, NB_SEED = 3, 10
     # init&train or load
     if LOAD :
         with open('OUT'+os.path.sep+Filename, 'rb') as f:
@@ -220,10 +221,17 @@ if __name__ == '__main__' :
         MODEL = model((I,O), N, BATCH, EPOCH, NB_GEN,NB_SEED, DATA_XPLT = PRCT)
         # training
         MODEL.fit(X_train_data,Y_train_data)
-    # result
+    # seeder position
+    TYPE = ['CTRL','EVOLUTION','RANDOM']
+    LENGHT = np.array([MODEL.NB_CONTROL, MODEL.NB_SURVIVOR+MODEL.NB_CHILD**2, MODEL.NB_CHALLENGE])
+    START = np.array([0]+np.cumsum(LENGHT)[:-1].tolist())
+    ## result
+    
     EF.FAST_IMSHOW([MODEL.SCORE_LOSS], ['LOSS'])
-    curve_list, std_list = EF.FAST_CURVE_CONSTRUCT(MODEL.SCORE_LOSS, MODEL.BEST_SCORE_LOSS, NB_SEED)
-    EF.FAST_PLOT(curve_list,std_list,['CTRL','EVOLUTION','RANDOM','BEST'], 'MNIST', 'Loss','Batch', yaxis=[0.,30])
+    curve_list, std_list = EF.FAST_CURVE_CONSTRUCT(MODEL.SCORE_LOSS, MODEL.BEST_SCORE_LOSS[None], [START,LENGHT], 2) # 5 for big, 2 otherwise
+    # lenght of curve reduction (to big in svg)
+    x_pos = np.linspace(0,len(curve_list[0])-1,1000).astype('int')
+    EF.FAST_PLOT(curve_list,std_list, TYPE +['BEST'], 'MNIST', 'LOSS','BATCH', yaxis=[0.,30], x_reduce = x_pos)
     # predict
     X_test_data,Y_test_data = shuffle(X_test_data,Y_test_data)
     X_torch = torch.tensor(X_test_data[:10].reshape((-1,x*y)), dtype=torch.float)
@@ -237,12 +245,18 @@ if __name__ == '__main__' :
     # network
     pos, G = EF.IMLINEAGE_2_GRAPH(node,PARENT)
     G, edges_size, node_size, SHORT_PATH = EF.ADD_PATH(node,G)
-    ## show
+    ## show edge
     E_ = np.log(edges_size.reshape(s).T+1)
     E_ = (E_-E_.min())/(E_.max()-E_.min())
-    N_ = np.log(node_size.reshape(s).T)
-    N_ = node_size.reshape(s).T
-    N_ = (N_-N_.min())/(N_.max()-N_.min())
+    curve_e, std_e = EF.FAST_CURVE_CONSTRUCT(E_, [E_.mean(0), E_.std(0)], [START,LENGHT], 0.5)
+    EF.FAST_PLOT(curve_e, std_e,['CTRL','EVOLUTION','RANDOM','MEAN'], 'MNIST', 'EDGES','GEN', yaxis=[0.,1.])
+    # show node
+    N_ = np.sqrt(node_size.reshape(s).T)
+    #N_ = (N_-N_.min())/(N_.max()-N_.min())
+    curve_n, std_n = EF.FAST_CURVE_CONSTRUCT(N_, [N_.mean(0), N_.std(0)/(np.pi)], [START,LENGHT], 0.5)
+    YMAX = np.max(curve_n)+0.5 #np.sqrt(N_.shape[1])
+    EF.FAST_PLOT(curve_n, std_n, TYPE+['MEAN'], 'MNIST', 'NODES','GEN', yaxis=[1.,YMAX])
+    # distribution
     EF.FAST_IMSHOW([E_,N_], ['EDGES','NODE'])
     #draw evolution
     """
