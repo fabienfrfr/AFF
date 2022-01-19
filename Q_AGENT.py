@@ -56,7 +56,7 @@ class Q_AGENT():
         self.GAMMA = 0.9
         #self.optimizer = torch.optim.Adam(self.MODEL.parameters())
         self.optimizer = torch.optim.Adam(self.MODEL.parameters()) #torch.optim.SGD(self.MODEL.parameters(), lr=1e-6, momentum=0.9)
-        self.criterion = nn.SmoothL1Loss() # nn.MSELoss() # because not classification (same comparaison [batch] -> [batch])
+        self.criterion = nn.SmoothL1Loss() # HubberLoss, nn.MSELoss() # because not classification (same comparaison [batch] -> [batch])
         #self.criterion = nn.NLLLoss(reduction='sum') #negative log likelihood loss ([batch,Nout]->[batch])
         self.loss = None
         self.LOSS = []
@@ -184,7 +184,7 @@ if __name__ == '__main__' :
     from scipy.special import comb
     print(comb(25, 17, exact=False))
     # init
-    ARG = ((9,3),25, 16, 16, 12)
+    ARG = ((9,3),25, 16, 16, 12, 2)
     q = Q_AGENT(*ARG, CTRL=True)
     #print(q.NEURON_LIST)
     #Mutate
