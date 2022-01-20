@@ -104,7 +104,11 @@ class Q_AGENT():
             next_action = np.random.randint(self.IO[1])
         else :
             if DILEMNA.min() < 0 : DILEMNA = DILEMNA-DILEMNA.min() # n-1 choice restriction
-            p_norm = DILEMNA/DILEMNA.sum()
+            ## add dispersion (in q-table, values is near)
+            order = np.square(np.argsort(DILEMNA)+1)
+            # probability
+            p_norm = order/order.sum()
+            #print(order, p_norm)
             next_action = np.random.choice(self.IO[1], p=p_norm)
         return next_action
     
@@ -133,6 +137,9 @@ class Q_AGENT():
         pred_q_values_next  = self.MODEL(new_state)
         # Compute targeted Q-value for action performed
         target_q_values_batch = (reward+(1-DONE)*self.GAMMA*torch.max(pred_q_values_next, 1)[0]).detach().unsqueeze(1)
+        self.y = [pred_q_values_batch,target_q_values_batch]
+        #[print(i,self.y[i].shape) for i in range(2)]
+        #print(self.y[1])
         # zero the parameter gradients
         self.MODEL.zero_grad()
         # Compute the loss
@@ -202,8 +209,8 @@ if __name__ == '__main__' :
     MEMORY[0] = torch.tensor(np.random.random((16,9)), dtype=torch.float) # old_state
     MEMORY[1] = torch.tensor(np.random.randint(0,3, (16,1)),  dtype=torch.long) #.unsqueeze(1) # action
     MEMORY[2] = torch.tensor(np.random.random((16,9)), dtype=torch.float) # new_state
-    MEMORY[3] = torch.tensor(np.random.randint(-10,10, (16,1))) # reward
-    MEMORY[4] = torch.tensor(np.random.randint(0,2, (16,1)), dtype=torch.int) # DONE
+    MEMORY[3] = torch.tensor(np.random.randint(-10,10, (16))) # reward
+    MEMORY[4] = torch.tensor(np.random.randint(0,2, (16)), dtype=torch.int) # DONE
     q.MEMORY = MEMORY
     # optim test
     q.OPTIM()

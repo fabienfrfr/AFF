@@ -66,6 +66,7 @@ class LYFE():
             P = 0.875 + (self.ARG[1] - o)/(8*self.ARG[1]) # proba
             ## party game
             for i in range(self.NB_P_GEN): #tqdm(range(self.NB_P_GEN), position=1, leave=None):
+                #print(i)
                 self.PLAYERS[i].PARTY(self.ENV[i])
                 self.LOSS_LIST += [np.mean(self.PLAYERS[i].LOSS[-5:])]
                 self.SCORE_LIST += [self.ENV[i].SCORE]
@@ -144,4 +145,7 @@ if __name__ == '__main__' :
     # experiment
     EXP = LYFE(ARG_TUPLE, RULE)
     EXP.LAUNCH()
-
+    # some test
+    """
+    EXP.PLAYERS[5].MEMORY_
+    """

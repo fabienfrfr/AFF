@@ -67,7 +67,10 @@ class Q_AGENT():
             next_action = np.random.randint(self.IO[1])
         else :
             if DILEMNA.min() < 0 : DILEMNA = DILEMNA-DILEMNA.min() # n-1 choice restriction
-            p_norm = DILEMNA/DILEMNA.sum()
+            ## ADD dispersion between near values (q-table, values is near)
+            order = np.square(np.argsort(DILEMNA)+1)
+            # probability
+            p_norm = order/order.sum()
             print(p_norm)
             next_action = np.random.choice(self.IO[1], p=p_norm)
         return next_action
@@ -90,7 +93,7 @@ NB_OBS = env.observation_space.shape[0]
 AGENT = Q_AGENT(NB_OBS,NB_ACTION)
 memory = ReplayMemory(10000)
 
-for i in tqdm(range(10)) :
+for i in tqdm(range(20000)) :
     new_state = env.reset()
     done = False
     i = 0
@@ -105,13 +108,13 @@ for i in tqdm(range(10)) :
         memory.push(state[None], action, new_state[None], reward, done)
         i+=1
     # last memory
-    transitions = memory.sample(i)
+    transitions = memory.sample(i) ## !! if not time dependant !!!
     batch = Transition(*zip(*transitions))
     # extrat batch
     old_state = torch.tensor(np.concatenate(batch.state), dtype=torch.float)
     action = torch.tensor(np.array(batch.action), dtype=torch.long).unsqueeze(1)
     new_state = torch.tensor(np.concatenate(batch.next_state), dtype=torch.float)
-    reward = torch.tensor(np.array(batch.reward))
+    reward = torch.tensor(np.array(batch.reward), dtype=torch.long)
     DONE = torch.tensor(np.array(batch.done), dtype=torch.int)
     # Qtable
     pred_q_values_batch,target_q_values_batch = AGENT.Q_TABLE(old_state, action, new_state, reward, DONE)
