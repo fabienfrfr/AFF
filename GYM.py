@@ -58,17 +58,17 @@ class Q_AGENT():
 
     ## Action Exploration/Exploitation Dilemna
     def ACTION(self, Input) :
-        img_in = torch.tensor(Input, dtype=torch.float)
+        VIEW_in = torch.tensor(Input, dtype=torch.float)
         # actor-critic (old version)
-        action_probs = self.MODEL(img_in)
+        action_probs = self.MODEL(VIEW_in)
         # exploration-exploitation dilemna
         DILEMNA = np.squeeze(action_probs.detach().numpy())
         if DILEMNA.sum() == 0 or str(DILEMNA.sum()) == 'nan' :
             next_action = np.random.randint(self.IO[1])
         else :
-            if DILEMNA.min() < 0 : DILEMNA = DILEMNA-DILEMNA.min() # n-1 choice restriction
+            if DILEMNA.min() < 0 : DILEMNA = DILEMNA-DILEMNA.min() # order garanty
             ## ADD dispersion between near values (q-table, values is near)
-            order = np.square(np.argsort(DILEMNA)+1)
+            order = np.exp(np.argsort(DILEMNA)+1)
             # probability
             p_norm = order/order.sum()
             print(p_norm)
@@ -96,19 +96,20 @@ memory = ReplayMemory(10000)
 for i in tqdm(range(20000)) :
     new_state = env.reset()
     done = False
-    i = 0
+    j = 0
     while not done :
         action = AGENT.ACTION(new_state[None])
         #print(action)
         state = new_state
         new_state, reward, done, info = env.step(action)
         # see
-        env.render()
+        if i%500 == 0 :
+            env.render()
         # Store the transition in memory
         memory.push(state[None], action, new_state[None], reward, done)
-        i+=1
+        j+=1
     # last memory
-    transitions = memory.sample(i) ## !! if not time dependant !!!
+    transitions = memory.sample(j) ## !! if not time dependant !!!
     batch = Transition(*zip(*transitions))
     # extrat batch
     old_state = torch.tensor(np.concatenate(batch.state), dtype=torch.float)
@@ -119,11 +120,30 @@ for i in tqdm(range(20000)) :
     # Qtable
     pred_q_values_batch,target_q_values_batch = AGENT.Q_TABLE(old_state, action, new_state, reward, DONE)
     # train
-    AGENT.MODEL.zero_grad()
-    #AGENT.optimizer.zero_grad()
+    #AGENT.MODEL.zero_grad()
+    AGENT.optimizer.zero_grad()
     # Compute the loss
     loss = AGENT.criterion(pred_q_values_batch,target_q_values_batch).type(torch.float)
     # Do backward pass
     loss.backward()
     AGENT.optimizer.step()
 env.close()
+
+
+# test
+for i in tqdm(range(10)) :
+    new_state = env.reset()
+    done = False
+    i = 0
+    while not done :
+        VIEW_in =  torch.tensor(new_state[None], dtype=torch.float)
+        action_probs = AGENT.MODEL(VIEW_in)
+        DILEMNA = np.squeeze(action_probs.detach().numpy())
+        #print(action)
+        state = new_state
+        new_state, reward, done, info = env.step(np.argmax(DILEMNA))
+        # see
+        env.render()
+    # last memory
+env.close()
+

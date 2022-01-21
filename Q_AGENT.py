@@ -105,7 +105,7 @@ class Q_AGENT():
         else :
             if DILEMNA.min() < 0 : DILEMNA = DILEMNA-DILEMNA.min() # n-1 choice restriction
             ## add dispersion (in q-table, values is near)
-            order = np.square(np.argsort(DILEMNA)+1)
+            order = np.exp(np.argsort(DILEMNA)+1)
             # probability
             p_norm = order/order.sum()
             #print(order, p_norm)
