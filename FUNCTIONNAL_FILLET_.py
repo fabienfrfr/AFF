@@ -30,9 +30,9 @@ class CTRL_NET(nn.Module):
         super(CTRL_NET, self).__init__()
         I,O = IO
         if I+O > 64 :
-            H = int(np.sqrt(I+O))
+            H = 2*int(np.sqrt(I+O))
         else : 
-            H = int(I+O)
+            H = 16
         self.IN = nn.Conv1d(I, I, 1, groups=I, bias=True)
         self.H1 = nn.Linear(I, H)
         self.H2 = nn.Linear(H, H)
@@ -40,7 +40,8 @@ class CTRL_NET(nn.Module):
 
     def forward(self, x):
         s = x.shape
-        x = F.relu(self.IN(x.view(s[0],s[1],1)).view(s))
+        x = self.IN(x.view(s[0],s[1],1)).view(s)
+        x = F.relu(x)
         x = F.relu(self.H1(x))
         x = F.relu(self.H2(x))
         return self.OUT(x)
@@ -79,7 +80,7 @@ class model():
         else :
             self.criterion = [nn.SmoothL1Loss()] # regression / RL
         # memory
-        self.memory = [ReplayMemory(100000)]
+        self.memory = [ReplayMemory(10000)]
     
     def STEP(self, INPUT, index=0) :
         in_tensor = torch.tensor(INPUT, dtype=torch.float)
@@ -91,7 +92,9 @@ class model():
         else :
             if DILEMNA.min() < 0 : DILEMNA = DILEMNA-DILEMNA.min() # order garanty
             ## ADD dispersion between near values (ex : q-table, values is near)
-            order = np.exp(np.argsort(DILEMNA)+1)
+            order = np.argsort(DILEMNA)+1
+            #order[np.argmax(order)] += 1
+            order = np.exp(order)
             # probability
             p_norm = order/order.sum()
             out_choice = np.random.choice(self.IO[1], p=p_norm)
@@ -105,15 +108,24 @@ class model():
         loss = self.criterion[index](output, target)
         # do back-ward
         loss.backward()
-        self.optimizer[index].zero_grad()
+        self.optimizer[index].step()
+        return loss
     
     def EVOLUTION(self):
         return
-
+    
+    def PREDICT(self, INPUT, index=0):
+        in_tensor = torch.tensor(INPUT, dtype=torch.float)
+        # extract prob
+        out_probs = self.SEEDER_LIST[index](in_tensor)
+        out_probs = np.squeeze(out_probs.detach().numpy())
+        return np.argmax(out_probs)
+        
 ##################################### GYM - TEST
 import gym
 from tqdm import tqdm
 env = gym.make("CartPole-v0")
+env._max_episode_steps=300
 
 NB_OBS = env.observation_space.shape[0]
 NB_ACTION = env.action_space.n
@@ -122,16 +134,18 @@ IO =  (NB_OBS,NB_ACTION)
 BATCH = 25
 NB_GEN = 100
 NB_SEED = 1
-NB_EPISODE = 50000
+NB_EPISODE = 50000 #25000
 
 MODEL = model([IO, BATCH, NB_GEN, NB_SEED], TYPE='RL')
 Transition = namedtuple('Transition',('state', 'action', 'next_state', 'reward', 'done'))
 
 NB_E_P_G = int(NB_EPISODE/NB_GEN)
 # loop
-duration = []
+duration, loss = [], []
+select = False
 for g in tqdm(range(MODEL.NB_GEN)) :
     # per seeder
+    D = []
     for n in range(MODEL.NB_SEEDER):
         # train
         r,l = 0,0
@@ -154,6 +168,7 @@ for g in tqdm(range(MODEL.NB_GEN)) :
                 j+=1
                 l+=1
             # duration
+            D += [j]
             duration += [j]
             r+=1
             # fit
@@ -164,11 +179,13 @@ for g in tqdm(range(MODEL.NB_GEN)) :
                 for b in range(nb_batch) :
                     batch = Transition(*zip(*transitions[b*MODEL.BATCH_SIZE : (b+1)*MODEL.BATCH_SIZE]))
                     pred_q, target_q = Q_TABLE(MODEL.SEEDER_LIST[n], batch)
-                    MODEL.FIT(pred_q, target_q, n)
+                    LOSS = MODEL.FIT(pred_q, target_q, n)
+    print('  ', min(D),'  ', np.mean(D),'  ', np.mean(D),'  ', max(D))
     # Apply natural selection
     MODEL.EVOLUTION()
-env.close()          
+env.close()
 
 ### plot
 import pylab as plt
-plt.plot(duration)
+from scipy.ndimage import filters
+plt.plot(filters.gaussian_filter1d(duration,2))

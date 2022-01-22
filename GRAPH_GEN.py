@@ -14,7 +14,7 @@ class GRAPH():
         # assign parameter
         self.IO = IO
         # nombre de perceptron dans les couches "hidden"
-        P_MAX = np.sum(IO) #np.rint(np.sqrt(NB_P_GEN)+2).astype(int)
+        P_MAX = 2*np.sum(IO) #np.rint(np.sqrt(NB_P_GEN)+2).astype(int)
         self.NB_PERCEPTRON_HIDDEN = np.random.randint(P_MIN,P_MAX+1)
         
         # nombre de connection minimal (invariant)
