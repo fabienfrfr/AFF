@@ -5,7 +5,7 @@ Created on Fri Jan 21 13:43:17 2022
 @author: fabien
 """
 # ML modules
-import numpy as np, pandas as pd #, random
+import numpy as np, pandas as pd
 import torch, torch.nn as nn
 import torch.nn.functional as F
 
@@ -17,7 +17,7 @@ from GRAPH_EAT import GRAPH_EAT
 from pRNN_GEN import pRNN
 
 ##### Prerequisite
-from collections import namedtuple, deque
+from collections import deque
 import itertools
 
 class ReplayMemory(object):
@@ -55,23 +55,10 @@ class CTRL_NET(nn.Module):
         x = F.relu(self.H1(x))
         x = F.relu(self.H2(x))
         return self.OUT(x)
-
-## For Q-Learning
-def Q_TABLE(model, batch, GAMMA = 0.9):
-    old_state = torch.tensor(np.concatenate(batch.state), dtype=torch.float)
-    action = torch.tensor(np.array(batch.action), dtype=torch.long).unsqueeze(1)
-    new_state = torch.tensor(np.concatenate(batch.next_state), dtype=torch.float)
-    reward = torch.tensor(np.array(batch.reward), dtype=torch.long)
-    done = torch.tensor(np.array(batch.done), dtype=torch.int)
-    # actor proba
-    actor = model(old_state)
-    # Compute predicted Q-values for each action
-    pred_q_values_batch = actor.gather(1, action)
-    pred_q_values_next  = model(new_state)
-    # Compute targeted Q-value for action performed
-    target_q_values_batch = (reward+(1-done)*GAMMA*torch.max(pred_q_values_next, 1)[0]).detach().unsqueeze(1)
-    # return y, y_prev
-    return pred_q_values_batch,target_q_values_batch
+    
+def LOADER(Filename):
+    with open('OUT'+os.path.sep+Filename, 'rb') as f:
+        return pickle.load(f)
 
 ##### FF MODULE
 class FunctionnalFillet():
@@ -99,12 +86,12 @@ class FunctionnalFillet():
         self.loss = pd.DataFrame(columns=['GEN','IDX_SEED', 'EPISOD', 'N_BATCH', 'LOSS_VALUES'])
         self.supp_param = None
         # evolution param
-        self.NB_CONTROL = int(np.rint(np.power(self.NB_SEEDER, 1./4)))
+        self.NB_CONTROL = int(np.power(self.NB_SEEDER, 1./4))
         self.NB_EVOLUTION = int(np.sqrt(self.NB_SEEDER)-1) # square completion
-        self.NB_CHALLENGE = int(self.NB_SEEDER - (self.NB_EVOLUTION**2 + self.NB_CONTROL))
+        self.NB_CHALLENGE = int(self.NB_SEEDER - (self.NB_EVOLUTION*(self.NB_EVOLUTION+1) + self.NB_CONTROL))
         # evolution variable
         self.PARENTING = [-1*np.ones(self.NB_SEEDER)[None]]
-        self.PARENTING[0][:self.NB_CONTROL] = 0
+        self.PARENTING[0][0][:self.NB_CONTROL] = 0
         
     def UPDATE_MODEL(self):
         # neuron graph history
@@ -170,7 +157,9 @@ class FunctionnalFillet():
             median_eps = g.EPISOD.median()
             medianLoss[int(i)] = g[g.EPISOD > median_eps].LOSS_VALUES.mean()
         # normalization
-        score = supp_factor*(medianLoss/medianLoss.sum())
+        relativeLOSS = (medianLoss-medianLoss.min())/(medianLoss.max()-medianLoss.min())
+        # coeffect, loss dominant
+        score = supp_factor*relativeLOSS + relativeLOSS
         # order
         order = np.argsort(score[self.NB_CONTROL:])
         ### stock control network
@@ -183,11 +172,11 @@ class FunctionnalFillet():
         GRAPH_IDX = list(order[:self.NB_EVOLUTION])
         for i in GRAPH_IDX :
             GRAPH_S += [self.GRAPH_LIST[i]]
-            if np.random.choice((True,False), 1, [0.9,0.1]):
+            if np.random.choice((True,False), 1, p=[0.9,0.1]):
                 NET_S += [self.SEEDER_LIST[self.NB_CONTROL:][i]]
             else :
                 NET_S += [pRNN(GRAPH_S[-1].NEURON_LIST, self.BATCH, self.IO[0], STACK=self.TIME_DEP)]
-                PARENT += [i+1]
+            PARENT += [i+1]
         ### mutation
         GRAPH_M = []
         NET_M = []
@@ -216,7 +205,7 @@ class FunctionnalFillet():
         if save :
             if(not os.path.isdir('OUT')): os.makedirs('OUT')
             time = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-            filehandler = open("OUT"+os.path.sep+"MODEL_"+time+".obj", 'wb')
+            filehandler = open("OUT"+os.path.sep+"MODEL_FF_"+time+".obj", 'wb')
             pickle.dump(self, filehandler); filehandler.close()
     
     def PREDICT(self, INPUT, index=0):
@@ -225,87 +214,3 @@ class FunctionnalFillet():
         out_probs = self.SEEDER_LIST[index](in_tensor)
         out_probs = np.squeeze(out_probs.detach().numpy())
         return np.argmax(out_probs)
-
-        
-##################################### GYM - TEST
-import gym
-from tqdm import tqdm
-env = gym.make("CartPole-v0")
-
-N_MAX = 300
-env._max_episode_steps=N_MAX
-
-NB_OBS = env.observation_space.shape[0]
-NB_ACTION = env.action_space.n
-
-IO =  (NB_OBS,NB_ACTION)
-BATCH = 25
-NB_GEN = 100
-NB_SEED = 4**2
-NB_EPISODE = 25000 #25000
-
-Transition = namedtuple('Transition',('state', 'action', 'next_state', 'reward', 'done'))
-MODEL = FunctionnalFillet([IO, BATCH, NB_GEN, NB_SEED, NB_EPISODE], Transition, TYPE='RL')
-
-# loop
-duration = pd.DataFrame(columns=['GEN','IDX_SEED', 'EPISOD', 'DURATION'])
-select = False
-for g in tqdm(range(MODEL.NB_GEN)) :
-    # per seeder
-    D = []
-    for n in range(MODEL.NB_SEEDER):
-        # train
-        render,l = 0,0
-        for i in range(MODEL.NB_E_P_G):
-            new_state = env.reset()
-            done = False
-            # gen data
-            j = 0
-            while not done :
-                action = MODEL.STEP(new_state[None], n)
-                state = new_state
-                new_state, reward, done, info = env.step(action)
-                if done and j < N_MAX-10 :
-                    reward = -10
-                # see
-                if render == 0 :
-                    env.render()
-                MODEL.memory[n].push(state[None], action, new_state[None], reward, done)
-                # iteration
-                j+=1
-                l+=1
-            # duration
-            duration = duration.append({'GEN':g, 'IDX_SEED':n,'EPISOD':i,'DURATION':j},ignore_index=True)
-            render+=1
-            # fit
-            if l >= MODEL.BATCH :
-                nb_batch = max(1, np.rint(j/MODEL.BATCH).astype(int))
-                transitions = MODEL.memory[n].sample(nb_batch*MODEL.BATCH)
-                # batch adapted loop
-                for b in range(nb_batch) :
-                    batch = Transition(*zip(*transitions[b*MODEL.BATCH : (b+1)*MODEL.BATCH]))
-                    pred_q, target_q = Q_TABLE(MODEL.SEEDER_LIST[n], batch)
-                    MODEL.TRAIN(pred_q, target_q, g, n, i, b)
-    # Apply natural selection
-    MODEL.SELECTION(g)
-    if g == 1 : break
-## Finalization
-MODEL.FINALIZATION(duration,False)
-env.close()
-
-
-
-
-###
-print(MODEL.PARENTING)
-
-### plot
-import pylab as plt
-#from scipy.ndimage import filters
-duration = np.array(duration)
-#plt.plot(filters.gaussian_filter1d(duration.T,2))
-plt.plot(duration.T)
-
-## MNIST
-from tensorflow.keras.datasets import mnist
-(X_train_data,Y_train_data),(X_test_data,Y_test_data) = mnist.load_data()

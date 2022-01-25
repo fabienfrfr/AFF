@@ -121,7 +121,7 @@ class model():
             B_I = []
             for i in ORDER[:self.NB_SURVIVOR] :
                 B_G_ += [self.GRAPH_LIST[i]]
-                if np.random.choice((True,False), 1, [P,1-P]):
+                if np.random.choice((True,False), 1, p=[P,1-P]):
                     BEST += [self.SEEDER_LIST[self.NB_CONTROL:][i]]
                 else :
                     BEST += [pRNN(B_G_[-1].NEURON_LIST, self.BATCH, self.IO[0])]
@@ -189,7 +189,7 @@ class model():
         else : 
             return max_index
 
-### TESTING PART
+### ALGO MNIST PART
     
 if __name__ == '__main__' :
     LOAD = True

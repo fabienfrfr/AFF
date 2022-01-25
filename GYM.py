@@ -4,146 +4,129 @@
 Created on Wed Jan 19 15:40:35 2022
 @author: fabien
 """
-import gym, random
-import numpy as np
 
-import torch, torch.nn as nn
-import torch.nn.functional as F
-
+import gym
+import torch, numpy as np, pandas as pd
 from tqdm import tqdm
+from collections import namedtuple
 
-env = gym.make("CartPole-v0")
+import FUNCTIONNAL_FILLET_ as FF
 
-from collections import namedtuple, deque
-Transition = namedtuple('Transition',('state', 'action', 'next_state', 'reward', 'done'))
-
-class ReplayMemory(object):
-    def __init__(self, capacity):
-        self.memory = deque([],maxlen=capacity)
-    def push(self, *args):
-        """Save a transition"""
-        self.memory.append(Transition(*args))
-    def sample(self, batch_size):
-        return random.sample(self.memory, batch_size)
-    def __len__(self):
-        return len(self.memory)
-
-class CTRL_NET(nn.Module):
-    def __init__(self, IO):
-        super(CTRL_NET, self).__init__()
-        I,O = IO
-        if I+O > 64 :
-            H = int(np.sqrt(I+O))
-        else : 
-            H = int(I+O)
-        self.IN = nn.Conv1d(I, I, 1, groups=I, bias=True)
-        self.H1 = nn.Linear(I, H)
-        self.H2 = nn.Linear(H, H)
-        self.OUT = nn.Linear(H, O)
-
-    def forward(self, x):
-        s = x.shape
-        x = F.relu(self.IN(x.view(s[0],s[1],1)).view(s))
-        x = F.relu(self.H1(x))
-        x = F.relu(self.H2(x))
-        return self.OUT(x)
-
-class Q_AGENT():
-    def __init__(self, NB_OBS,NB_ACTION):
-        self.IO = NB_OBS,NB_ACTION
-        self.MODEL = CTRL_NET((NB_OBS,NB_ACTION))
-        self.GAMMA = 0.9
-        self.optimizer = torch.optim.Adam(self.MODEL.parameters())
-        self.criterion = nn.SmoothL1Loss()
-
-    ## Action Exploration/Exploitation Dilemna
-    def ACTION(self, Input) :
-        VIEW_in = torch.tensor(Input, dtype=torch.float)
-        # actor-critic (old version)
-        action_probs = self.MODEL(VIEW_in)
-        # exploration-exploitation dilemna
-        DILEMNA = np.squeeze(action_probs.detach().numpy())
-        if DILEMNA.sum() == 0 or str(DILEMNA.sum()) == 'nan' :
-            next_action = np.random.randint(self.IO[1])
-        else :
-            if DILEMNA.min() < 0 : DILEMNA = DILEMNA-DILEMNA.min() # order garanty
-            ## ADD dispersion between near values (q-table, values is near)
-            order = np.exp(np.argsort(DILEMNA)+1)
-            # probability
-            p_norm = order/order.sum()
-            print(p_norm)
-            next_action = np.random.choice(self.IO[1], p=p_norm)
-        return next_action
-
-    ## Q-Table
-    def Q_TABLE(self, old_state, action, new_state, reward, DONE) :
-        # actor proba
-        actor = self.MODEL(old_state)
-        # Compute predicted Q-values for each action
-        pred_q_values_batch = actor.gather(1, action)
-        pred_q_values_next  = self.MODEL(new_state)
-        # Compute targeted Q-value for action performed
-        target_q_values_batch = (reward+(1-DONE)*self.GAMMA*torch.max(pred_q_values_next, 1)[0]).detach().unsqueeze(1)
-        # return y, y_prev
-        return pred_q_values_batch,target_q_values_batch
-
-NB_ACTION = env.action_space.n
-NB_OBS = env.observation_space.shape[0]
-
-AGENT = Q_AGENT(NB_OBS,NB_ACTION)
-memory = ReplayMemory(10000)
-
-for i in tqdm(range(20000)) :
-    new_state = env.reset()
-    done = False
-    j = 0
-    while not done :
-        action = AGENT.ACTION(new_state[None])
-        #print(action)
-        state = new_state
-        new_state, reward, done, info = env.step(action)
-        # see
-        if i%500 == 0 :
-            env.render()
-        # Store the transition in memory
-        memory.push(state[None], action, new_state[None], reward, done)
-        j+=1
-    # last memory
-    transitions = memory.sample(j) ## !! if not time dependant !!!
-    batch = Transition(*zip(*transitions))
-    # extrat batch
+##################################### FUNCTION
+## For Q-Learning
+def Q_TABLE(model, batch, GAMMA = 0.9):
     old_state = torch.tensor(np.concatenate(batch.state), dtype=torch.float)
     action = torch.tensor(np.array(batch.action), dtype=torch.long).unsqueeze(1)
     new_state = torch.tensor(np.concatenate(batch.next_state), dtype=torch.float)
     reward = torch.tensor(np.array(batch.reward), dtype=torch.long)
-    DONE = torch.tensor(np.array(batch.done), dtype=torch.int)
-    # Qtable
-    pred_q_values_batch,target_q_values_batch = AGENT.Q_TABLE(old_state, action, new_state, reward, DONE)
-    # train
-    #AGENT.MODEL.zero_grad()
-    AGENT.optimizer.zero_grad()
-    # Compute the loss
-    loss = AGENT.criterion(pred_q_values_batch,target_q_values_batch).type(torch.float)
-    # Do backward pass
-    loss.backward()
-    AGENT.optimizer.step()
-env.close()
+    done = torch.tensor(np.array(batch.done), dtype=torch.int)
+    # actor proba
+    actor = model(old_state)
+    # Compute predicted Q-values for each action
+    pred_q_values_batch = actor.gather(1, action)
+    pred_q_values_next  = model(new_state)
+    # Compute targeted Q-value for action performed
+    target_q_values_batch = (reward+(1-done)*GAMMA*torch.max(pred_q_values_next, 1)[0]).detach().unsqueeze(1)
+    # return y, y_prev
+    return pred_q_values_batch,target_q_values_batch
 
+## Accuracy variable construction factor
+def Factor_construction(df, main_group, main_value, sub_group, factor):
+    # extract data
+    sub_df = df[df[main_group] == main_value]
+    fact_abs = sub_df.groupby(sub_group)[factor].mean().values
+    fact_rel = (fact_abs-fact_abs.min())/(fact_abs.max()-fact_abs.min())
+    return fact_rel
 
-# test
-for i in tqdm(range(10)) :
-    new_state = env.reset()
-    done = False
-    i = 0
-    while not done :
-        VIEW_in =  torch.tensor(new_state[None], dtype=torch.float)
-        action_probs = AGENT.MODEL(VIEW_in)
-        DILEMNA = np.squeeze(action_probs.detach().numpy())
-        #print(action)
-        state = new_state
-        new_state, reward, done, info = env.step(np.argmax(DILEMNA))
-        # see
-        env.render()
-    # last memory
-env.close()
+def FIT(env,MODEL):
+    # loop
+    duration = pd.DataFrame(columns=['GEN','IDX_SEED', 'EPISOD', 'DURATION']).astype(int)
+    for g in tqdm(range(MODEL.NB_GEN)) :
+        # per seeder
+        for n in range(MODEL.NB_SEEDER):
+            # train
+            render,l = 0,0
+            for i in range(MODEL.NB_E_P_G):
+                new_state = env.reset()
+                done = False
+                # gen data
+                j = 0
+                while not done :
+                    action = MODEL.STEP(new_state[None], n)
+                    state = new_state
+                    new_state, reward, done, info = env.step(action)
+                    if done and j < N_MAX-10 :
+                        reward = -10
+                    # see
+                    if render == 0 :
+                        env.render()
+                    MODEL.memory[n].push(state[None], action, new_state[None], reward, done)
+                    # iteration
+                    j+=1
+                    l+=1
+                # duration
+                duration = duration.append({'GEN':g, 'IDX_SEED':n,'EPISOD':i,'DURATION':j},ignore_index=True)
+                render+=1
+                # fit
+                if l >= MODEL.BATCH :
+                    nb_batch = min(int(MODEL.memory[n].__len__()/MODEL.BATCH), np.rint(j/MODEL.BATCH).astype(int))
+                    transitions = MODEL.memory[n].sample(nb_batch*MODEL.BATCH)
+                    # batch adapted loop
+                    for b in range(nb_batch) :
+                        batch = Transition(*zip(*transitions[b*MODEL.BATCH : (b+1)*MODEL.BATCH]))
+                        pred_q, target_q = Q_TABLE(MODEL.SEEDER_LIST[n], batch)
+                        MODEL.TRAIN(pred_q, target_q, g, n, i, b)
+        # Accuracy contruction
+        duration_factor = Factor_construction(duration, 'GEN', g, 'IDX_SEED', 'DURATION')
+        duration_factor = 1 - duration_factor # for odering
+        # Apply natural selection
+        MODEL.SELECTION(g, supp_factor=duration_factor)
+        #if g == 1 : break
+    ## Finalization
+    MODEL.FINALIZATION(supp_param=duration,save=True)
+    env.close()
+    return duration
+
+##################################### ALGO
+
+if __name__ == '__main__' :
+    LOAD = True
+    Filename = 'MODEL_FF_20220125_172002.obj' #25 : 5h
+    ## env gym
+    env = gym.make("CartPole-v0")
+    N_MAX = 300
+    env._max_episode_steps=N_MAX
+    NB_OBS = env.observation_space.shape[0]
+    NB_ACTION = env.action_space.n
+    
+    ## parameter
+    IO =  (NB_OBS,NB_ACTION)
+    BATCH = 25
+    NB_GEN = 100
+    NB_SEED = 5**2
+    NB_EPISODE = 25000 #25000
+    
+    ## Load previous model or launch new
+    if LOAD :
+        MODEL = FF.LOADER(Filename)
+    else :
+        Transition = namedtuple('Transition',('state', 'action', 'next_state', 'reward', 'done'))
+        MODEL = FF.FunctionnalFillet([IO, BATCH, NB_GEN, NB_SEED, NB_EPISODE], Transition, TYPE='RL')
+        # Fit
+        FIT(env, MODEL)
+    
+    ## extract some variable
+    duration = MODEL.supp_param
+    print(MODEL.PARENTING)
+    
+    ### plot
+    import pylab as plt
+    from scipy.ndimage import filters
+    
+    gen_duration = np.squeeze(duration.groupby('GEN').agg({'DURATION':'max'}).values)
+    smooth = filters.gaussian_filter1d(gen_duration,1)
+    plt.plot(smooth); plt.show(); plt.close()
+    
+    duration_sep = duration.groupby(['IDX_SEED','GEN']).agg({"DURATION":"mean"})
+    plt.plot(duration_sep)
 
