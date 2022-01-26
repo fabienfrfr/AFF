@@ -108,7 +108,9 @@ if __name__ == '__main__' :
     
     ## Load previous model or launch new
     if LOAD :
-        MODEL = FF.LOADER(Filename)
+        Transition = namedtuple('Transition',('state', 'action', 'next_state', 'reward', 'done')) #important
+        MODEL = FF.FunctionnalFillet([IO, BATCH, NB_GEN, NB_SEED, NB_EPISODE], Transition, TYPE='RL')
+        MODEL = MODEL.LOAD(Filename)
     else :
         Transition = namedtuple('Transition',('state', 'action', 'next_state', 'reward', 'done'))
         MODEL = FF.FunctionnalFillet([IO, BATCH, NB_GEN, NB_SEED, NB_EPISODE], Transition, TYPE='RL')
@@ -123,10 +125,50 @@ if __name__ == '__main__' :
     import pylab as plt
     from scipy.ndimage import filters
     
-    gen_duration = np.squeeze(duration.groupby('GEN').agg({'DURATION':'max'}).values)
-    smooth = filters.gaussian_filter1d(gen_duration,1)
-    plt.plot(smooth); plt.show(); plt.close()
+    ## 2 simple curve
+    ctrl = duration[duration.IDX_SEED==0].groupby('GEN')
+    evol = duration[duration.IDX_SEED!=0].groupby('GEN')
     
+    score, std, min_, max_ = [], [], [], []
+    for c in [ctrl,evol] :
+        score += [np.squeeze(c.agg({'DURATION':'max'}).values)] 
+        std += [np.squeeze(c.agg({'DURATION':'std'}).values)] 
+        min_ += [score[-1].min()]
+        max_ += [score[-1].max()]
+    min_, max_ = min(min_), max(max_)
+    
+    W, H, L, S = 3.7, 3.7, 18., 9. # width, height, label_size, scale_size
+    #W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
+    # fig ratio
+    MM2INCH = 1# 2.54
+    W, H, L, S = np.array((W, H, L, S))/MM2INCH # ratio fig : 2.7/2.1
+    STD = 1
+    # Figure
+    fig = plt.figure(figsize=(W, H))
+    
+    plt.rc('font', size=S)
+    plt.rc('axes', titlesize=S)
+    
+    ax = fig.add_subplot()
+    ax.set_title('CartPole-v1', fontsize=L)
+    ax.set_ylabel('Time (relative)', fontsize=L)
+    ax.set_xlabel('GEN', fontsize=L)
+    x_reduce = np.arange(len(score[0]))
+    for z in zip(score,std):
+        curve = filters.gaussian_filter1d((z[0]-min_)/(max_-min_),1)
+        inter = filters.gaussian_filter1d((z[1])/(max_-min_),1)
+        
+        ax.plot(curve)
+        ax.fill_between(x_reduce, curve - inter/STD, curve + inter/STD, alpha=0.3)
+    
+    plt.xlim([0,100])
+    plt.ylim([0,0.9])
+    
+    # Save data
+    import os
+    plt.savefig('OUT' + os.path.sep + 'CartPole-v1_' + 'b_' +str(BATCH)+"n_"+str(100)+".svg")
+    plt.show(); plt.close()
+    """
     duration_sep = duration.groupby(['IDX_SEED','GEN']).agg({"DURATION":"mean"})
     plt.plot(duration_sep)
-
+    """

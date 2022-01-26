@@ -55,12 +55,13 @@ class CTRL_NET(nn.Module):
         x = F.relu(self.H1(x))
         x = F.relu(self.H2(x))
         return self.OUT(x)
-    
-def LOADER(Filename):
-    with open('OUT'+os.path.sep+Filename, 'rb') as f:
-        return pickle.load(f)
 
 ##### FF MODULE
+"""  
+Note hybrid propriety :   
+If GEN = 0, equivalent of no evolution during training : only SGD
+if NB_BATCH > NB_BATCH/GEN, equivalent of no SGD : only evolution
+"""
 class FunctionnalFillet():
     def __init__(self, arg, NAMED_MEMORY=None, TYPE="class", TIME_DEPENDANT = False):
         # parameter
@@ -148,16 +149,21 @@ class FunctionnalFillet():
         return
     
     def SELECTION(self, GEN, supp_factor=1):
-        # extract data
-        sub_loss = self.loss[self.loss.GEN == GEN]
-        gb_seed = sub_loss.groupby('IDX_SEED')
         # sup median loss selection
         medianLoss = np.ones(self.NB_SEEDER)
-        for i,g in gb_seed :
-            median_eps = g.EPISOD.median()
-            medianLoss[int(i)] = g[g.EPISOD > median_eps].LOSS_VALUES.mean()
-        # normalization
-        relativeLOSS = (medianLoss-medianLoss.min())/(medianLoss.max()-medianLoss.min())
+        # extract data
+        sub_loss = self.loss[self.loss.GEN == GEN]
+        # verify if you have SDG (only evolution selection)
+        if sub_loss.size > 0 :
+            gb_seed = sub_loss.groupby('IDX_SEED')
+            # sup median loss selection
+            for i,g in gb_seed :
+                median_eps = g.EPISOD.median()
+                medianLoss[int(i)] = g[g.EPISOD > median_eps].LOSS_VALUES.mean()
+            # normalization
+            relativeLOSS = (medianLoss-medianLoss.min())/(medianLoss.max()-medianLoss.min())
+        else :
+            relativeLOSS = medianLoss
         # coeffect, loss dominant
         score = supp_factor*relativeLOSS + relativeLOSS
         # order
@@ -214,3 +220,7 @@ class FunctionnalFillet():
         out_probs = self.SEEDER_LIST[index](in_tensor)
         out_probs = np.squeeze(out_probs.detach().numpy())
         return np.argmax(out_probs)
+    
+    def LOAD(self, Filename):
+        with open('OUT'+os.path.sep+Filename, 'rb') as f:
+            return pickle.load(f)
