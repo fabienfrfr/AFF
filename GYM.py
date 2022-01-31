@@ -31,15 +31,25 @@ def Q_TABLE(model, batch, GAMMA = 0.9):
     return pred_q_values_batch,target_q_values_batch
 
 ## Accuracy variable construction factor
-def Factor_construction(df, main_group, main_value, sub_group, factor):
+def Factor_construction(df, main_group, main_value, sub_group, factor, AL=None):
     # extract data
     sub_df = df[df[main_group] == main_value]
-    fact_abs = sub_df.groupby(sub_group)[factor].mean().values
+    if AL == None :
+        fact_abs = sub_df.groupby(sub_group)[factor].mean().values
+    else :
+        """
+        AL = ALPHA_LIST = [group, coeff]
+        """
+        fact_abs = np.unique(sub_df[factor].values)
+        for i,g in sub_df.groupby(sub_group)[factor] :
+            Tail_eps = g[AL[0]].min()+(g[AL[0]].max() - g[AL[0]].min())*AL[1]
+            fact_abs[int(i)] = g[g[AL[0]] > Tail_eps][factor].mean()
     fact_rel = (fact_abs-fact_abs.min())/(fact_abs.max()-fact_abs.min())
     return fact_rel
 
 def FIT(env,MODEL):
     # loop
+    dilemna_ = MODEL.NB_E_P_G*MODEL.ALPHA
     duration = pd.DataFrame(columns=['GEN','IDX_SEED', 'EPISOD', 'DURATION']).astype(int)
     for g in tqdm(range(MODEL.NB_GEN)) :
         # per seeder
@@ -52,7 +62,11 @@ def FIT(env,MODEL):
                 # gen data
                 j = 0
                 while not done :
-                    action = MODEL.STEP(new_state[None], n)
+                    # train or predict (%)
+                    if n < dilemna_ :
+                        action = MODEL.STEP(new_state[None], n)
+                    else :
+                        action = MODEL.PREDICT(new_state[None], n)
                     state = new_state
                     new_state, reward, done, info = env.step(action)
                     if done and j < N_MAX-10 :
@@ -78,7 +92,7 @@ def FIT(env,MODEL):
                         MODEL.TRAIN(pred_q, target_q, g, n, i, b)
         # Accuracy contruction
         duration_factor = Factor_construction(duration, 'GEN', g, 'IDX_SEED', 'DURATION')
-        duration_factor = 1 - duration_factor # for odering
+        duration_factor = 1 - duration_factor # for odering (loss need inversion)
         # Apply natural selection
         MODEL.SELECTION(g, supp_factor=duration_factor)
         #if g == 1 : break
@@ -90,7 +104,7 @@ def FIT(env,MODEL):
 ##################################### ALGO
 
 if __name__ == '__main__' :
-    LOAD = True
+    LOAD = False #True
     Filename = 'MODEL_FF_20220125_172002.obj' #25 : 5h
     ## env gym
     env = gym.make("CartPole-v0")
@@ -105,26 +119,35 @@ if __name__ == '__main__' :
     NB_GEN = 100
     NB_SEED = 5**2
     NB_EPISODE = 25000 #25000
+    ALPHA = 0.9
     
     ## Load previous model or launch new
     if LOAD :
         Transition = namedtuple('Transition',('state', 'action', 'next_state', 'reward', 'done')) #important
-        MODEL = FF.FunctionnalFillet([IO, BATCH, NB_GEN, NB_SEED, NB_EPISODE], Transition, TYPE='RL')
+        MODEL = FF.FunctionnalFillet([IO, BATCH, NB_GEN, NB_SEED, NB_EPISODE, ALPHA], Transition, TYPE='RL')
         MODEL = MODEL.LOAD(Filename)
     else :
         Transition = namedtuple('Transition',('state', 'action', 'next_state', 'reward', 'done'))
-        MODEL = FF.FunctionnalFillet([IO, BATCH, NB_GEN, NB_SEED, NB_EPISODE], Transition, TYPE='RL')
+        MODEL = FF.FunctionnalFillet([IO, BATCH, NB_GEN, NB_SEED, NB_EPISODE, ALPHA], Transition, TYPE='RL')
         # Fit
         FIT(env, MODEL)
     
     ## extract some variable
     duration = MODEL.supp_param
-    print(MODEL.PARENTING)
+    PARENT = MODEL.PARENTING.T
+    NB_P_GEN = MODEL.NB_SEEDER
     
     ### plot
     import pylab as plt
     from scipy.ndimage import filters
     
+    plt.imshow(PARENT); plt.show(); plt.close()
+    
+    import EXTRA_FUNCTION as EF
+    """
+    duration_sep = duration.groupby(['IDX_SEED','GEN']).agg({"DURATION":"mean"})
+    plt.plot(duration_sep)
+    """
     ## 2 simple curve
     ctrl = duration[duration.IDX_SEED==0].groupby('GEN')
     evol = duration[duration.IDX_SEED!=0].groupby('GEN')
@@ -137,38 +160,30 @@ if __name__ == '__main__' :
         max_ += [score[-1].max()]
     min_, max_ = min(min_), max(max_)
     
-    W, H, L, S = 3.7, 3.7, 18., 9. # width, height, label_size, scale_size
-    #W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
-    # fig ratio
-    MM2INCH = 1# 2.54
-    W, H, L, S = np.array((W, H, L, S))/MM2INCH # ratio fig : 2.7/2.1
-    STD = 1
-    # Figure
-    fig = plt.figure(figsize=(W, H))
-    
-    plt.rc('font', size=S)
-    plt.rc('axes', titlesize=S)
-    
-    ax = fig.add_subplot()
-    ax.set_title('CartPole-v1', fontsize=L)
-    ax.set_ylabel('Time (relative)', fontsize=L)
-    ax.set_xlabel('GEN', fontsize=L)
-    x_reduce = np.arange(len(score[0]))
+    # norm & plot save
+    curve, inter = [],[]
     for z in zip(score,std):
-        curve = filters.gaussian_filter1d((z[0]-min_)/(max_-min_),1)
-        inter = filters.gaussian_filter1d((z[1])/(max_-min_),1)
-        
-        ax.plot(curve)
-        ax.fill_between(x_reduce, curve - inter/STD, curve + inter/STD, alpha=0.3)
+        curve += [filters.gaussian_filter1d((z[0]-min_)/(max_-min_),1)]
+        inter += [filters.gaussian_filter1d((z[1])/(max_-min_),1)]       
+    EF.FAST_PLOT(curve, inter, ['ctrl','evolution'],'','','',yaxis = [0,0.9], BATCH=25,CYCLE=100, STD=1)
     
-    plt.xlim([0,100])
-    plt.ylim([0,0.9])
-    
-    # Save data
-    import os
-    plt.savefig('OUT' + os.path.sep + 'CartPole-v1_' + 'b_' +str(BATCH)+"n_"+str(100)+".svg")
-    plt.show(); plt.close()
-    """
-    duration_sep = duration.groupby(['IDX_SEED','GEN']).agg({"DURATION":"mean"})
-    plt.plot(duration_sep)
-    """
+    ## plot parenting
+    N_AGENT_TOT = np.product(MODEL.PARENTING.shape)
+    node = np.arange(N_AGENT_TOT)
+    pos, G = EF.IMLINEAGE_2_GRAPH(node,PARENT)
+    # calculate heritage
+    G, edges_size, node_size, SHORT_PATH = EF.ADD_PATH(node,G)
+    # prepare data indexes
+    # show nodes
+    N_ = np.sqrt(node_size.reshape((NB_GEN+1,NB_P_GEN)).T)
+    YMAX = np.sqrt(N_.shape[1])
+    # curve construc
+    plt.imshow(N_, interpolation='none', aspect="auto"); plt.show(); plt.close()
+    node = [N_[2:7].mean(0), N_[7:-3].mean(0), N_[-3:].mean(0)]
+    std = [N_[2:7].std(0), N_[7:-3].std(0), N_[-3:].std(0)]
+    # norm & plot
+    curve, inter = [],[]
+    for z in zip(node,std):
+        curve += [filters.gaussian_filter1d(z[0],1)]
+        inter += [filters.gaussian_filter1d(z[1],1)]       
+    EF.FAST_PLOT(curve, inter, ['parent','child','random'],'node CartPole-v0','NODES','GEN',yaxis = [1,4], BATCH=25,CYCLE=100, STD=1)

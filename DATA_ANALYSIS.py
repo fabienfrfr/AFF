@@ -5,7 +5,7 @@ Created on Sat May  8 09:47:40 2021
 @author: fabien
 """
 
-import numpy as np
+import numpy as np, pylab as plt
 
 import pandas as pd
 import ast
@@ -20,7 +20,7 @@ CSV_FILE = 'OUT/LYFE_RULE_0_EXP_20211125_145300_.csv'
 CSV_FILE = 'OUT/LYFE_RULE_1_EXP_20211126_134230_.csv'
 CSV_FILE = 'OUT/LYFE_RULE_2_EXP_20211125_132239_.csv'
 
-CSV_FILE = 'OUT/LYFE_RULE_2_EXP_20211125_132239_.csv'
+CSV_FILE = 'OUT/LYFE_RULE_0_EXP_20211125_145300_.csv'
 
 # animation
 N_FRAME = None
@@ -45,7 +45,7 @@ class DATA_MEANING():
         ### groupby GEN
         self.GB_GEN = self.DF.groupby('GEN')
         # curve constructor
-        self.TYPE_POS = DATA.GB_GEN.get_group(1).TYPE.values
+        self.TYPE_POS = self.GB_GEN.get_group(1).TYPE.values
         self.CURVE_CONSTRUCTOR = np.unique(self.TYPE_POS, return_counts=True, return_index=True)
         # label constructor (to upgrade)
         if True :
@@ -93,6 +93,7 @@ class DATA_MEANING():
     def EVOLUTION(self, SHOW_TREE=False):
         # convert tree lineage to imlineage
         self.PARENT = EF.TREELINEAGE_2_IMLINEAGE(self.GB_GEN)
+        plt.imshow(self.PARENT); plt.show(); plt.close()
         # parenting to networkx
         N_AGENT_TOT = self.NB_GEN*self.NB_P_GEN
         self.node = np.arange(N_AGENT_TOT)
@@ -101,15 +102,17 @@ class DATA_MEANING():
         self.G, edges_size, node_size, self.SHORT_PATH = EF.ADD_PATH(self.node,self.G)
         # prepare data indexes
         START,LENGHT = self.CURVE_CONSTRUCTOR[1:]
+        print(LENGHT)
         ## show edges
         E_ = np.log(edges_size.reshape((self.NB_GEN,self.NB_P_GEN)).T+1)
         E_ = (E_-E_.min())/(E_.max()-E_.min())
-        curve_e, std_e = EF.FAST_CURVE_CONSTRUCT(E_, [E_.mean(0), E_.std(0)], [START,LENGHT], 1)
+        curve_e, std_e = EF.FAST_CURVE_CONSTRUCT(E_, [E_[:].mean(0), E_.std(0)], [START,LENGHT], 1)
         EF.FAST_PLOT(curve_e,std_e,self.TYPE+['MEAN'], 'TAG', 'EDGES','GEN', yaxis=[0.,1.])
         # show nodes
         N_ = np.sqrt(node_size.reshape((self.NB_GEN,self.NB_P_GEN)).T)
         YMAX = np.sqrt(N_.shape[1])
-        curve_n, std_n = EF.FAST_CURVE_CONSTRUCT(N_, [N_.mean(0), N_.std(0)], [START,LENGHT], 1)
+        YMAX=5
+        curve_n, std_n = EF.FAST_CURVE_CONSTRUCT(N_, [N_[:].mean(0), N_.std(0)], [START,LENGHT], 1)
         EF.FAST_PLOT(curve_n,std_n,self.TYPE+['MEAN'], 'TAG', 'NODES','GEN', yaxis=[1.,YMAX])
         ## show image complete
         EF.FAST_IMSHOW([E_,N_], ['EDGES','NODE'])

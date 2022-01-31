@@ -70,6 +70,7 @@ class FunctionnalFillet():
         self.NB_GEN = arg[2]
         self.NB_SEEDER = arg[3]
         self.NB_EPISOD = arg[4]
+        self.ALPHA = arg[5] # 1-% of predict (not random step)
         self.NB_E_P_G = int(self.NB_EPISOD/self.NB_GEN)
         self.TIME_DEP = TIME_DEPENDANT
         self.TYPE = TYPE
@@ -127,6 +128,13 @@ class FunctionnalFillet():
             out_choice = np.random.choice(self.IO[1], p=p_norm)
         return out_choice
     
+    def PREDICT(self, INPUT, index=0):
+        in_tensor = torch.tensor(INPUT, dtype=torch.float)
+        # extract prob
+        out_probs = self.SEEDER_LIST[index](in_tensor)
+        out_probs = np.squeeze(out_probs.detach().numpy())
+        return np.argmax(out_probs)
+    
     def TRAIN(self, output, target, generation=0, index=0, episod=0, i_batch=0):
         # reset
         #self.optimizer[index].zero_grad()
@@ -150,7 +158,7 @@ class FunctionnalFillet():
     
     def SELECTION(self, GEN, supp_factor=1):
         # sup median loss selection
-        medianLoss = np.ones(self.NB_SEEDER)
+        TailLoss = np.ones(self.NB_SEEDER)
         # extract data
         sub_loss = self.loss[self.loss.GEN == GEN]
         # verify if you have SDG (only evolution selection)
@@ -158,14 +166,17 @@ class FunctionnalFillet():
             gb_seed = sub_loss.groupby('IDX_SEED')
             # sup median loss selection
             for i,g in gb_seed :
-                median_eps = g.EPISOD.median()
-                medianLoss[int(i)] = g[g.EPISOD > median_eps].LOSS_VALUES.mean()
+                if self.ALPHA != 1 :
+                    Tail_eps = g.EPISOD.min()+(g.EPISOD.max() - g.EPISOD.min())*self.ALPHA
+                else :
+                    Tail_eps = g.EPISOD.median()
+                TailLoss[int(i)] = g[g.EPISOD > Tail_eps].LOSS_VALUES.mean()
             # normalization
-            relativeLOSS = (medianLoss-medianLoss.min())/(medianLoss.max()-medianLoss.min())
+            relativeLOSS = (TailLoss-TailLoss.min())/(TailLoss.max()-TailLoss.min())
         else :
-            relativeLOSS = medianLoss
-        # coeffect, loss dominant
-        score = supp_factor*relativeLOSS + relativeLOSS
+            relativeLOSS = TailLoss
+        # coeffect, belong to [0,3]
+        score = supp_factor + supp_factor*relativeLOSS + relativeLOSS
         # order
         order = np.argsort(score[self.NB_CONTROL:])
         ### stock control network
@@ -213,13 +224,6 @@ class FunctionnalFillet():
             time = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
             filehandler = open("OUT"+os.path.sep+"MODEL_FF_"+time+".obj", 'wb')
             pickle.dump(self, filehandler); filehandler.close()
-    
-    def PREDICT(self, INPUT, index=0):
-        in_tensor = torch.tensor(INPUT, dtype=torch.float)
-        # extract prob
-        out_probs = self.SEEDER_LIST[index](in_tensor)
-        out_probs = np.squeeze(out_probs.detach().numpy())
-        return np.argmax(out_probs)
     
     def LOAD(self, Filename):
         with open('OUT'+os.path.sep+Filename, 'rb') as f:

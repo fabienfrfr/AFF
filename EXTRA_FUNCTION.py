@@ -305,7 +305,7 @@ def FAST_CURVE_CONSTRUCT(TRAINING_, BONUS_TRAINING, PARAM, SIGMA=1):
         
     return curve_list,std_list
 
-def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=0, CYCLE=0, NB=0, yaxis = None, XMAX=None, x_reduce=None):
+def FAST_PLOT(curve_list,std_list,label_list,Title,Ylabel,Xlabel, RULE=0, BATCH=0, CYCLE=0, NB=0, STD = np.pi, yaxis = None, XMAX=None, x_reduce=None):
     W, H, L, S = 3.7, 3.7, 18., 9. # width, height, label_size, scale_size
     #W, H, L, S = 3.7, 2.9, 18., 9. # width, height, label_size, scale_size
     # fig ratio
